@@ -1,0 +1,8 @@
+name: Peloton
+on:
+  schedule:
+    - cron: "50 02 * * *"
+jobs:
+  placeholder:
+    steps:
+      run: echo "Hello World"
