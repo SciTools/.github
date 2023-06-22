@@ -9,16 +9,16 @@ on:
 
 jobs:
   Update Peloton Project Board:
+    name: "Update Peloton Project Board"
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
     steps:
-      name: "Update Peloton Project Board"
-
-      runs-on: ubuntu-latest
-
-      defaults:
-        run:
-          shell: bash -l {0}
-
-      steps:
+      - name: "Add issue 4000"
         run: |
           gh api graphql -f query='
             mutation {
