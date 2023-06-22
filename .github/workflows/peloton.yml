@@ -19,13 +19,12 @@ jobs:
           shell: bash -l {0}
 
       steps:
-        - name: "Add to Project"
-          run: |
-            gh api graphql -f query='
-              mutation {
-                addProjectsV2ItemById(input: {projectId; "PVT_kwDOABU7f84ALhAI" contentId: "MDU6SXNzdWU4MDcxMTY2Mzg="}) {
-                  item {
-                    id
-                  }
+        run: |
+          gh api graphql -f query='
+            mutation {
+              addProjectsV2ItemById(input: {projectId; "PVT_kwDOABU7f84ALhAI" contentId: "MDU6SXNzdWU4MDcxMTY2Mzg="}) {
+                item {
+                  id
                 }
-              }'
+              }
+            }'
