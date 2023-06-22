@@ -17,6 +17,9 @@ jobs:
       run:
         shell: bash -l {0}
 
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - name: "Add issue 4000"
         run: |
