@@ -2,7 +2,32 @@ name: Peloton
 on:
   schedule:
     - cron: "50 02 * * *"
+
+  push:
+    branches:
+      - "peloton_GHA"
+
 jobs:
-  placeholder:
+  update_peloton_project_board:
+    name: "Update Peloton Project Board"
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
-      run: echo "Hello World"
+      - name: "Add issue 4000"
+        run: |
+          gh api graphql -f query='
+            mutation {
+              addProjectV2ItemById(input: {projectId: "PVT_kwDOABU7f84ALhAI" contentId: "MDU6SXNzdWU4MDcxMTY2Mzg="}) {
+                item {
+                  id
+                }
+              }
+            }'
