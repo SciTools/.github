@@ -25,7 +25,7 @@ jobs:
         run: |
           gh api graphql -f query='
             mutation {
-              addProjectsV2ItemById(input: {projectId; "PVT_kwDOABU7f84ALhAI" contentId: "MDU6SXNzdWU4MDcxMTY2Mzg="}) {
+              addProjectsV2ItemById(input: {projectId: "PVT_kwDOABU7f84ALhAI" contentId: "MDU6SXNzdWU4MDcxMTY2Mzg="}) {
                 item {
                   id
                 }
