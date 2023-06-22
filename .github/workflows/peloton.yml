@@ -8,7 +8,7 @@ on:
       - "peloton_GHA"
 
 jobs:
-  Update Peloton Project Board:
+  update_peloton_project_board:
     name: "Update Peloton Project Board"
 
     runs-on: ubuntu-latest
