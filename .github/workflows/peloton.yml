@@ -3,14 +3,10 @@ on:
   schedule:
     - cron: "50 02 * * *"
 
-  push:
-    branches:
-      - "peloton_GHA"
-
 jobs:
-  update_peloton_project_board:
+  update_peloton_project:
     name: "Update Peloton Project Board"
-
+    if: github.repository == 'SciTools/.github'
     runs-on: ubuntu-latest
 
     defaults:
@@ -18,15 +14,20 @@ jobs:
         shell: bash -l {0}
 
     steps:
-      - name: "Add issue 4000"
+      - name: "Checkout repo"
+        uses: actions/checkout@v3
+
+      - name: "Set up environment"
+        run: |
+          source $CONDA/bin/activate base
+          conda install -c conda-forge --file peloton/requirements.txt
+
+      - name: "Query GitHub"
         env:
           GITHUB_TOKEN: ${{ secrets.PROJECT_WRITE_PERMISSIONS }}
-        run: |
-          gh api graphql -f query='
-            mutation {
-              addProjectV2ItemById(input: {projectId: "PVT_kwDOABU7f84ALhAI" contentId: "MDU6SXNzdWU4MDcxMTY2Mzg="}) {
-                item {
-                  id
-                }
-              }
-            }'
+        run: $CONDA/bin/python peloton/query.py
+
+      - name: "Populate Peloton Project"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROJECT_WRITE_PERMISSIONS }}
+        run: $CONDA/bin/python peloton/populate.py
