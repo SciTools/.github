@@ -3,6 +3,11 @@ This module visualises SciTools issues and PR's in a dashboard, to assist the
 dev team in keeping the repos healthy.
 """
 
+from pathlib import Path
+
+
+csv_path = Path(__file__).parent / "peloton.csv"
+
 # TODO: use the SciTools/peloton user group instead.
 peloton_logins = [
     "bjlittle",
