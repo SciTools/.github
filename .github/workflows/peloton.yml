@@ -3,10 +3,6 @@ on:
   schedule:
     - cron: "50 02 * * *"
 
-  push:
-    branches:
-      - "populate_3"
-
 jobs:
   update_peloton_project:
     name: "Update Peloton Project Board"
