@@ -38,6 +38,10 @@ def _get_peloton_logins() -> List[str]:
     nodes = data["organization"]["team"]["members"]["nodes"]
     logins = [node["login"] for node in nodes]
     logins.extend([
+        # @rcomer has asked not to receive notifications for the
+        #  SciTools/peloton GitHub team, so is not a member and instead is
+        #  added here.
+        "rcomer",
         "codecov[bot]",
         "github-actions[bot]",
         "pre-commit-ci[bot]",
