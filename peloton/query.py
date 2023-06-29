@@ -51,9 +51,10 @@ if __name__ == "__main__":
                 feature_branch_label_id = label.raw_data["id"]
                 break
 
-        for issue in chain(
-            repo.get_issues(state="open"), repo.get_issues(state="closed", since=since)
-        ):
+        # for issue in chain(
+        #     repo.get_issues(state="open"), repo.get_issues(state="closed", since=since)
+        # ):
+        for issue in repo.get_issues(state="open", assignee="trexfeathers"):
             issue_dict = issue.raw_data
 
             user_login = issue.user.login
