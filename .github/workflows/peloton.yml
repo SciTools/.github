@@ -5,7 +5,7 @@ on:
 
   push:
     branches:
-      - "peloton_GHA_demo"
+      - "populate_3"
 
 jobs:
   update_peloton_project:
