@@ -18,6 +18,13 @@ jobs:
         shell: bash -l {0}
 
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.AUTH_APP_ID }}
+          private_key: ${{ secrets.AUTH_APP_PRIVATE_KEY }}
+
       - name: "Checkout repo"
         uses: actions/checkout@v3
 
@@ -28,10 +35,10 @@ jobs:
 
       - name: "Query GitHub"
         env:
-          GITHUB_TOKEN: ${{ secrets.PROJECT_WRITE_PERMISSIONS }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: $CONDA/bin/python peloton/query.py
 
       - name: "Populate Peloton Project"
         env:
-          GITHUB_TOKEN: ${{ secrets.PROJECT_WRITE_PERMISSIONS }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: $CONDA/bin/python peloton/populate.py
