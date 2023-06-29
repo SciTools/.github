@@ -10,7 +10,7 @@ on:
 jobs:
   update_peloton_project:
     name: "Update Peloton Project Board"
-    if: github.repository == 'SciTools/.github'
+#    if: github.repository == 'SciTools/.github'
     runs-on: ubuntu-latest
 
     defaults:
