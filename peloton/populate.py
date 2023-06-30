@@ -16,9 +16,11 @@ import pandas as pd
 from common import csv_path, peloton_logins
 
 
-# https://docs.github.com/en/issues/planning-and-tracking-with-projects/
-#  automating-your-project/
-#  using-the-api-to-manage-projects#finding-the-node-id-of-a-user-project
+"""
+https://docs.github.com/en/issues/planning-and-tracking-with-projects/
+automating-your-project/
+using-the-api-to-manage-projects#finding-the-node-id-of-a-user-project
+"""
 PROJECT_ID = "PVT_kwDOABU7f84ALhAI"
 
 # Number of commands to include in a single GraphQL query - avoids time-outs.
@@ -26,7 +28,7 @@ PAGINATION = 20
 
 
 class MutationTypes(Enum):
-    # https://docs.github.com/en/graphql/reference/mutations
+    """https://docs.github.com/en/graphql/reference/mutations"""
     ADD = "addProjectV2ItemById"
     DELETE = "deleteProjectV2Item"
     UPDATE = "updateProjectV2ItemFieldValue"
@@ -34,8 +36,9 @@ class MutationTypes(Enum):
 
 
 class DataTypes(Enum):
-    # https://docs.github.com/en/graphql/reference/
-    #  input-objects#projectv2fieldvalue
+    """
+    https://docs.github.com/en/graphql/reference/input-objects#projectv2fieldvalue
+    """
     DATE = "date"
     NUMBER = "number"
     SELECT = "singleSelectOptionId"
@@ -50,10 +53,13 @@ class FieldInfo(NamedTuple):
 
 
 class Fields(Enum):
-    """The project fields to populate."""
-    # https://docs.github.com/en/issues/planning-and-tracking-with-projects/
-    #  automating-your-project/
-    #  using-the-api-to-manage-projects#finding-the-node-id-of-a-field
+    """
+    The project fields to populate.
+
+    https://docs.github.com/en/issues/planning-and-tracking-with-projects/
+    automating-your-project/
+    using-the-api-to-manage-projects#finding-the-node-id-of-a-field
+    """
     DATE_CREATED = FieldInfo(
         "PVTF_lADOABU7f84ALhAIzgHV-jI", DataTypes.DATE, "created_at"
     )
@@ -93,10 +99,13 @@ class Fields(Enum):
 
 
 class SelectionIds(Enum):
-    """Ids to use for project fields that accept `singleSelectOptionId` inputs."""
-    # https://docs.github.com/en/issues/planning-and-tracking-with-projects
-    #  /automating-your-project/
-    #  using-the-api-to-manage-projects#finding-the-node-id-of-a-field
+    """
+    Ids to use for project fields that accept `singleSelectOptionId` inputs.
+
+    https://docs.github.com/en/issues/planning-and-tracking-with-projects
+    /automating-your-project/
+    using-the-api-to-manage-projects#finding-the-node-id-of-a-field
+    """
     AUTHOR_PELOTON = "389ebec0"
     AUTHOR_EXTERNAL = "d961b9b7"
     COMMENTER_PELOTON = "98462be7"
