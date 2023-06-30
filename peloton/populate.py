@@ -119,6 +119,7 @@ def run_mutation(lines: List[str], return_ids: bool = False) -> List[str]:
         block_slice = slice(i, i + PAGINATION)
         query = "mutation {\n%s\n}" % "\n".join(lines[block_slice])
 
+        # Useful for reading GHA logs.
         print(query)
         output = run(
             ["gh", "api", "graphql", "-f", f"query={query}"],

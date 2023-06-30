@@ -26,6 +26,7 @@ def _get_peloton_logins() -> List[str]:
           }
         }
     """
+    # Useful for reading GHA logs.
     print(query)
     output = run(
         ["gh", "api", "graphql", "-f", f"query={query}"],
