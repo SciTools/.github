@@ -1,0 +1,38 @@
+name: Peloton
+on:
+  schedule:
+    - cron: "50 02 * * *"
+
+jobs:
+  update_peloton_project:
+    name: "Update Peloton Project Board"
+    if: github.repository == 'SciTools/.github'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.AUTH_APP_ID }}
+          private_key: ${{ secrets.AUTH_APP_PRIVATE_KEY }}
+
+      - name: "Checkout repo"
+        uses: actions/checkout@v3
+
+      - name: "Set up environment"
+        run: conda install -c conda-forge --file peloton/requirements.txt
+
+      - name: "Query GitHub"
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: $CONDA/bin/python peloton/query.py
+
+      - name: "Populate Peloton Project"
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+        run: $CONDA/bin/python peloton/populate.py
