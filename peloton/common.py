@@ -46,7 +46,8 @@ def _get_peloton_logins() -> List[str]:
         "codecov[bot]",
         "github-actions[bot]",
         "pre-commit-ci[bot]",
-        "scitools-ci[bot]"
+        "scitools-ci[bot]",
+        "dependabot[bot]",
     ])
 
     return logins
