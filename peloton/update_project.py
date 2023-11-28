@@ -1,0 +1,1197 @@
+import abc
+from argparse import ArgumentParser
+from dataclasses import dataclass, asdict, fields
+from datetime import date, datetime, timedelta
+from enum import StrEnum
+import logging
+from string import printable
+from time import sleep
+from sys import stdout
+
+import numpy as np
+import pandas as pd
+
+from sgqlc.endpoint.http import HTTPEndpoint
+import sgqlc.types
+import sgqlc.types.relay
+import sgqlc.operation
+import github_schema
+
+# TODO: docstrings and type hints
+# TODO: update GHA to use this script
+# TODO: rename this script
+# TODO: blackify
+
+# TODO: commit the schema, together with instructions for updating via sgqlc CLI.
+github_schema = github_schema
+github_schema_root = github_schema.github_schema
+
+
+GITHUB_QUERY_CONDITIONS = (
+    "org:SciTools org:SciTools-incubator org:SciTools-classroom "
+    "-repo:SciTools/cartopy "
+    "repo:bjlittle/geovista repo:pp-mo/ncdata repo:pp-mo/ugrid-checks "
+)
+"""
+https://github.com/search?q=org%3ASciTools+org%3ASciTools-incubator
++org%3ASciTools-classroom+-repo%3ASciTools%2Fcartopy
++repo%3Abjlittle%2Fgeovista+repo%3App-mo%2Fncdata+repo%3App-mo%2Fugrid-checks
+"""
+CLOSED_THRESHOLD = date.today() - timedelta(days=28)
+# Using the negating syntax returns everything that is NOT closed AND
+#  everything that was closed after CLOSED_THRESHOLD.
+GITHUB_QUERY_CONDITIONS += f" -closed:<{CLOSED_THRESHOLD}"
+
+PELOTON_PROJECT_ID = "PVT_kwDOABU7f84ALhAI"
+
+# Set an interval to avoid update loops over-stressing the GraphQL server.
+SECONDS_BETWEEN_UPDATES = 60
+
+
+# Required by run_operation(), set during main() argparsing.
+ENDPOINT: HTTPEndpoint = None
+
+# All logging is recorded in the log file.
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s %(message)s \n",
+    filename="latest_peloton_refresh.log",
+    filemode="w",
+)
+
+
+def run_operation(op: sgqlc.operation.Operation) -> github_schema.Query:
+    result = None
+    if hasattr(ENDPOINT, "base_headers"):
+        # ENDPOINT has been set.
+        if op:
+            # Note: sgqlc already logs its queries to logging.DEBUG, so we
+            #  get to capture those without our own logging call.
+            data = ENDPOINT(op)
+            result = op + data
+    else:
+        message = "ENDPOINT has not been set. Cannot run query."
+        raise ValueError(message)
+
+    return result
+
+
+class SelectionIds(StrEnum):
+    """
+    Ids to use for project fields that accept `singleSelectOptionId` inputs.
+
+    Use ProjectFieldsQuery to get the latest info on this.
+    """
+
+    AUTHOR_PELOTON = "389ebec0"
+    AUTHOR_EXTERNAL = "d961b9b7"
+    AUTHOR_BOT = "8fbf3584"
+    COMMENTER_PELOTON = "98462be7"
+    COMMENTER_EXTERNAL = "235b3d90"
+    COMMENTER_BOT = "54adc7eb"
+    DISCUSSION_WANTED = "e17f4b18"
+
+
+###############################################################################
+# QUERIES.
+
+
+class PaginatedQuery(abc.ABC):
+    PAGINATION = 100
+    selector_kwargs: dict = {}
+
+    @dataclass(frozen=True)
+    class ColNames:
+        """
+        Used to access columns in self.data_frame
+
+        The DataFrame is produced from normalised JSON so can have quite a
+        long 'path'. This class provides a convenience for extracting the names
+        from sqglc objects and storing the resulting column names for
+        downstream use.
+        """
+
+        @staticmethod
+        def _get_element_name(element: str | sgqlc.operation.Selection) -> str:
+            if hasattr(element, "__field__"):
+                element_name = element.__alias__ or element.__field__.graphql_name
+            else:
+                assert isinstance(element, str)
+                element_name = element
+            return element_name
+
+        @classmethod
+        def _get_col_name(cls, *elements: str | sgqlc.operation.Selection) -> str:
+            element_names = [
+                cls._get_element_name(element)
+                for element in elements
+            ]
+            return ".".join(element_names)
+
+        @classmethod
+        def from_sgqlc_trees(cls, **trees: list[str | sgqlc.operation.Selection]):
+            cls_kwargs: dict[str, str] = {
+                k: cls._get_col_name(*v)
+                for k, v in trees.items()
+            }
+            return cls(**cls_kwargs)
+
+    def __init__(self):
+        self.cols = None
+        self.data_frame = pd.json_normalize(
+            [item.__json_data__ for item in self.run_query()]
+        )
+        assert self.cols is not None
+        self.post_process()
+
+    @staticmethod
+    @abc.abstractmethod
+    def make_selector(
+            operation: sgqlc.operation.Operation
+    ) -> sgqlc.operation.Selector:
+        raise NotImplementedError
+
+    @staticmethod
+    @abc.abstractmethod
+    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+        raise NotImplementedError
+
+    @staticmethod
+    @abc.abstractmethod
+    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_query_fields(self, page: sgqlc.operation.Selection) -> None:
+        raise NotImplementedError
+
+    def build_query(self, after: str = None) -> sgqlc.operation.Operation:
+        operation = sgqlc.operation.Operation(github_schema_root.query_type)
+        selector = self.make_selector(operation)
+        page = selector(first=self.PAGINATION, after=after, **self.selector_kwargs)
+        self.add_query_fields(page)
+        page.page_info.__fields__(has_next_page=True, end_cursor=True)
+        return operation
+
+    def run_query(self) -> list:
+        all_items = []
+        has_next_page = True
+        end_cursor = None
+
+        while has_next_page:
+            query = self.build_query(after=end_cursor)
+            result = run_operation(query)
+            page = self.extract_page(result)
+
+            page_info = page.page_info
+            has_next_page = page_info.has_next_page
+            end_cursor = page_info.end_cursor
+
+            page_items = self.extract_page_items(page)
+            all_items.extend(page_items)
+
+        return all_items
+
+    def post_process(self):
+        cols: PaginatedQuery.ColNames = getattr(self, "cols")
+        for field in fields(cols):
+            # GraphQL will not return an element with the expected 'path' if
+            #  the project field is fully unpopulated.
+            col_name = getattr(cols, field.name)
+            if col_name not in self.data_frame.columns:
+                self.data_frame[col_name] = None
+
+
+class ProjectItemsQuery(PaginatedQuery):
+    @dataclass(frozen=True)
+    class ColNames(PaginatedQuery.ColNames):
+        id_in_project: str
+        linked_id: str
+        date_updated: str
+        final_comment_time: str
+        num_comments: str
+
+    @staticmethod
+    def make_selector(
+            operation: sgqlc.operation.Operation
+    ) -> sgqlc.operation.Selector:
+        project = operation.node(id=PELOTON_PROJECT_ID)
+        return project.__as__(github_schema.ProjectV2).items
+
+    @staticmethod
+    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+        return result.node.items
+
+    @staticmethod
+    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+        return page.nodes
+
+    def add_query_fields(self, page: sgqlc.operation.Selection) -> None:
+        nodes = page.nodes()
+        id_in_project = nodes.id(__alias__="id_in_project")
+
+        linked_id_field = nodes.field_value_by_name(
+            name="_linked_id",
+            __alias__="linked_id",
+        )
+        linked_id_value = linked_id_field.__as__(
+            github_schema.ProjectV2ItemFieldTextValue
+        )
+        linked_id = linked_id_value.text()
+
+        date_updated_field = nodes.field_value_by_name(
+            name="Date Updated",
+            __alias__="date_updated",
+        )
+        date_updated_value = date_updated_field.__as__(
+            github_schema.ProjectV2ItemFieldDateValue
+        )
+        date_updated = date_updated_value.date()
+
+        final_comment_field = nodes.field_value_by_name(
+            name="Final Comment Time",
+            # Avoid a name clash with IssuesQuery.
+            __alias__="final_comment_time_project",
+        )
+        final_comment_time_value = final_comment_field.__as__(
+            github_schema.ProjectV2ItemFieldDateValue
+        )
+        final_comment_time = final_comment_time_value.date()
+
+        num_comments_field = nodes.field_value_by_name(
+            name="Num Comments",
+            __alias__="num_comments",
+        )
+        num_comments_value = num_comments_field.__as__(
+            github_schema.ProjectV2ItemFieldNumberValue
+        )
+        num_comments = num_comments_value.number()
+
+        if self.cols is None:
+            # This is run in a loop, but we only need to get the column names
+            #  once.
+            self.cols = self.ColNames.from_sgqlc_trees(
+                id_in_project=[id_in_project],
+                linked_id=[linked_id_field, linked_id],
+                date_updated=[date_updated_field, date_updated],
+                final_comment_time=[final_comment_field, final_comment_time],
+                num_comments=[num_comments_field, num_comments]
+            )
+
+    def post_process(self):
+        super().post_process()
+        self.data_frame.set_index(self.cols.id_in_project, inplace=True)
+
+
+class ProjectFieldsQuery(PaginatedQuery):
+    """
+    https://docs.github.com/en/issues/planning-and-tracking-with-projects
+    /automating-your-project/
+    using-the-api-to-manage-projects#finding-the-node-id-of-a-field
+    """
+    @dataclass(frozen=True)
+    class ColNames(PaginatedQuery.ColNames):
+        id_: str
+        name_: str
+        data_type: str
+        config_data: str
+        options_data: str
+
+    @staticmethod
+    def make_selector(
+            operation: sgqlc.operation.Operation
+    ) -> sgqlc.operation.Selector:
+        project = operation.node(id=PELOTON_PROJECT_ID)
+        return project.__as__(github_schema.ProjectV2).fields
+
+    @staticmethod
+    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+        return result.node.fields
+
+    @staticmethod
+    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+        return page.nodes
+
+    def add_query_fields(self, page: sgqlc.operation.Selection) -> None:
+        nodes = page.nodes()
+
+        for field_type in (
+                github_schema.ProjectV2Field,
+                github_schema.ProjectV2IterationField,
+                github_schema.ProjectV2SingleSelectField
+        ):
+            field = nodes.__as__(field_type)
+
+            id_ = field.id()
+            name_ = field.name()
+            data_type = field.data_type()
+
+            # In-fill with string to make column naming work in absence of
+            #  actual field.
+            config_data = "config_data"
+            if field_type is github_schema.ProjectV2IterationField:
+                config_data = field.configuration()
+                iters = config_data.iterations()
+                iters.start_date()
+                iters.id()
+
+            options_data = "options_data"
+            if field_type is github_schema.ProjectV2SingleSelectField:
+                options_data = field.options()
+                options_data.id()
+                options_data.name()
+
+        if self.cols is None:
+            # This is run in a loop, but we only need to get the column names
+            #  once.
+            self.cols = self.ColNames.from_sgqlc_trees(
+                id_=[id_],
+                name_=[name_],
+                data_type=[data_type],
+                config_data=[config_data],
+                options_data=[options_data],
+            )
+
+    def post_process(self):
+        super().post_process()
+        self.data_frame.set_index(self.cols.id_, inplace=True)
+
+        type_mapping = dict(
+            DATE=github_schema.ProjectV2FieldValue.date,
+            NUMBER=github_schema.ProjectV2FieldValue.number,
+            SINGLE_SELECT=github_schema.ProjectV2FieldValue.single_select_option_id,
+            TEXT=github_schema.ProjectV2FieldValue.text,
+        )
+
+        data_types = [
+            type_mapping[dt]
+            if dt in type_mapping else None
+            for dt in self.data_frame[self.cols.data_type]
+        ]
+        self.data_frame[self.cols.data_type] = data_types
+
+
+class IssuesQuery(PaginatedQuery):
+    selector_kwargs = dict(type="ISSUE")
+    item_types = (github_schema.Issue, github_schema.PullRequest)
+
+    @dataclass(frozen=True)
+    class ColNames(PaginatedQuery.ColNames):
+        id_: str
+        url: str
+        number_: str
+        title: str
+        total_comments: str
+        final_comment_data: str
+        created_at: str
+        updated_at: str
+        closed_at: str
+        author_login: str
+        author_bot_id: str
+        votes: str
+        labels_data: str
+
+        # Manually set columns that are not populated directly by the query.
+        discussion_wanted: str = "discussion_wanted"
+        author_membership: str = "author_type"
+        commenter_membership: str = "commenter_type"
+
+        final_comment_login: str = "final_comment_login"
+        final_comment_bot_id: str = "final_comment_bot_id"
+        final_comment_time: str = "final_comment_time"
+
+        # Marks whether we are forced to use a Project draft object for this
+        #  item since it cannot be officially linked. Issues/PRs can be linked,
+        #  Discussions cannot be linked.
+        use_draft: str = "use_draft"
+
+        @property
+        def project_field_map(self) -> dict:
+            # Run ProjectFieldsQuery to get the latest info on this.
+            return {
+                "PVTF_lADOABU7f84ALhAIzgHV-jI": self.created_at,
+                "PVTF_lADOABU7f84ALhAIzgHV_kc": self.final_comment_login,
+                "PVTF_lADOABU7f84ALhAIzgHV_lI": self.final_comment_time,
+                "PVTF_lADOABU7f84ALhAIzgLbMPM": self.total_comments,
+                "PVTF_lADOABU7f84ALhAIzgLbMRM": self.updated_at,
+                "PVTF_lADOABU7f84ALhAIzgLbMTQ": self.closed_at,
+                "PVTF_lADOABU7f84ALhAIzgLbMn8": self.author_login,
+                "PVTF_lADOABU7f84ALhAIzgLbM0k": self.votes,
+                "PVTSSF_lADOABU7f84ALhAIzgLbNmc": self.author_membership,
+                "PVTSSF_lADOABU7f84ALhAIzgLbNsM": self.commenter_membership,
+                "PVTSSF_lADOABU7f84ALhAIzgLlAMk": self.discussion_wanted,
+            }
+
+    def __init__(self, github_query_conditions: str, peloton_logins: list[str]):
+        # Copy mutable object before modifying.
+        self.selector_kwargs = dict(self.__class__.selector_kwargs)
+        self.selector_kwargs["query"] = github_query_conditions
+
+        self._peloton_logins = list(peloton_logins)
+
+        super().__init__()
+
+    @staticmethod
+    def make_selector(
+        operation: sgqlc.operation.Operation
+    ) -> sgqlc.operation.Selector:
+        return operation.search
+
+    @staticmethod
+    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+        return result.search
+
+    @staticmethod
+    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+        return page.edges
+
+    def add_query_fields(self, page) -> None:
+        nodes = page.edges().node()
+        for item_type in self.item_types:
+            # Type for Discussion to help check this also works when sub-classed.
+            item: github_schema.Issue | github_schema.PullRequest | github_schema.Discussion = (
+                nodes.__as__(item_type)
+            )
+
+            id_ = item.id()
+            url_ = item.url()
+            number_ = item.number()
+            title = item.title()
+            created_at = item.created_at()
+            updated_at = item.updated_at()
+            closed_at = item.closed_at()
+            author = item.author()
+            author_login = author.login()
+
+            votes = item.reactions(
+                content=github_schema.ReactionContent("THUMBS_UP"),
+                __alias__="votes"
+            )
+            total_votes = votes.total_count()
+
+            labels = item.labels(first=100)
+            labels_nodes = labels.nodes()
+            # No assignment as this just adds data to labels_nodes.
+            labels_nodes.name()
+
+            comments = item.comments()
+            total_comments = comments.total_count()
+            final_comment: sgqlc.operation.Selection = item.comments(
+                last=1,
+                __alias__="final_comment"
+            )
+            final_comment_nodes = final_comment.nodes()
+            # No assignment as this just adds data to final_comment_nodes.
+            final_comment_nodes.author().login()
+            final_comment_nodes.created_at()
+
+            # Work out if logins are Bot accounts.
+            #  More awkward to use __as__() (rather than __typename__()), but
+            #  if GitHub change something we can actually get a failure (rather
+            #  than text matching, which would fail silently).
+            author_bot = author.__as__(github_schema.Bot)
+            author_bot_id = author_bot.id(__alias__="bot_id")
+            # No assignment as this just adds data to final_comment_nodes.
+            final_comment_nodes.author().__as__(github_schema.Bot).id(__alias__="bot_id")
+
+            if self.cols is None:
+                # This is run in a loop, but we only need to get the column
+                #  names once.
+                self.cols = self.ColNames.from_sgqlc_trees(
+                    id_=[nodes, id_],
+                    url=[nodes, url_],
+                    number_=[nodes, number_],
+                    title=[nodes, title],
+                    total_comments=[nodes, comments, total_comments],
+                    final_comment_data=[nodes, final_comment, final_comment_nodes],
+                    created_at=[nodes, created_at],
+                    updated_at=[nodes, updated_at],
+                    closed_at=[nodes, closed_at],
+                    author_login=([nodes, author, author_login]),
+                    votes=[nodes, votes, total_votes],
+                    labels_data=[nodes, labels, labels_nodes],
+                    author_bot_id=[nodes, author, author_bot_id]
+                )
+
+    def get_final_comment_details(self, issue: pd.Series):
+        final_comment = issue[self.cols.final_comment_data]
+        if not final_comment:
+            final_comment_login = issue[self.cols.author_login]
+            final_comment_bot_id = issue[self.cols.author_bot_id]
+            final_comment_time = issue[self.cols.created_at]
+        else:
+            final_comment = final_comment[0]
+            final_comment_login = final_comment["author"]["login"]
+            final_comment_bot_id = final_comment["author"].get("bot_id", None)
+            final_comment_time = final_comment["createdAt"]
+        return final_comment_login, final_comment_bot_id, final_comment_time
+
+    def categorise_logins(self):
+        def categorise_column(column: pd.Series):
+            if column.name == self.cols.author_login:
+                bot_column = self.data_frame[self.cols.author_bot_id]
+                is_peloton = SelectionIds.AUTHOR_PELOTON
+                is_bot = SelectionIds.AUTHOR_BOT
+                is_external = SelectionIds.AUTHOR_EXTERNAL
+            elif column.name == self.cols.final_comment_login:
+                bot_column = self.data_frame[self.cols.final_comment_bot_id]
+                is_peloton = SelectionIds.COMMENTER_PELOTON
+                is_bot = SelectionIds.COMMENTER_BOT
+                is_external = SelectionIds.COMMENTER_EXTERNAL
+            else:
+                raise NotImplementedError
+
+            return np.select(
+                condlist=[
+                    column.isin(self._peloton_logins),
+                    ~bot_column.isnull() | (column == "CLAassistant"),
+                ],
+                choicelist=[
+                    is_peloton,
+                    is_bot,
+                ],
+                default=is_external
+            )
+
+        if not self.data_frame.empty:
+            self.data_frame[self.cols.author_membership] = (
+                categorise_column(self.data_frame[self.cols.author_login])
+            )
+            self.data_frame[self.cols.commenter_membership] = (
+                categorise_column(self.data_frame[self.cols.final_comment_login])
+            )
+
+    def post_process(self):
+        super().post_process()
+
+        self.data_frame.set_index(self.cols.id_, inplace=True)
+
+        if not self.data_frame.empty:
+            self.data_frame[self.cols.use_draft] = False
+
+            final_comment_logins, final_comment_bots, final_comment_times = zip(
+                *[
+                    self.get_final_comment_details(issue)
+                    for _, issue in self.data_frame.iterrows()
+                ])
+            self.data_frame[self.cols.final_comment_login] = final_comment_logins
+            self.data_frame[self.cols.final_comment_bot_id] = final_comment_bots
+            self.data_frame[self.cols.final_comment_time] = final_comment_times
+
+            labels = self.data_frame[self.cols.labels_data]
+            discuss_regex = r"decision|help|discussion"
+            self.data_frame.loc[
+                labels.astype(str).str.contains(discuss_regex, case=False),
+                self.cols.discussion_wanted
+            ] = SelectionIds.DISCUSSION_WANTED
+
+            self.categorise_logins()
+
+
+class DiscussionsQuery(IssuesQuery):
+    selector_kwargs = IssuesQuery.selector_kwargs | dict(type="DISCUSSION")
+    item_types = (github_schema.Discussion,)
+
+    @dataclass(frozen=True)
+    class ColNames(IssuesQuery.ColNames):
+        # Need default values so that parent can create self.cols first -
+        #  setting most of the values upstream.
+        comments_data: str = NotImplemented
+        total_replies: str = NotImplemented
+        final_reply_data: str = NotImplemented
+
+    def add_query_fields(self, page) -> None:
+        super().add_query_fields(page)
+        nodes = page.edges().node()
+        discussion: github_schema.Discussion = nodes.__as__(github_schema.Discussion)
+
+        comments = discussion.comments(
+            first=100,
+            __alias__="discussion_comments",
+        )
+        comments_edges = comments.edges()
+        comments_nodes = comments_edges.node()
+        replies = comments_nodes.replies()
+
+        total_replies = replies.total_count()
+        final_reply = comments_nodes.replies(
+            last=1,
+            __alias__="comment_final_reply",
+        )
+        final_reply_nodes = final_reply.nodes()
+        # Add data to final_reply_nodes.
+        final_reply_nodes.author().login()
+        final_reply_nodes.created_at()
+
+        if self.cols.comments_data is NotImplemented:
+            # This is run in a loop, but we only need to get the column names
+            #  once.
+            cols_original = {
+                f.name: getattr(self.cols, f.name)
+                for f in fields(self.cols)
+                if f in fields(IssuesQuery.ColNames)
+            }
+            cols_extra = self.ColNames.from_sgqlc_trees(
+                comments_data=[nodes, comments, comments_edges],
+                total_replies=[comments_nodes, replies, total_replies],
+                final_reply_data=[comments_nodes, final_reply, final_reply_nodes],
+                **{k: [] for k in cols_original.keys()},
+            )
+            self.cols = self.ColNames(**asdict(cols_extra) | cols_original)
+
+    def post_process(self):
+        super().post_process()
+
+        if not self.data_frame.empty:
+            self.data_frame[self.cols.discussion_wanted] = SelectionIds.DISCUSSION_WANTED
+            self.data_frame[self.cols.use_draft] = True
+
+            # self.data_frame["total_replies"] = 0
+            for ix, row in self.data_frame.iterrows():
+                reply_thread = row[self.cols.comments_data]
+            # for reply_thread in self.data_frame["replies_data"]:
+                reply_thread_df = pd.json_normalize(reply_thread)
+                if reply_thread_df.empty:
+                    continue
+                else:
+                    self.data_frame.loc[ix, self.cols.total_comments] += (
+                        reply_thread_df[self.cols.total_replies].sum()
+                    )
+
+                    final_reply_data = reply_thread_df[self.cols.final_reply_data]
+                    final_reply_df = pd.json_normalize(
+                        [row[0] for row in final_reply_data if len(row) > 0]
+                    )
+                    if final_reply_df.empty:
+                        continue
+                    else:
+                        final_reply_row = (
+                            final_reply_df.sort_values("createdAt").iloc[-1]
+                        )
+                        final_reply_time = final_reply_row["createdAt"]
+                        final_reply_login = final_reply_row["author.login"]
+                        # GitHub GraphQL is not prepared for bots to reply
+                        #  on discussions.
+                        final_reply_bot_id = None
+                        if final_reply_time > row[self.cols.final_comment_time]:
+                            self.data_frame.loc[ix, self.cols.final_comment_time] = (
+                                final_reply_time
+                            )
+                            self.data_frame.loc[ix, self.cols.final_comment_login] = (
+                                final_reply_login
+                            )
+                            self.data_frame.loc[ix, self.cols.final_comment_bot_id] = (
+                                final_reply_bot_id
+                            )
+
+            self.categorise_logins()
+
+
+class PelotonTeamQuery(PaginatedQuery):
+    @dataclass(frozen=True)
+    class ColNames(PaginatedQuery.ColNames):
+        login: str
+
+    @staticmethod
+    def make_selector(
+        operation: sgqlc.operation.Operation
+    ) -> sgqlc.operation.Selector:
+        organization = operation.organization(login="SciTools")
+        team = organization.team(slug="Peloton")
+        return team.members
+
+    @staticmethod
+    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+        return result.organization.team.members
+
+    @staticmethod
+    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+        return page.nodes
+
+    def add_query_fields(self, page) -> None:
+        nodes = page.nodes()
+        login = nodes.login()
+
+        if self.cols is None:
+            # This is run in a loop, but we only need to get the column names
+            #  once.
+            self.cols = self.ColNames.from_sgqlc_trees(
+                login=[login],
+            )
+
+    def post_process(self):
+        super().post_process()
+        # @rcomer has asked not to receive notifications for the
+        #  SciTools/peloton GitHub team, so is not a member and instead is
+        #  added here.
+        self.data_frame.loc[len(self.data_frame)] = (
+            {self.cols.login: "rcomer"}
+        )
+
+
+###############################################################################
+# MUTATIONS.
+
+
+class PaginatedMutation:
+    PAGINATION = 20
+    inputs_default = dict(project_id=PELOTON_PROJECT_ID)
+
+    def __init__(
+        self,
+        data_frame: pd.DataFrame,
+        project_cols: ProjectItemsQuery.ColNames,
+        issues_cols: IssuesQuery.ColNames,
+    ):
+        self.inputs = self.make_inputs(data_frame, project_cols, issues_cols)
+        self.indexes = list(range(len(self.inputs)))
+        self.aliases = [f"op_{ix}" for ix in self.indexes]
+
+        slices = [
+            slice(i, i + self.PAGINATION)
+            for i in range(0, len(self.inputs), self.PAGINATION)
+        ]
+        result_lists = [self.run_sub_mutation(s) for s in slices]
+        self.result = self.get_data_from_sub_mutations(result_lists)
+
+    @abc.abstractmethod
+    def make_inputs(
+        self,
+        data_frame: pd.DataFrame,
+        project_cols: ProjectItemsQuery.ColNames,
+        issue_cols: IssuesQuery.ColNames,
+    ) -> list[dict]:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_selector(
+        self,
+        mutation: sgqlc.operation.Operation,
+        index: int
+    ) -> None:
+        raise NotImplementedError
+
+    def run_sub_mutation(self, block_slice: slice) -> list:
+        mutation = sgqlc.operation.Operation(github_schema_root.mutation_type)
+        for ix in self.indexes[block_slice]:
+            self.add_selector(mutation=mutation, index=ix)
+        result = run_operation(mutation)
+        payloads = [result[a] for a in self.aliases[block_slice]]
+        return payloads
+
+    def get_data_from_sub_mutations(self, payloads: list[list]):
+        # Not all subclasses need to extract any data from the mutation.
+        return None
+
+
+class AddIssuesMutation(PaginatedMutation):
+    def make_inputs(
+        self,
+        data_frame: pd.DataFrame,
+        project_cols: ProjectItemsQuery.ColNames,
+        issue_cols: IssuesQuery.ColNames,
+    ) -> list[dict]:
+        return [
+            # Expecting a DataFrame where the required column is the index.
+            (self.inputs_default | dict(content_id=row.name))
+            for _, row in data_frame.iterrows()
+        ]
+
+    def add_selector(
+        self,
+        mutation: sgqlc.operation.Operation,
+        index: int
+    ) -> None:
+        add = mutation.add_project_v2_item_by_id(
+            input=self.inputs[index], __alias__=self.aliases[index]
+        )
+        add.item().id()
+
+    def get_data_from_sub_mutations(
+        self,
+        payloads: list[list[github_schema.AddProjectV2ItemByIdPayload]]
+    ):
+        result = []
+        for sub_list in payloads:
+            ids_in_project = [p.item.id for p in sub_list]
+            result.extend(ids_in_project)
+        return result
+
+
+class AddDraftsMutation(PaginatedMutation):
+    def make_inputs(
+        self,
+        data_frame: pd.DataFrame,
+        project_cols: ProjectItemsQuery.ColNames,
+        issue_cols: IssuesQuery.ColNames,
+    ) -> list[dict]:
+        inputs = []
+        for _, row in data_frame.iterrows():
+            title = row[issue_cols.title]
+            # TODO: how to avoid bad unicode escape sequence with emojis?
+            #  sgqlc uses bytes(op).decode('utf-8') on its queries which
+            #  might be the
+            #  source of the problem.
+            title = "".join(filter(lambda t: t in set(printable), title))
+            inputs.append((
+                self.inputs_default
+                |
+                dict(title=title, body=row[issue_cols.url])
+            ))
+        return inputs
+
+    def add_selector(
+        self,
+        mutation: sgqlc.operation.Operation,
+        index: int
+    ) -> None:
+        add = mutation.add_project_v2_draft_issue(
+            input=self.inputs[index], __alias__=self.aliases[index]
+        )
+        add.project_item().id()
+
+    def get_data_from_sub_mutations(
+        self,
+        payloads: list[list[github_schema.AddProjectV2DraftIssuePayload]]
+    ):
+        result = []
+        for sub_list in payloads:
+            ids_in_project = [p.project_item.id for p in sub_list]
+            result.extend(ids_in_project)
+        return result
+
+
+class ClearPelotonDateMutation(PaginatedMutation):
+    inputs_default = (
+        PaginatedMutation.inputs_default
+        |
+        dict(field_id="PVTF_lADOABU7f84ALhAIzgP3vFs")
+    )
+
+    def make_inputs(
+        self,
+        data_frame: pd.DataFrame,
+        project_cols: ProjectItemsQuery.ColNames,
+        issue_cols: IssuesQuery.ColNames,
+    ) -> list[dict]:
+        return [
+            (self.inputs_default | dict(item_id=row[project_cols.id_in_project]))
+            for _, row in data_frame.iterrows()
+        ]
+
+    def add_selector(
+        self,
+        mutation: sgqlc.operation.Operation,
+        index: int
+    ) -> None:
+        mutation.clear_project_v2_item_field_value(
+            input=self.inputs[index], __alias__=self.aliases[index]
+        ).client_mutation_id()
+
+
+class RemoveItemsMutation(PaginatedMutation):
+    def make_inputs(
+        self,
+        data_frame: pd.DataFrame,
+        project_cols: ProjectItemsQuery.ColNames,
+        issue_cols: IssuesQuery.ColNames,
+    ) -> list[dict]:
+        return [
+            # Expecting a DataFrame where the required column is the index.
+            (self.inputs_default | dict(item_id=row.name))
+            for _, row in data_frame.iterrows()
+        ]
+
+    def add_selector(
+        self,
+        mutation: sgqlc.operation.Operation,
+        index: int
+    ) -> None:
+        mutation.delete_project_v2_item(
+            input=self.inputs[index], __alias__=self.aliases[index]
+        ).client_mutation_id()
+
+
+class UpdateItemsMutation(PaginatedMutation):
+    def make_inputs(
+        self,
+        data_frame: pd.DataFrame,
+        project_cols: ProjectItemsQuery.ColNames,
+        issue_cols: IssuesQuery.ColNames,
+    ) -> list[dict]:
+        inputs = []
+
+        if data_frame.empty:
+            # The loop below is not going to run, so we don't need a query to
+            #  populate field_types.
+            field_types = None
+        else:
+            project_fields = ProjectFieldsQuery()
+            field_types = project_fields.data_frame[project_fields.cols.data_type]
+
+        def value_kwarg(field_id_, value):
+            if field_types is not None:
+                field_type_ = field_types.loc[field_id_]
+                if field_type_ is github_schema.ProjectV2FieldValue.date:
+                    value = value[:10]
+                return {field_type_.name: field_type_.type(value)}
+            else:
+                raise ValueError
+
+        for _, row in data_frame.iterrows():
+            kwargs = (
+                self.inputs_default
+                |
+                dict(item_id=row[project_cols.id_in_project])
+            )
+
+            # The field in the project that contains the ID of the linked item.
+            link_field = "PVTF_lADOABU7f84ALhAIzgPKqWg"
+            link_kwargs = dict(
+                field_id=link_field,
+                value=value_kwarg(link_field, row.name),
+            )
+            inputs.append((kwargs | link_kwargs))
+
+            for field_id, col_name in issue_cols.project_field_map.items():
+                extra_kwargs = dict(field_id=field_id)
+                if col_name in row.index:
+                    if not pd.isnull(row[col_name]):
+                        extra_kwargs["value"] = (
+                            value_kwarg(field_id, row[col_name])
+                        )
+                    inputs.append((kwargs | extra_kwargs))
+
+        return inputs
+
+    def add_selector(
+        self,
+        mutation: sgqlc.operation.Operation,
+        index: int
+    ) -> None:
+        inputs = self.inputs[index]
+        if "value" in inputs:
+            op = mutation.update_project_v2_item_field_value
+        else:
+            op = mutation.clear_project_v2_item_field_value
+
+        op(input=inputs, __alias__=self.aliases[index]).client_mutation_id()
+
+
+###############################################################################
+
+
+def log_data_frame_items(
+    data_frame: pd.DataFrame,
+    message: str,
+    url_col: str = None
+) -> None:
+    logging.info(message + f": {len(data_frame)} items")
+    if url_col is not None and not data_frame.empty:
+        logging.debug(
+            message + ":\n" + "\n".join(data_frame[url_col].tolist())
+        )
+
+
+
+def main():
+    parser = ArgumentParser(
+        prog="PelotonUpdate",
+        description="Update the Peloton GitHub Project with issues and discussions",
+    )
+    parser.add_argument(
+        "--bearer_token",
+        help=(
+            "GitHub personal access token with these scopes: project, repo, "
+            "read:org, read:discussion ."
+        ),
+        type=str
+    )
+    parser.add_argument(
+        "--update_loop_minutes",
+        help=(
+            "Number of minutes that the script will loop for, updating any "
+            "issues/discussions that have changed since the last loop. "
+            "Intended for use during meetings - for live updating."
+        ),
+        default=0,
+        type=int,
+    )
+    parser.add_argument(
+        "--debug",
+        help="Print debug information, including all queries that are run.",
+        action="store_true",
+    )
+    bearer_token = parser.parse_args().bearer_token
+    update_loop_minutes = parser.parse_args().update_loop_minutes
+    debug = parser.parse_args().debug
+
+    global ENDPOINT
+    ENDPOINT = HTTPEndpoint(
+        url="https://api.github.com/graphql",
+        base_headers=dict(Authorization=f"bearer {bearer_token}")
+    )
+
+    # console allows a configurable level at which logging is also sent to
+    # STDOUT.
+    console = logging.StreamHandler(stdout)
+    console.setFormatter(logging.Formatter("%(asctime)s %(message)s",))
+    if debug:
+        console.setLevel(logging.DEBUG)
+    else:
+        console.setLevel(logging.INFO)
+    logging.getLogger("").addHandler(console)
+
+    update_loop_finish_time = datetime.now() + timedelta(minutes=update_loop_minutes)
+    last_update_loop_time = None
+    updates_only = False
+
+    peloton_team = PelotonTeamQuery()
+    peloton_logins = peloton_team.data_frame[peloton_team.cols.login].tolist()
+    logging.debug("Peloton team logins: " + ", ".join(peloton_logins))
+
+    while not updates_only or datetime.now() < update_loop_finish_time:
+        if updates_only:
+            logging.info("Starting incremental update loop ...")
+        else:
+            logging.info("Starting full refresh ...")
+
+        logging.info("    Fetching data ...")
+
+        project = ProjectItemsQuery()
+        logging.debug(f"    Project has {len(project.data_frame)} items.")
+
+        query_string = GITHUB_QUERY_CONDITIONS
+        if updates_only:
+            query_string = GITHUB_QUERY_CONDITIONS + (
+                f" updated:>="
+                f"{last_update_loop_time.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+            )
+        # Capture the time immediately before running the query.
+        #  (And immediately after encoding the previous value in the query
+        #  condition, if we're in an updates_only loop).
+        last_update_loop_time = datetime.now()
+        issues = IssuesQuery(query_string, peloton_logins)
+        discussions = DiscussionsQuery(query_string, peloton_logins)
+        logging.debug(
+            f"    Query returned {len(issues.data_frame)} issues and "
+            f"{len(discussions.data_frame)} discussions."
+        )
+
+        issues_discussions = pd.concat(
+            [issues.data_frame, discussions.data_frame]
+        )
+
+        logging.info("    Data fetch complete.")
+
+        if not updates_only:
+            # Removes all remaining project items that do not correspond with issues
+            #  or discussions returned in the query. E.g. an issue closed so long ago
+            #  that today's query no longer includes it.
+
+            # This is only run once, during the initial loop that gets everything
+            #  we want to be in the project. Subsequent loops being limited to
+            #  recent updates would mark almost every project item for removal.
+
+            no_linked_id = project.data_frame[project.cols.linked_id].isnull()
+            orphaned_linked_ids = ~project.data_frame[project.cols.linked_id].isin(
+                issues_discussions.index
+            )
+            items_to_remove = project.data_frame[no_linked_id | orphaned_linked_ids]
+            log_data_frame_items(items_to_remove, "    Removing from project")
+            RemoveItemsMutation(items_to_remove, project.cols, issues.cols)
+
+        # Link via a custom linked_id field to allow shared logic between issues
+        #  and discussions (as opposed to using GitHub Projects' native linking
+        #  that is only available for issues).
+        # Not passing rsuffix or lsuffix means we know our column names (`.cols`)
+        #  are unique with no overlaps between DataFrames - we can keep using them.
+        # We reset_index() for this since we want to have the id_in_project in our
+        #  resulting DataFrame.
+        joined = project.data_frame.reset_index().join(
+            issues_discussions,
+            on=project.cols.linked_id,
+            how="right",
+        ).set_index(project.cols.linked_id)
+
+        # Indicates that no associated project item was found during Pandas joining.
+        not_in_project = joined[project.cols.id_in_project].isnull()
+
+        have_new_comments = ~not_in_project & (
+            # Check two conditions to account for possibly deleted comments.
+            (
+                joined[issues.cols.total_comments] !=
+                joined[project.cols.num_comments]
+            )
+            |
+            (
+                # Forced to do date comparison (not datetime) because that is the
+                #  max precision of project.cols.final_comment_time .
+                joined[issues.cols.final_comment_time].str[:10] !=
+                joined[project.cols.final_comment_time]
+            )
+        )
+        comments_to_clear = joined[have_new_comments]
+        log_data_frame_items(
+            comments_to_clear,
+            "    Clearing next-peloton-date",
+            issues.cols.url
+        )
+        ClearPelotonDateMutation(comments_to_clear, project.cols, issues.cols)
+
+        issues_to_add = joined[not_in_project & ~joined[issues.cols.use_draft]]
+        log_data_frame_items(
+            issues_to_add,
+            "    Adding issues to project",
+            issues.cols.url
+        )
+        joined.loc[issues_to_add.index, project.cols.id_in_project] = (
+            AddIssuesMutation(issues_to_add, project.cols, issues.cols).result
+        )
+
+        drafts_to_add = joined[not_in_project & joined[issues.cols.use_draft]]
+        log_data_frame_items(
+            drafts_to_add,
+            "    Adding discussions to project",
+            issues.cols.url
+        )
+        joined.loc[drafts_to_add.index, project.cols.id_in_project] = (
+            AddDraftsMutation(drafts_to_add, project.cols, issues.cols).result
+        )
+
+        if updates_only:
+            items_to_update = joined
+        else:
+            updated_since_last = (
+                # Forced to do date comparison (not datetime) because that is the
+                #  max precision of project.cols.date_updated .
+                joined[issues.cols.updated_at].str[:10] !=
+                joined[project.cols.date_updated]
+            )
+            items_to_update = (
+                joined[updated_since_last | have_new_comments | not_in_project]
+            )
+
+        log_data_frame_items(
+            items_to_update,
+            "    Updating project fields",
+            issues.cols.url
+        )
+        UpdateItemsMutation(items_to_update, project.cols, issues.cols)
+
+        if not updates_only:
+            logging.info(
+                "Full refresh complete. Incremental updates will loop until "
+                f"{update_loop_finish_time.strftime('%H:%M:%S')} , "
+                f"with {SECONDS_BETWEEN_UPDATES} second gaps."
+            )
+        else:
+            logging.info("Incremental update loop complete.")
+        # Subsequent loops (if any) will be limited to issues/discussions
+        #  updated since the last loop.
+        updates_only = True
+        sleep(SECONDS_BETWEEN_UPDATES)
+
+
+if __name__ == "__main__":
+    main()
