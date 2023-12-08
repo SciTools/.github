@@ -1,4 +1,20 @@
 #!/usr/bin/env python3
+"""
+Script for populating the Peloton GitHub project with Issues and Discussions.
+
+https://github.com/orgs/SciTools/projects/13?pane=info
+
+Achieved by running GraphQL queries and mutations against GitHub - the
+recommended way to work with GitHub data.
+https://docs.github.com/en/graphql
+
+The GraphQL syntax is difficult to work with directly, so we use sgqlc to
+provide a pythonic interface. `github_schema.py` helps enumerate what
+operations are possible. (For advance use, consider using a GraphQL IDE or IDE
+plugin, and parse the schema directly - code completion and syntax highlighting
+works well, and sgqlc-codegen can also convert GraphQL into Python code).
+
+"""
 
 import abc
 from argparse import ArgumentParser
