@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import abc
 from argparse import ArgumentParser
 from dataclasses import dataclass, asdict, fields
@@ -19,7 +21,6 @@ import github_schema
 
 # TODO: docstrings and type hints
 # TODO: update GHA to use this script
-# TODO: rename this script
 # TODO: blackify
 
 # TODO: commit the schema, together with instructions for updating via sgqlc CLI.
@@ -55,7 +56,7 @@ ENDPOINT: HTTPEndpoint = None
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s %(levelname)s %(message)s \n",
-    filename="latest_peloton_refresh.log",
+    filename="latest_peloton_update.log",
     filemode="w",
 )
 
