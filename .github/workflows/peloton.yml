@@ -2,6 +2,12 @@ name: Peloton
 on:
   schedule:
     - cron: "50 02 * * *"
+  workflow_dispatch:
+    inputs:
+      update_loop_minutes:
+        description: "Number of minutes to keep updating for, after full refresh."
+        required: true
+        default: 0
 
 jobs:
   update_peloton_project:
@@ -27,12 +33,9 @@ jobs:
       - name: "Set up environment"
         run: conda install -c conda-forge --file peloton/requirements.txt
 
-      - name: "Query GitHub"
-        env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-        run: $CONDA/bin/python peloton/query.py
-
-      - name: "Populate Peloton Project"
-        env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-        run: $CONDA/bin/python peloton/populate.py
+      - name: "Update the Peloton Project"
+        run: |
+          $CONDA/bin/python peloton/update_project.py \
+            --debug \
+            --bearer_token "${{ steps.generate_token.outputs.token }}" \
+            -- update_loop_minutes ${{ github.event.inputs.update_loop_minutes }}
