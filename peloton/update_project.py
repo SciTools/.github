@@ -19,9 +19,6 @@ import sgqlc.types.relay
 import sgqlc.operation
 import github_schema
 
-# TODO: update GHA to use this script
-
-# TODO: commit the schema, together with instructions for updating via sgqlc CLI.
 github_schema = github_schema
 github_schema_root = github_schema.github_schema
 
