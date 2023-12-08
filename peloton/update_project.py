@@ -20,7 +20,6 @@ import sgqlc.operation
 import github_schema
 
 # TODO: update GHA to use this script
-# TODO: blackify
 
 # TODO: commit the schema, together with instructions for updating via sgqlc CLI.
 github_schema = github_schema
@@ -659,7 +658,7 @@ class DiscussionsQuery(IssuesQuery):
     """
     Query GitHub using the GH search syntax to get discussions.
 
-    Discussions share a lot of properties with Issues, so we can re-use
+    Discussions share a lot of properties with Issues, so we can reuse
     much of the parent class.
     """
     _selector_kwargs = IssuesQuery._selector_kwargs | dict(type="DISCUSSION")
