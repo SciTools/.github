@@ -19,7 +19,6 @@ import sgqlc.types.relay
 import sgqlc.operation
 import github_schema
 
-# TODO: docstrings and type hints
 # TODO: update GHA to use this script
 # TODO: blackify
 
@@ -62,6 +61,7 @@ logging.basicConfig(
 
 
 def run_operation(op: sgqlc.operation.Operation) -> github_schema.Query:
+    """Execute a GraphQL operation and return the results."""
     result = None
     if hasattr(ENDPOINT, "base_headers"):
         # ENDPOINT has been set.
@@ -98,8 +98,20 @@ class SelectionIds(StrEnum):
 
 
 class PaginatedQuery(abc.ABC):
-    PAGINATION = 100
-    selector_kwargs: dict = {}
+    """
+    Base class for sgqlc queries that return paginated lists of items.
+
+    Takes care of the heavy lifting for defining pages and detecting the number
+    of pages to be returned.
+    """
+
+    # GraphQL insists that returned lists are broken into defined pages.
+    #  Use _PAGINATION to set the page size (max 100).
+    _PAGINATION = 100
+    # The 'selector' is the level of the query that is paginated. Different
+    #  selectors can accept different arguments (e.g. `search` in the GitHub
+    #  schema includes the same search query string used on the website).
+    _selector_kwargs: dict = {}
 
     @dataclass(frozen=True)
     class ColNames:
@@ -111,89 +123,128 @@ class PaginatedQuery(abc.ABC):
         from sqglc objects and storing the resulting column names for
         downstream use.
         """
-
         @staticmethod
-        def _get_element_name(element: str | sgqlc.operation.Selection) -> str:
-            if hasattr(element, "__field__"):
-                element_name = element.__alias__ or element.__field__.graphql_name
-            else:
-                assert isinstance(element, str)
-                element_name = element
-            return element_name
+        def _get_element_names(*elements: str | sgqlc.operation.Selection) -> str:
+            """
+            Extract the names of GraphQL elements, or use strings in place.
 
-        @classmethod
-        def _get_col_name(cls, *elements: str | sgqlc.operation.Selection) -> str:
-            element_names = [
-                cls._get_element_name(element)
-                for element in elements
-            ]
-            return ".".join(element_names)
+            Used to predict a column name resulting from applying
+            :meth:`pandas.json_normalize` to the JSON returned by a GraphQL
+            query.
+            """
+            def get_element_name(element):
+                if hasattr(element, "__field__"):
+                    element_name = (
+                        element.__alias__ or element.__field__.graphql_name
+                    )
+                else:
+                    assert isinstance(element, str)
+                    element_name = element
+                return element_name
+
+            return ".".join([get_element_name(element) for element in elements])
 
         @classmethod
         def from_sgqlc_trees(cls, **trees: list[str | sgqlc.operation.Selection]):
+            """
+            Create a ColNames object from a dict of sequences of sgqlc objects.
+
+            Strings can be used at any point in these sequences to hard code
+            an expected element name.
+            """
             cls_kwargs: dict[str, str] = {
-                k: cls._get_col_name(*v)
+                k: cls._get_element_names(*v)
                 for k, v in trees.items()
             }
             return cls(**cls_kwargs)
 
     def __init__(self):
+        """
+        Execute the query as defined using the class methods.
+
+        Caller interaction with this instance is limited to accessing
+        self.data_frame and self.cols.
+        """
         self.cols = None
         self.data_frame = pd.json_normalize(
-            [item.__json_data__ for item in self.run_query()]
+            [item.__json_data__ for item in self._run_query()]
         )
         assert self.cols is not None
-        self.post_process()
+        self._post_process()
 
     @staticmethod
     @abc.abstractmethod
-    def make_selector(
+    def _make_selector(
             operation: sgqlc.operation.Operation
     ) -> sgqlc.operation.Selector:
+        """Create the element of the GraphQL query that will be paginated."""
         raise NotImplementedError
 
     @staticmethod
     @abc.abstractmethod
-    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+    def _extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+        """
+        Get the page of results from the JSON returned by a GraphQL query.
+        """
         raise NotImplementedError
 
     @staticmethod
     @abc.abstractmethod
-    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+    def _extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+        """Get the list of results from a page of results."""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_query_fields(self, page: sgqlc.operation.Selection) -> None:
+    def _add_query_fields(self, page: sgqlc.operation.Selection) -> None:
+        """Use sgqlc to populate a query page with the required fields."""
         raise NotImplementedError
 
-    def build_query(self, after: str = None) -> sgqlc.operation.Operation:
+    def _build_query(self, after: str = None) -> sgqlc.operation.Operation:
+        """
+        Use sgqlc to build a GraphQL query for a page of results.
+
+        :meth:`_make_selector` and :meth:`_add_query_fields` are used to
+        specialise this pattern for different queries - need different
+        sequences of sgqlc attributes depending on the structure.
+        """
         operation = sgqlc.operation.Operation(github_schema_root.query_type)
-        selector = self.make_selector(operation)
-        page = selector(first=self.PAGINATION, after=after, **self.selector_kwargs)
-        self.add_query_fields(page)
+        selector = self._make_selector(operation)
+        page = selector(first=self._PAGINATION, after=after, **self._selector_kwargs)
+        self._add_query_fields(page)
         page.page_info.__fields__(has_next_page=True, end_cursor=True)
         return operation
 
-    def run_query(self) -> list:
+    def _run_query(self) -> list:
+        """
+        Execute a built query, looping to produce pages, return combined results.
+
+        :meth:`_build_query`, :meth:`_extract_page` and
+        :meth:`_extract_page_items` are used to specialise this pattern for
+        different queries - need different sequences of sgqlc attributes
+        depending on the structure.
+        """
         all_items = []
         has_next_page = True
         end_cursor = None
 
         while has_next_page:
-            query = self.build_query(after=end_cursor)
+            query = self._build_query(after=end_cursor)
             result = run_operation(query)
-            page = self.extract_page(result)
+            page = self._extract_page(result)
 
             page_info = page.page_info
             has_next_page = page_info.has_next_page
             end_cursor = page_info.end_cursor
 
-            page_items = self.extract_page_items(page)
+            page_items = self._extract_page_items(page)
             all_items.extend(page_items)
 
         return all_items
 
-    def post_process(self):
+    def _post_process(self) -> None:
+        """
+        Modify self.data_frame (having populating with results from the query).
+        """
         cols: PaginatedQuery.ColNames = getattr(self, "cols")
         for field in fields(cols):
             # GraphQL will not return an element with the expected 'path' if
@@ -204,6 +255,7 @@ class PaginatedQuery(abc.ABC):
 
 
 class ProjectItemsQuery(PaginatedQuery):
+    """Query the Peloton GitHub project to get the items it contains."""
     @dataclass(frozen=True)
     class ColNames(PaginatedQuery.ColNames):
         id_in_project: str
@@ -213,21 +265,21 @@ class ProjectItemsQuery(PaginatedQuery):
         num_comments: str
 
     @staticmethod
-    def make_selector(
-            operation: sgqlc.operation.Operation
+    def _make_selector(
+        operation: sgqlc.operation.Operation
     ) -> sgqlc.operation.Selector:
         project = operation.node(id=PELOTON_PROJECT_ID)
         return project.__as__(github_schema.ProjectV2).items
 
     @staticmethod
-    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+    def _extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
         return result.node.items
 
     @staticmethod
-    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+    def _extract_page_items(page: sgqlc.types.relay.Connection) -> list:
         return page.nodes
 
-    def add_query_fields(self, page: sgqlc.operation.Selection) -> None:
+    def _add_query_fields(self, page: sgqlc.operation.Selection) -> None:
         nodes = page.nodes()
         id_in_project = nodes.id(__alias__="id_in_project")
 
@@ -279,13 +331,15 @@ class ProjectItemsQuery(PaginatedQuery):
                 num_comments=[num_comments_field, num_comments]
             )
 
-    def post_process(self):
-        super().post_process()
+    def _post_process(self) -> None:
+        super()._post_process()
         self.data_frame.set_index(self.cols.id_in_project, inplace=True)
 
 
 class ProjectFieldsQuery(PaginatedQuery):
     """
+    Query the Peloton GitHub project to get the fields it has.
+
     https://docs.github.com/en/issues/planning-and-tracking-with-projects
     /automating-your-project/
     using-the-api-to-manage-projects#finding-the-node-id-of-a-field
@@ -299,21 +353,21 @@ class ProjectFieldsQuery(PaginatedQuery):
         options_data: str
 
     @staticmethod
-    def make_selector(
-            operation: sgqlc.operation.Operation
+    def _make_selector(
+        operation: sgqlc.operation.Operation
     ) -> sgqlc.operation.Selector:
         project = operation.node(id=PELOTON_PROJECT_ID)
         return project.__as__(github_schema.ProjectV2).fields
 
     @staticmethod
-    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+    def _extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
         return result.node.fields
 
     @staticmethod
-    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+    def _extract_page_items(page: sgqlc.types.relay.Connection) -> list:
         return page.nodes
 
-    def add_query_fields(self, page: sgqlc.operation.Selection) -> None:
+    def _add_query_fields(self, page: sgqlc.operation.Selection) -> None:
         nodes = page.nodes()
 
         for field_type in (
@@ -353,8 +407,8 @@ class ProjectFieldsQuery(PaginatedQuery):
                 options_data=[options_data],
             )
 
-    def post_process(self):
-        super().post_process()
+    def _post_process(self) -> None:
+        super()._post_process()
         self.data_frame.set_index(self.cols.id_, inplace=True)
 
         type_mapping = dict(
@@ -373,8 +427,11 @@ class ProjectFieldsQuery(PaginatedQuery):
 
 
 class IssuesQuery(PaginatedQuery):
-    selector_kwargs = dict(type="ISSUE")
-    item_types = (github_schema.Issue, github_schema.PullRequest)
+    """
+    Query GitHub using the GH search syntax to get issues and pull requests.
+    """
+    _selector_kwargs = dict(type="ISSUE")
+    _item_types = (github_schema.Issue, github_schema.PullRequest)
 
     @dataclass(frozen=True)
     class ColNames(PaginatedQuery.ColNames):
@@ -392,7 +449,7 @@ class IssuesQuery(PaginatedQuery):
         votes: str
         labels_data: str
 
-        # Manually set columns that are not populated directly by the query.
+        # Columns not populated directly by the query, but used downstream.
         discussion_wanted: str = "discussion_wanted"
         author_membership: str = "author_type"
         commenter_membership: str = "commenter_type"
@@ -408,7 +465,11 @@ class IssuesQuery(PaginatedQuery):
 
         @property
         def project_field_map(self) -> dict:
-            # Run ProjectFieldsQuery to get the latest info on this.
+            """
+            The corresponding IDs of the Peloton GitHub project fields.
+
+            Run ProjectFieldsQuery to get the latest info on this.
+            """
             return {
                 "PVTF_lADOABU7f84ALhAIzgHV-jI": self.created_at,
                 "PVTF_lADOABU7f84ALhAIzgHV_kc": self.final_comment_login,
@@ -424,31 +485,34 @@ class IssuesQuery(PaginatedQuery):
             }
 
     def __init__(self, github_query_conditions: str, peloton_logins: list[str]):
+        # Specific query conditions can be passed by the caller, and then
+        #  are combined with the fixed query kwargs.
+
         # Copy mutable object before modifying.
-        self.selector_kwargs = dict(self.__class__.selector_kwargs)
-        self.selector_kwargs["query"] = github_query_conditions
+        self._selector_kwargs = dict(self.__class__._selector_kwargs)
+        self._selector_kwargs["query"] = github_query_conditions
 
         self._peloton_logins = list(peloton_logins)
 
         super().__init__()
 
     @staticmethod
-    def make_selector(
+    def _make_selector(
         operation: sgqlc.operation.Operation
     ) -> sgqlc.operation.Selector:
         return operation.search
 
     @staticmethod
-    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+    def _extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
         return result.search
 
     @staticmethod
-    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+    def _extract_page_items(page: sgqlc.types.relay.Connection) -> list:
         return page.edges
 
-    def add_query_fields(self, page) -> None:
+    def _add_query_fields(self, page) -> None:
         nodes = page.edges().node()
-        for item_type in self.item_types:
+        for item_type in self._item_types:
             # Type for Discussion to help check this also works when sub-classed.
             item: github_schema.Issue | github_schema.PullRequest | github_schema.Discussion = (
                 nodes.__as__(item_type)
@@ -514,7 +578,8 @@ class IssuesQuery(PaginatedQuery):
                     author_bot_id=[nodes, author, author_bot_id]
                 )
 
-    def get_final_comment_details(self, issue: pd.Series):
+    def _get_final_comment_details(self, issue: pd.Series) -> tuple[str, str, str]:
+        """Use author info to back-fill if no final comment exists."""
         final_comment = issue[self.cols.final_comment_data]
         if not final_comment:
             final_comment_login = issue[self.cols.author_login]
@@ -527,7 +592,8 @@ class IssuesQuery(PaginatedQuery):
             final_comment_time = final_comment["createdAt"]
         return final_comment_login, final_comment_bot_id, final_comment_time
 
-    def categorise_logins(self):
+    def _categorise_logins(self) -> None:
+        """Apply the Peloton project's login categories to this data."""
         def categorise_column(column: pd.Series):
             if column.name == self.cols.author_login:
                 bot_column = self.data_frame[self.cols.author_bot_id]
@@ -562,8 +628,8 @@ class IssuesQuery(PaginatedQuery):
                 categorise_column(self.data_frame[self.cols.final_comment_login])
             )
 
-    def post_process(self):
-        super().post_process()
+    def _post_process(self) -> None:
+        super()._post_process()
 
         self.data_frame.set_index(self.cols.id_, inplace=True)
 
@@ -572,7 +638,7 @@ class IssuesQuery(PaginatedQuery):
 
             final_comment_logins, final_comment_bots, final_comment_times = zip(
                 *[
-                    self.get_final_comment_details(issue)
+                    self._get_final_comment_details(issue)
                     for _, issue in self.data_frame.iterrows()
                 ])
             self.data_frame[self.cols.final_comment_login] = final_comment_logins
@@ -586,12 +652,18 @@ class IssuesQuery(PaginatedQuery):
                 self.cols.discussion_wanted
             ] = SelectionIds.DISCUSSION_WANTED
 
-            self.categorise_logins()
+            self._categorise_logins()
 
 
 class DiscussionsQuery(IssuesQuery):
-    selector_kwargs = IssuesQuery.selector_kwargs | dict(type="DISCUSSION")
-    item_types = (github_schema.Discussion,)
+    """
+    Query GitHub using the GH search syntax to get discussions.
+
+    Discussions share a lot of properties with Issues, so we can re-use
+    much of the parent class.
+    """
+    _selector_kwargs = IssuesQuery._selector_kwargs | dict(type="DISCUSSION")
+    _item_types = (github_schema.Discussion,)
 
     @dataclass(frozen=True)
     class ColNames(IssuesQuery.ColNames):
@@ -601,8 +673,8 @@ class DiscussionsQuery(IssuesQuery):
         total_replies: str = NotImplemented
         final_reply_data: str = NotImplemented
 
-    def add_query_fields(self, page) -> None:
-        super().add_query_fields(page)
+    def _add_query_fields(self, page) -> None:
+        super()._add_query_fields(page)
         nodes = page.edges().node()
         discussion: github_schema.Discussion = nodes.__as__(github_schema.Discussion)
 
@@ -624,6 +696,7 @@ class DiscussionsQuery(IssuesQuery):
         final_reply_nodes.author().login()
         final_reply_nodes.created_at()
 
+        self.cols: DiscussionsQuery.ColNames
         if self.cols.comments_data is NotImplemented:
             # This is run in a loop, but we only need to get the column names
             #  once.
@@ -636,21 +709,23 @@ class DiscussionsQuery(IssuesQuery):
                 comments_data=[nodes, comments, comments_edges],
                 total_replies=[comments_nodes, replies, total_replies],
                 final_reply_data=[comments_nodes, final_reply, final_reply_nodes],
+                # Need to specify the original fields to create a valid
+                #  dataclass, but we are not using their values.
                 **{k: [] for k in cols_original.keys()},
             )
             self.cols = self.ColNames(**asdict(cols_extra) | cols_original)
 
-    def post_process(self):
-        super().post_process()
+    def _post_process(self) -> None:
+        super()._post_process()
 
         if not self.data_frame.empty:
+            # Data on Discussion comments and replies is very nested.
+            #  Drill-down to derive data on the latest comment/reply.
             self.data_frame[self.cols.discussion_wanted] = SelectionIds.DISCUSSION_WANTED
             self.data_frame[self.cols.use_draft] = True
 
-            # self.data_frame["total_replies"] = 0
             for ix, row in self.data_frame.iterrows():
                 reply_thread = row[self.cols.comments_data]
-            # for reply_thread in self.data_frame["replies_data"]:
                 reply_thread_df = pd.json_normalize(reply_thread)
                 if reply_thread_df.empty:
                     continue
@@ -674,6 +749,7 @@ class DiscussionsQuery(IssuesQuery):
                         # GitHub GraphQL is not prepared for bots to reply
                         #  on discussions.
                         final_reply_bot_id = None
+
                         if final_reply_time > row[self.cols.final_comment_time]:
                             self.data_frame.loc[ix, self.cols.final_comment_time] = (
                                 final_reply_time
@@ -685,16 +761,17 @@ class DiscussionsQuery(IssuesQuery):
                                 final_reply_bot_id
                             )
 
-            self.categorise_logins()
+            self._categorise_logins()
 
 
 class PelotonTeamQuery(PaginatedQuery):
+    """Query the Peloton GitHub team to get its members."""
     @dataclass(frozen=True)
     class ColNames(PaginatedQuery.ColNames):
         login: str
 
     @staticmethod
-    def make_selector(
+    def _make_selector(
         operation: sgqlc.operation.Operation
     ) -> sgqlc.operation.Selector:
         organization = operation.organization(login="SciTools")
@@ -702,14 +779,14 @@ class PelotonTeamQuery(PaginatedQuery):
         return team.members
 
     @staticmethod
-    def extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
+    def _extract_page(result: github_schema.Query) -> sgqlc.types.relay.Connection:
         return result.organization.team.members
 
     @staticmethod
-    def extract_page_items(page: sgqlc.types.relay.Connection) -> list:
+    def _extract_page_items(page: sgqlc.types.relay.Connection) -> list:
         return page.nodes
 
-    def add_query_fields(self, page) -> None:
+    def _add_query_fields(self, page) -> None:
         nodes = page.nodes()
         login = nodes.login()
 
@@ -720,8 +797,8 @@ class PelotonTeamQuery(PaginatedQuery):
                 login=[login],
             )
 
-    def post_process(self):
-        super().post_process()
+    def _post_process(self) -> None:
+        super()._post_process()
         # @rcomer has asked not to receive notifications for the
         #  SciTools/peloton GitHub team, so is not a member and instead is
         #  added here.
@@ -734,9 +811,18 @@ class PelotonTeamQuery(PaginatedQuery):
 # MUTATIONS.
 
 
-class PaginatedMutation:
-    PAGINATION = 20
-    inputs_default = dict(project_id=PELOTON_PROJECT_ID)
+class PaginatedMutation(abc.ABC):
+    """
+    Base class for sgqlc mutations, including pagination to avoid timeouts.
+    """
+
+    # _PAGINATION defines the number of mutation fields to include in one
+    #  mutation. If more are needed, the fields will be broken into
+    #  multiple pages.
+    _PAGINATION = 20
+    # All mutation fields include an `inputs` argument. The contents vary but
+    #  will always refer to the Peloton project.
+    _inputs_default = dict(project_id=PELOTON_PROJECT_ID)
 
     def __init__(
         self,
@@ -744,49 +830,86 @@ class PaginatedMutation:
         project_cols: ProjectItemsQuery.ColNames,
         issues_cols: IssuesQuery.ColNames,
     ):
-        self.inputs = self.make_inputs(data_frame, project_cols, issues_cols)
-        self.indexes = list(range(len(self.inputs)))
-        self.aliases = [f"op_{ix}" for ix in self.indexes]
+        """
+        Execute the mutation as defined using the class methods.
 
-        slices = [
-            slice(i, i + self.PAGINATION)
-            for i in range(0, len(self.inputs), self.PAGINATION)
+        Caller interaction with this instance is limited to accessing
+        self.result.
+        """
+        self._inputs = self._make_inputs(data_frame, project_cols, issues_cols)
+        self._indexes = list(range(len(self._inputs)))
+        # A mutation can only contain multiple 'fields' if they have different
+        #  names from each other.
+        self._aliases = [f"op_{ix}" for ix in self._indexes]
+
+        page_slices = [
+            slice(i, i + self._PAGINATION)
+            for i in range(0, len(self._inputs), self._PAGINATION)
         ]
-        result_lists = [self.run_sub_mutation(s) for s in slices]
-        self.result = self.get_data_from_sub_mutations(result_lists)
+        result_lists = [self._run_sub_mutation(s) for s in page_slices]
+        self.result = self._get_data_from_sub_mutations(result_lists)
 
     @abc.abstractmethod
-    def make_inputs(
+    def _make_inputs(
         self,
         data_frame: pd.DataFrame,
         project_cols: ProjectItemsQuery.ColNames,
         issue_cols: IssuesQuery.ColNames,
     ) -> list[dict]:
+        """
+        Create the full sequence of `inputs` args for the mutation.
+
+        Represents the full sequence of fields that will be included in
+        the mutation.
+        """
         raise NotImplementedError
 
     @abc.abstractmethod
-    def add_selector(
+    def _add_selector(
         self,
         mutation: sgqlc.operation.Operation,
         index: int
     ) -> None:
+        """
+        Populate `mutation` with a field that takes self.inputs[index].
+
+        E.g.
+            mutation.add_project_v2_item_by_id(
+                input=self._inputs[index], __alias__=self._aliases[index]
+            )
+        """
         raise NotImplementedError
 
-    def run_sub_mutation(self, block_slice: slice) -> list:
+    def _run_sub_mutation(self, page_slice: slice) -> list:
+        """
+        Build, run and return results from a mutation for one page of fields.
+        """
         mutation = sgqlc.operation.Operation(github_schema_root.mutation_type)
-        for ix in self.indexes[block_slice]:
-            self.add_selector(mutation=mutation, index=ix)
+        for ix in self._indexes[page_slice]:
+            self._add_selector(mutation=mutation, index=ix)
         result = run_operation(mutation)
-        payloads = [result[a] for a in self.aliases[block_slice]]
+        # Fields are accessed from mutation results via their keys.
+        payloads = [result[a] for a in self._aliases[page_slice]]
         return payloads
 
-    def get_data_from_sub_mutations(self, payloads: list[list]):
-        # Not all subclasses need to extract any data from the mutation.
+    def _get_data_from_sub_mutations(self, payloads: list[list]) -> list | None:
+        """
+        Extract data from the nested results list that a mutation returns.
+
+        Provided for mutations that need to return something e.g. IDs of
+        issues newly added to the project. Otherwise: no need to subclass.
+        """
         return None
 
 
 class AddIssuesMutation(PaginatedMutation):
-    def make_inputs(
+    """
+    Mutation to add Issues to the Peloton GitHub project.
+
+    Added via the IDs of the issues itself, and records (self.results) the
+    IDs of the corresponding items in the project.
+    """
+    def _make_inputs(
         self,
         data_frame: pd.DataFrame,
         project_cols: ProjectItemsQuery.ColNames,
@@ -794,24 +917,24 @@ class AddIssuesMutation(PaginatedMutation):
     ) -> list[dict]:
         return [
             # Expecting a DataFrame where the required column is the index.
-            (self.inputs_default | dict(content_id=row.name))
+            (self._inputs_default | dict(content_id=row.name))
             for _, row in data_frame.iterrows()
         ]
 
-    def add_selector(
+    def _add_selector(
         self,
         mutation: sgqlc.operation.Operation,
         index: int
     ) -> None:
         add = mutation.add_project_v2_item_by_id(
-            input=self.inputs[index], __alias__=self.aliases[index]
+            input=self._inputs[index], __alias__=self._aliases[index]
         )
         add.item().id()
 
-    def get_data_from_sub_mutations(
+    def _get_data_from_sub_mutations(
         self,
         payloads: list[list[github_schema.AddProjectV2ItemByIdPayload]]
-    ):
+    ) -> list[str]:
         result = []
         for sub_list in payloads:
             ids_in_project = [p.item.id for p in sub_list]
@@ -820,7 +943,13 @@ class AddIssuesMutation(PaginatedMutation):
 
 
 class AddDraftsMutation(PaginatedMutation):
-    def make_inputs(
+    """
+    Mutation to add Discussions to the Peloton GitHub project.
+
+    Added by adding project 'drafts' - via a given title and body text - and
+    records (self.results) the IDs of the corresponding items in the project.
+    """
+    def _make_inputs(
         self,
         data_frame: pd.DataFrame,
         project_cols: ProjectItemsQuery.ColNames,
@@ -835,26 +964,26 @@ class AddDraftsMutation(PaginatedMutation):
             #  source of the problem.
             title = "".join(filter(lambda t: t in set(printable), title))
             inputs.append((
-                self.inputs_default
+                self._inputs_default
                 |
                 dict(title=title, body=row[issue_cols.url])
             ))
         return inputs
 
-    def add_selector(
+    def _add_selector(
         self,
         mutation: sgqlc.operation.Operation,
         index: int
     ) -> None:
         add = mutation.add_project_v2_draft_issue(
-            input=self.inputs[index], __alias__=self.aliases[index]
+            input=self._inputs[index], __alias__=self._aliases[index]
         )
         add.project_item().id()
 
-    def get_data_from_sub_mutations(
+    def _get_data_from_sub_mutations(
         self,
         payloads: list[list[github_schema.AddProjectV2DraftIssuePayload]]
-    ):
+    ) -> list[str]:
         result = []
         for sub_list in payloads:
             ids_in_project = [p.project_item.id for p in sub_list]
@@ -863,35 +992,42 @@ class AddDraftsMutation(PaginatedMutation):
 
 
 class ClearPelotonDateMutation(PaginatedMutation):
-    inputs_default = (
-        PaginatedMutation.inputs_default
+    """
+    Mutation clearing next-peloton-date field from items in the Peloton project.
+
+    Used when there has been an update to the issue/discussion in question,
+    meriting that it be revisited in an upcoming Peloton meeting.
+    """
+    _inputs_default = (
+        PaginatedMutation._inputs_default
         |
         dict(field_id="PVTF_lADOABU7f84ALhAIzgP3vFs")
     )
 
-    def make_inputs(
+    def _make_inputs(
         self,
         data_frame: pd.DataFrame,
         project_cols: ProjectItemsQuery.ColNames,
         issue_cols: IssuesQuery.ColNames,
     ) -> list[dict]:
         return [
-            (self.inputs_default | dict(item_id=row[project_cols.id_in_project]))
+            (self._inputs_default | dict(item_id=row[project_cols.id_in_project]))
             for _, row in data_frame.iterrows()
         ]
 
-    def add_selector(
+    def _add_selector(
         self,
         mutation: sgqlc.operation.Operation,
         index: int
     ) -> None:
         mutation.clear_project_v2_item_field_value(
-            input=self.inputs[index], __alias__=self.aliases[index]
+            input=self._inputs[index], __alias__=self._aliases[index]
         ).client_mutation_id()
 
 
 class RemoveItemsMutation(PaginatedMutation):
-    def make_inputs(
+    """Mutation to remove items from the Peloton GitHub project."""
+    def _make_inputs(
         self,
         data_frame: pd.DataFrame,
         project_cols: ProjectItemsQuery.ColNames,
@@ -899,22 +1035,29 @@ class RemoveItemsMutation(PaginatedMutation):
     ) -> list[dict]:
         return [
             # Expecting a DataFrame where the required column is the index.
-            (self.inputs_default | dict(item_id=row.name))
+            (self._inputs_default | dict(item_id=row.name))
             for _, row in data_frame.iterrows()
         ]
 
-    def add_selector(
+    def _add_selector(
         self,
         mutation: sgqlc.operation.Operation,
         index: int
     ) -> None:
         mutation.delete_project_v2_item(
-            input=self.inputs[index], __alias__=self.aliases[index]
+            input=self._inputs[index], __alias__=self._aliases[index]
         ).client_mutation_id()
 
 
 class UpdateItemsMutation(PaginatedMutation):
-    def make_inputs(
+    """
+    Mutation to update the fields of items in the Peloton project.
+
+    More complex than the other subclasses, which each did one 'thing' to one
+    issue/item/discussion. Here we need to update each field of each project
+    item.
+    """
+    def _make_inputs(
         self,
         data_frame: pd.DataFrame,
         project_cols: ProjectItemsQuery.ColNames,
@@ -930,18 +1073,26 @@ class UpdateItemsMutation(PaginatedMutation):
             project_fields = ProjectFieldsQuery()
             field_types = project_fields.data_frame[project_fields.cols.data_type]
 
-        def value_kwarg(field_id_, value):
+        def value_kwarg(field_id_: str, value) -> dict:
+            """
+            Use the data types in the GH schema to cast each value correctly.
+            """
             if field_types is not None:
                 field_type_ = field_types.loc[field_id_]
                 if field_type_ is github_schema.ProjectV2FieldValue.date:
+                    # Convert a date-time string to a date string.
                     value = value[:10]
                 return {field_type_.name: field_type_.type(value)}
             else:
-                raise ValueError
+                message = (
+                    "Problem with updating project item fields: "
+                    "cannot access information on field data types."
+                )
+                raise ValueError(message)
 
         for _, row in data_frame.iterrows():
             kwargs = (
-                self.inputs_default
+                self._inputs_default
                 |
                 dict(item_id=row[project_cols.id_in_project])
             )
@@ -958,6 +1109,8 @@ class UpdateItemsMutation(PaginatedMutation):
                 extra_kwargs = dict(field_id=field_id)
                 if col_name in row.index:
                     if not pd.isnull(row[col_name]):
+                        # Create a `value` input argument if there is a value
+                        #  available.
                         extra_kwargs["value"] = (
                             value_kwarg(field_id, row[col_name])
                         )
@@ -965,18 +1118,19 @@ class UpdateItemsMutation(PaginatedMutation):
 
         return inputs
 
-    def add_selector(
+    def _add_selector(
         self,
         mutation: sgqlc.operation.Operation,
         index: int
     ) -> None:
-        inputs = self.inputs[index]
+        inputs = self._inputs[index]
         if "value" in inputs:
             op = mutation.update_project_v2_item_field_value
         else:
+            # No value found, so clear the field instead.
             op = mutation.clear_project_v2_item_field_value
 
-        op(input=inputs, __alias__=self.aliases[index]).client_mutation_id()
+        op(input=inputs, __alias__=self._aliases[index]).client_mutation_id()
 
 
 ###############################################################################
@@ -987,12 +1141,14 @@ def log_data_frame_items(
     message: str,
     url_col: str = None
 ) -> None:
+    """
+    Logging of HOW MANY, and WHAT, items were involved in a script step.
+    """
     logging.info(message + f": {len(data_frame)} items")
     if url_col is not None and not data_frame.empty:
         logging.debug(
             message + ":\n" + "\n".join(data_frame[url_col].tolist())
         )
-
 
 
 def main():
@@ -1027,14 +1183,15 @@ def main():
     update_loop_minutes = parser.parse_args().update_loop_minutes
     debug = parser.parse_args().debug
 
+    # Connect to GitHub GraphQL using provided credentials.
     global ENDPOINT
     ENDPOINT = HTTPEndpoint(
         url="https://api.github.com/graphql",
         base_headers=dict(Authorization=f"bearer {bearer_token}")
     )
 
-    # console allows a configurable level at which logging is also sent to
-    # STDOUT.
+    # `console` allows a configurable level at which logging is also sent
+    #  to STDOUT.
     console = logging.StreamHandler(stdout)
     console.setFormatter(logging.Formatter("%(asctime)s %(message)s",))
     if debug:
