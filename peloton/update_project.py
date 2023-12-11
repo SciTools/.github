@@ -1187,13 +1187,13 @@ def main():
         type=int,
     )
     parser.add_argument(
-        "--debug",
+        "--verbose",
         help="Print debug information, including all queries that are run.",
         action="store_true",
     )
     bearer_token = parser.parse_args().bearer_token
     update_loop_minutes = parser.parse_args().update_loop_minutes
-    debug = parser.parse_args().debug
+    verbose = parser.parse_args().verbose
 
     # Connect to GitHub GraphQL using provided credentials.
     global ENDPOINT
@@ -1206,7 +1206,7 @@ def main():
     #  to STDOUT.
     console = logging.StreamHandler(stdout)
     console.setFormatter(logging.Formatter("%(asctime)s %(message)s",))
-    if debug:
+    if verbose:
         console.setLevel(logging.DEBUG)
     else:
         console.setLevel(logging.INFO)

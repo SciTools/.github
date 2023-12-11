@@ -36,6 +36,6 @@ jobs:
       - name: "Update the Peloton Project"
         run: |
           $CONDA/bin/python peloton/update_project.py \
-            --debug \
+            --verbose \
             --bearer_token "${{ steps.generate_token.outputs.token }}" \
             -- update_loop_minutes ${{ github.event.inputs.update_loop_minutes }}
