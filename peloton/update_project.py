@@ -858,7 +858,11 @@ class PaginatedMutation(abc.ABC):
             slice(i, i + self._PAGINATION)
             for i in range(0, len(self._inputs), self._PAGINATION)
         ]
-        result_lists = [self._run_sub_mutation(s) for s in page_slices]
+        result_lists = []
+        for page_slice in page_slices:
+            result_lists.append(self._run_sub_mutation(page_slice))
+            # Avoid rate limiting from GitHub.
+            sleep(5)
         self.result = self._get_data_from_sub_mutations(result_lists)
 
     @abc.abstractmethod
