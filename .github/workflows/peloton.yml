@@ -23,13 +23,6 @@ jobs:
         shell: bash -l {0}
 
     steps:
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.AUTH_APP_ID }}
-          private_key: ${{ secrets.AUTH_APP_PRIVATE_KEY }}
-
       - name: "Checkout repo"
         uses: actions/checkout@v3
 
@@ -40,5 +33,5 @@ jobs:
         run: |
           $CONDA/bin/python peloton/update_project.py \
             --verbose \
-            --bearer_token "${{ steps.generate_token.outputs.token }}" \
+            --bearer_token "${{ secrets.PROJECT_WRITE_PERMISSIONS }}" \
             -- update_loop_minutes ${{ github.event.inputs.update_loop_minutes }}
