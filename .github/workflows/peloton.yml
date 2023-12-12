@@ -8,6 +8,9 @@ on:
         description: "Number of minutes to keep updating for, after full refresh."
         required: true
         default: 0
+  push:
+    branches:
+      - new_peloton
 
 jobs:
   update_peloton_project:
