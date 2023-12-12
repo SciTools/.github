@@ -36,4 +36,4 @@ jobs:
           $CONDA/bin/python peloton/update_project.py \
             --verbose \
             --bearer_token "${{ secrets.PROJECT_WRITE_PERMISSIONS }}" \
-            -- update_loop_minutes ${{ github.event.inputs.update_loop_minutes }}
+            --update_loop_minutes $update_loop_minutes
