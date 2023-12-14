@@ -3,7 +3,7 @@
 # https://github.com/profusion/sgqlc/blob/fbee55d92554dd209b4e3ebda093f371bbc12aca/examples/github/update-schema.sh
 # https://sgqlc.readthedocs.io/en/latest/sgqlc.codegen.html#generating-schema-types
 
-if [ "$NO_DOWNLOAD" != 1 ]; then
+if [ "${NO_DOWNLOAD}" != 1 ]; then
     if [ -z "$GH_TOKEN" ]; then
         echo "please export GH_TOKEN with your GitHub API token" >&2
         echo "see: https://github.com/settings/tokens" >&2
