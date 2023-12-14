@@ -74,6 +74,20 @@ logging.basicConfig(
 )
 
 
+def datetime_str_to_date_str(datetimes: str | pd.Series) -> str:
+    """
+    Get just the date string from an ISO datetime string.
+
+    Can also operate on an entire :class:`pandas.Series` of strings.
+    """
+    if hasattr(datetimes, "str"):
+        object_to_index = datetimes.str
+    else:
+        assert isinstance(datetimes, str)
+        object_to_index = datetimes
+    return object_to_index[:10]
+
+
 def run_operation(op: sgqlc.operation.Operation) -> github_schema.Query:
     """Execute a GraphQL operation and return the results."""
     result = None
@@ -1102,8 +1116,7 @@ class UpdateItemsMutation(PaginatedMutation):
             if field_types is not None:
                 field_type_ = field_types.loc[field_id_]
                 if field_type_ is github_schema.ProjectV2FieldValue.date:
-                    # Convert a date-time string to a date string.
-                    value = value[:10]
+                    value = datetime_str_to_date_str(value)
                 return {field_type_.name: field_type_.type(value)}
             else:
                 message = (
@@ -1306,7 +1319,8 @@ def main():
             (
                 # Forced to do date comparison (not datetime) because that is the
                 #  max precision of project.cols.final_comment_time .
-                joined[issues.cols.final_comment_time].str[:10] !=
+                datetime_str_to_date_str(joined[issues.cols.final_comment_time])
+                !=
                 joined[project.cols.final_comment_time]
             )
         )
@@ -1344,7 +1358,7 @@ def main():
             updated_since_last = (
                 # Forced to do date comparison (not datetime) because that is the
                 #  max precision of project.cols.date_updated .
-                joined[issues.cols.updated_at].str[:10] !=
+                datetime_str_to_date_str(joined[issues.cols.updated_at]) !=
                 joined[project.cols.date_updated]
             )
             items_to_update = (
