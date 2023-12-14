@@ -60,6 +60,7 @@ PELOTON_PROJECT_ID = "PVT_kwDOABU7f84ALhAI"
 SECONDS_BETWEEN_UPDATES = 60
 
 
+GITHUB_GRAPHQL_URL = "https://api.github.com/graphql"
 # Required by run_operation(), set during main() argparsing.
 ENDPOINT: HTTPEndpoint = None
 
@@ -1014,10 +1015,11 @@ class ClearPelotonDateMutation(PaginatedMutation):
     Used when there has been an update to the issue/discussion in question,
     meriting that it be revisited in an upcoming Peloton meeting.
     """
+    NEXT_PELOTON_DATE_FIELD = "PVTF_lADOABU7f84ALhAIzgP3vFs"
     _inputs_default = (
         PaginatedMutation._inputs_default
         |
-        dict(field_id="PVTF_lADOABU7f84ALhAIzgP3vFs")
+        dict(field_id=NEXT_PELOTON_DATE_FIELD)
     )
 
     def _make_inputs(
@@ -1073,6 +1075,9 @@ class UpdateItemsMutation(PaginatedMutation):
     issue/item/discussion. Here we need to update each field of each project
     item.
     """
+    # The field in the project that contains the ID of the linked item.
+    LINK_FIELD = "PVTF_lADOABU7f84ALhAIzgPKqWg"
+
     def _make_inputs(
         self,
         data_frame: pd.DataFrame,
@@ -1113,14 +1118,14 @@ class UpdateItemsMutation(PaginatedMutation):
                 dict(item_id=row[project_cols.id_in_project])
             )
 
-            # The field in the project that contains the ID of the linked item.
-            link_field = "PVTF_lADOABU7f84ALhAIzgPKqWg"
+            # Do the special link field first.
             link_kwargs = dict(
-                field_id=link_field,
-                value=value_kwarg(link_field, row.name),
+                field_id=self.LINK_FIELD,
+                value=value_kwarg(self.LINK_FIELD, row.name),
             )
             inputs.append((kwargs | link_kwargs))
 
+            # Now do the rest of the fields.
             for field_id, col_name in issue_cols.project_field_map.items():
                 extra_kwargs = dict(field_id=field_id)
                 if col_name in row.index:
@@ -1202,7 +1207,7 @@ def main():
     # Connect to GitHub GraphQL using provided credentials.
     global ENDPOINT
     ENDPOINT = HTTPEndpoint(
-        url="https://api.github.com/graphql",
+        url=GITHUB_GRAPHQL_URL,
         base_headers=dict(Authorization=f"bearer {bearer_token}")
     )
 
