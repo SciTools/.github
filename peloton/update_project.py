@@ -879,7 +879,7 @@ class PaginatedMutation(abc.ABC):
             result_lists.append(self._run_sub_mutation(page_slice))
             # Avoid rate limiting from GitHub.
             sleep(5)
-        self.result = self._get_data_from_sub_mutations(result_lists)
+        self._result = self._get_data_from_sub_mutations(result_lists)
 
     @abc.abstractmethod
     def _make_inputs(
@@ -911,6 +911,11 @@ class PaginatedMutation(abc.ABC):
             )
         """
         raise NotImplementedError
+
+    @property
+    def result(self) -> list | None:
+        """The output of the mutation (if any). Read-only"""
+        return self._result
 
     def _run_sub_mutation(self, page_slice: slice) -> list:
         """
