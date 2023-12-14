@@ -41,6 +41,7 @@ github_schema_root = github_schema.github_schema
 
 GITHUB_QUERY_CONDITIONS = (
     "org:SciTools org:SciTools-incubator org:SciTools-classroom "
+    # Note `-` negates the condition that follows it.
     "-repo:SciTools/cartopy "
     "repo:bjlittle/geovista repo:pp-mo/ncdata repo:pp-mo/ugrid-checks "
 )
