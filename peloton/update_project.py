@@ -1165,11 +1165,10 @@ def log_data_frame_items(
     """
     Logging of HOW MANY, and WHAT, items were involved in a script step.
     """
-    logging.info(message + f": {len(data_frame)} items")
+    logging.info(f"{message}: {len(data_frame)} items")
     if url_col is not None and not data_frame.empty:
-        logging.debug(
-            message + ":\n" + "\n".join(data_frame[url_col].tolist())
-        )
+        url_list = "\n".join(data_frame[url_col].tolist())
+        logging.debug(f"{message}:\n{url_list}")
 
 
 def main():
@@ -1242,8 +1241,8 @@ def main():
 
         query_string = GITHUB_QUERY_CONDITIONS
         if updates_only:
-            query_string = GITHUB_QUERY_CONDITIONS + (
-                f" updated:>="
+            query_string = (
+                f"{GITHUB_QUERY_CONDITIONS} updated:>="
                 f"{last_update_loop_time.strftime('%Y-%m-%dT%H:%M:%SZ')}"
             )
         # Capture the time immediately before running the query.
