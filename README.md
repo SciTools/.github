@@ -1,4 +1,4 @@
-# SciTools/.github
+# SciTools/.github 
 
 Organisational level things such as the SciTools README and organisation workflows
 
