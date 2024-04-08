@@ -1,6 +1,6 @@
 # Note: SciTools/cartopy is managed by a separate development team so is not
 #  included in the templating.
 
-trexfeathers/iris@demo_20230817_main:
+SciTools/iris@demo_20230817_main:
   - source: templates/.pre-commit-config.yaml
     dest: .pre-commit-config.yaml
