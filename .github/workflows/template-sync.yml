@@ -4,18 +4,24 @@ on:
     # "At 02:00 on day-of-month 1 in every 2nd month."
     - cron: '0 2 1 */2 *'
   workflow_dispatch:
-  push:
 
 jobs:
   sync:
+    if: "github.repository_owner == 'SciTools' || github.event_name == 'workflow_dispatch'"
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
 
+      - id: generate-token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.AUTH_APP_ID }}
+          private_key: ${{ secrets.AUTH_APP_PRIVATE_KEY }}
+
       - uses: BetaHuhn/repo-file-sync-action@3023dac7ce66c18b119e2012348437eadeaea116
         with:
-          GH_PAT: ${{ secrets.DEMO_SYNC }}
+          GH_INSTALLATION_TOKEN: ${{ steps.generate-token.outputs.token }}
           CONFIG_PATH: .github/template-sync.yml
           PR_LABELS: |
             Bot
