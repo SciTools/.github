@@ -13,12 +13,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: BetaHuhn/repo-file-sync-action@3023dac7ce66c18b119e2012348437eadeaea116
+      - uses: Skyvern-AI/repo-file-sync-action@07a31547d9400a3fdbb08fc8ae92243913bdfea5
         with:
           GH_PAT: ${{ secrets.DEMO_SYNC }}
           CONFIG_PATH: .github/workflows/template-sync.yml
           PR_LABELS: |
             Bot
             Type: Infrastructure
-          COMMIT_PREFIX: 👁 Template deviations
+          PR_TITLE: 👁 Template deviations
           PR_BODY: https://github.com/SciTools/.github/tree/main/templates
