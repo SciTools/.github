@@ -2,5 +2,5 @@
 #  included in the templating.
 
 SciTools/iris@demo_20230817_main:
-  - source: templates/.pre-commit-config.yaml
-    dest: .pre-commit-config.yaml
+  - source: templates/.pre-commit-config.yamll
+    dest: .pre-commit-config.yamll
