@@ -16,7 +16,7 @@ jobs:
       - uses: BetaHuhn/repo-file-sync-action@3023dac7ce66c18b119e2012348437eadeaea116
         with:
           GH_PAT: ${{ secrets.DEMO_SYNC }}
-          CONFIG_PATH: .github/workflows/template-sync.yml
+          CONFIG_PATH: .github/template-sync.yml
           PR_LABELS: |
             Bot
             Type: Infrastructure
