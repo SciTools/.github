@@ -20,5 +20,5 @@ jobs:
           PR_LABELS: |
             Bot
             Type: Infrastructure
-          COMMIT_PREFIX: 👁 Template deviations
-          PR_BODY: "https://github.com/SciTools/.github/tree/main/templates"
+          COMMIT_PREFIX: "👁 TEMPLATE DEVIATIONS:"
+          PR_BODY: "## Please read: https://github.com/SciTools/.github/tree/main/templates"
