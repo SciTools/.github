@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: rasa/repo-file-sync-action@011c52e270cef47e3ed9af0a7a661d202acb1c72
+      - uses: BetaHuhn/repo-file-sync-action@3023dac7ce66c18b119e2012348437eadeaea116
         with:
           GH_PAT: ${{ secrets.DEMO_SYNC }}
           CONFIG_PATH: .github/workflows/template-sync.yml
