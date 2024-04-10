@@ -7,6 +7,9 @@ SciTools/cf-units:
 SciTools/iris:
   - source: templates/.pre-commit-config.yaml
     dest: .pre-commit-config.yaml
+SciTools/iris-grib:
+  - source: templates/.pre-commit-config.yaml
+    dest: .pre-commit-config.yaml
 SciTools/mo_pack:
   - source: templates/.pre-commit-config.yaml
     dest: .pre-commit-config.yaml
