@@ -636,10 +636,14 @@ class IssuesQuery(PaginatedQuery):
             else:
                 raise NotImplementedError
 
+            # We always categorise these users as bots, regardless of GitHub
+            #  labelling.
+            bot_override_users = ["CLAassistant", "codecov-commenter"]
+
             return np.select(
                 condlist=[
                     column.isin(self._peloton_logins),
-                    ~bot_column.isnull() | (column == "CLAassistant"),
+                    ~bot_column.isnull() | column.isin(bot_override_users),
                 ],
                 choicelist=[
                     is_peloton,
