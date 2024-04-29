@@ -2,10 +2,10 @@
 
 SciTools is a collaborative effort to produce powerful Python-based open-source tools for Earth scientists. Initially started at the UK [Met Office](https://www.metoffice.gov.uk/) in 2010, SciTools has grown into a diverse community of partners and collaborators from around the world. SciTools is responsible for the maintenance of a number of key packages such as Iris and Cartopy, and continues to develop new and innovative tools for the Earth scientist's toolkit.
 
-- 🔒 Privacy Policy
-- ✔ Accessibility Statement
+- [🔒 Privacy Policy](privacy_policy.md)
+- [✔ Accessibility Statement](accessibility_statement.md)
 
-## 📦 Projects
+## 📦 Packages
 
 ### Cartopy
 
@@ -58,11 +58,15 @@ The rules/agreements for **contributing** to the software. Contributions to any 
 
 ### ✏ Development
 
-The Met Office remains the driving force behind SciTools and most of our projects; however, all the projects are fundamentally developed in the open. The direction of SciTools projects is decided by the community of developers; who are always eager for more people from different areas to contribute towards Iris, Cartopy and the wider SciTools ecosystem. All types of contribution are encouraged:
+The Met Office remains the driving force behind SciTools and most of our packages; however, all the packages are fundamentally developed in the open. The direction of SciTools packages is decided by the community of developers; who are always eager for more people from different areas to contribute towards Iris, Cartopy and the wider SciTools ecosystem. All types of contribution are encouraged:
 
-- 💬 Participating in conversations on [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
-- 🔔 Starting new [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
-- 💡 Proposing changes via [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
+- 💬 Participating in conversations on existing repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
+- 🔔 Starting new repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
+- 💡 Proposing changes via repository [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
 - ✏ Developing your own software that uses or augments SciTools software package(s)
 
-Every SciTools repository has a team of _maintainers_ - developers with GitHub permissions to make changes to the codebase (typically via approving and merging pull requests). Maintainers do their best to respond to discussions / issues / pull requests and generally keep the repositories healthy. [Many of the SciTools repositories are discussed at regular Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info).
+Every SciTools repository has a team of _maintainers_ - developers with GitHub permissions to make changes to the codebase (typically via approving and merging pull requests). Maintainers do their best to respond to discussions / issues / pull requests and generally keep the repositories healthy. [Many of the SciTools repositories are discussed by maintainers at regular Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info).
+
+### 📞 Contact
+
+Please raise a [discussion](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) on the appropriate SciTools repository. If your contact is not linked to a specific repository then you can use the [SciTools/.github](https://github.com/SciTools/.github) repository. The conversation can also continue in private, feel free to request this.
