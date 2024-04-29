@@ -19,3 +19,30 @@ Below is the privacy policy from https://scitools.org.uk/privacy.html:
 > - To contact you so you can review your stored personal details.
 > - To contact you regarding events about Scitools library development.
 >We do not sell or rent out personal information to any other organisations.
+>
+>## Where we store and process your personal information
+>The Met Office is responsible for the processing of your personal information.
+>
+>We will take all steps reasonably necessary to ensure that your information is treated securely and in accordance with this privacy policy.
+>
+>Your personal information will not be transferred abroad, but your GitHub profile name will be published on the website so source code contributions can be processed by the Developers.
+>
+>CLA Administrators will have access to all your personal data. This is to permit processing of the CLA and publication of your GitHub profile name for the Developers.
+>
+>## Cookies
+>
+>We do not collect cookies on this site.
+>
+>## Access to your information and correction
+>
+>Access to personal information which we may hold about you can be requested in writing to the Data Protection Officer at the address below or by sending an email to dataprotection@metoffice.gov.uk. We may require proof of identity in relation to any such request and may also make a small charge for this service.
+>
+>Data Protection Officer
+>Met Office
+>FitzRoy Road
+>Exeter
+>Devon
+>EX1 3PB
+>United Kingdom
+>
+>We want to make sure that your personal information is accurate and up to date. You may ask us to correct or remove information you think is inaccurate.
