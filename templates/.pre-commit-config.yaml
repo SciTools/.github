@@ -24,14 +24,22 @@ repos:
     -   id: check-merge-conflict
         # Check for debugger imports and py37+ `breakpoint()` calls in Python source.
     -   id: debug-statements
-        # Don't commit to main branch.
-    -   id: no-commit-to-branch
         # Check TOML file syntax.
     -   id: check-toml
         # Check YAML file syntax.
     -   id: check-yaml
-        # Replaces or checks mixed line ending
+        # Makes sure files end in a newline and only a newline.
+        # Duplicates https://docs.astral.sh/ruff/rules/missing-newline-at-end-of-file/
+        #  but also works on non-Python files.
+    -   id: end-of-file-fixer
+        # Replaces or checks mixed line ending.
     -   id: mixed-line-ending
+        # Don't commit to main branch.
+    -   id: no-commit-to-branch
+        # Trims trailing whitespace.
+        # Duplicates https://docs.astral.sh/ruff/rules/trailing-whitespace/
+        #  but also works on non-Python files.
+    -   id: trailing-whitespace
 
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.4.2"
