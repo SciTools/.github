@@ -18,7 +18,7 @@ repos:
     -   id: check-added-large-files
         # Check whether files parse as valid Python.
     -   id: check-ast
-        # Check for file name conflicts on case-insensitive filesytems.
+        # Check for file name conflicts on case-insensitive filesystems.
     -   id: check-case-conflict
         # Check for files that contain merge conflict strings.
     -   id: check-merge-conflict
@@ -26,6 +26,12 @@ repos:
     -   id: debug-statements
         # Don't commit to main branch.
     -   id: no-commit-to-branch
+        # Check TOML file syntax.
+    -   id: check-toml
+        # Check YAML file syntax.
+    -   id: check-yaml
+        # Replaces or checks mixed line ending
+    -   id: mixed-line-ending
 
 -   repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.4.2"
