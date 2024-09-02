@@ -7,7 +7,7 @@ SciTools is a collaborative effort to produce powerful Python-based open-source 
   - [GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility)
   - [GitHub accessibility statement](https://accessibility.github.com/)
 
-[^1]: [The Accessible Icon Project](https://accessibleicon.org/)
+[^1]: An interesting read: [the Accessible Icon Project](https://accessibleicon.org/)
 
 ### Contents
 
