@@ -67,7 +67,7 @@ The rules/agreements for **contributing** to the software. Contributions to any 
 
 The Met Office remains the driving force behind SciTools and most of our packages; however, all the packages are fundamentally developed in the open. The direction of SciTools packages is decided by the community of developers; who are always eager for more people from different areas to contribute towards Iris, Cartopy and the wider SciTools ecosystem. All types of contribution are encouraged:
 
-[comment]: the list below has slightly odd formatting around the emojis to help it behave better with screen readers (keeping the page more accessible).
+<!--- The list below has slightly odd formatting around the emojis to help it behave better with screen readers (keeping the page more accessible). -->
 
 - 1 :speech_balloon: : Participating in conversations on existing repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
 - 2 :bell: : Starting new repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
