@@ -9,6 +9,11 @@ SciTools is a collaborative effort to produce powerful Python-based open-source 
 
 [^1]: [The Accessible Icon Project](https://accessibleicon.org/)
 
+### Contents
+
+- [📦 Packages](#-packages)
+- [ℹ More about SciTools](#ℹ-more-about-scitools)
+
 ## 📦 Packages
 
 ### Cartopy
