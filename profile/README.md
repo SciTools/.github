@@ -2,23 +2,21 @@
 
 SciTools is a collaborative effort to produce powerful Python-based open-source tools for Earth scientists. Initially started at the UK [Met Office](https://www.metoffice.gov.uk/) in 2010, SciTools has grown into a diverse community of partners and collaborators from around the world. SciTools is responsible for the maintenance of a number of key packages such as Iris and Cartopy, and continues to develop new and innovative tools for the Earth scientist's toolkit.
 
-- [🔒 Privacy Policy](privacy_policy.md)
-- ♿ Accessibility [^1]
+- [Privacy Policy :lock:](privacy_policy.md)
+- Accessibility :globe_with_meridians:
   - [GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility)
   - [GitHub accessibility statement](https://accessibility.github.com/)
 
-[^1]: An interesting read: [the Accessible Icon Project](https://accessibleicon.org/)
-
 ### Contents
 
-- [📦 Packages](#-packages)
-- [ℹ More about SciTools](#ℹ-more-about-scitools)
+- [Packages :package:](#packages-package)
+- [More about SciTools :information_source:](#more-about-scitools-information_source)
 
-## 📦 Packages
+## Packages :package:
 
 ### Cartopy
 
-<img src="https://raw.githubusercontent.com/SciTools/cartopy/main/docs/source/_static/cartopy.png" height="100">
+<img src="https://raw.githubusercontent.com/SciTools/cartopy/main/docs/source/_static/cartopy.png" height="100" alt="cartopy logo">
 
 Cartopy is a Python package designed for geospatial data processing in order to produce maps and other geospatial data analyses.
 
@@ -30,7 +28,7 @@ You will find cartopy especially useful for large area / small scale data, where
 
 ### Iris
 
-<img src="https://raw.githubusercontent.com/SciTools/iris/main/docs/src/_static/iris-logo.svg" height="100">
+<img src="https://raw.githubusercontent.com/SciTools/iris/main/docs/src/_static/iris-logo.svg" height="100" alt="iris logo">
 
 The Iris package implements a data model to create a data abstraction layer which isolates analysis and visualisation code from data format specifics. The data model we have chosen is the CF Data Model. The implementation of this model we have called an Iris Cube.
 
@@ -55,27 +53,29 @@ Iris currently supports read/write access to a range of data formats, including 
 - [SciTools-incubator](https://github.com/SciTools-incubator) organization - experimental SciTools projects
 - [SciTools-classroom](https://github.com/SciTools-classroom) organization - explore the power of SciTools through our collection of dedicated learning material and presentations
 
-## ℹ More about SciTools
+## More about SciTools :information_source:
 
-### 📥 Software Licensing
+### Software Licensing :inbox_tray:
 
 The rules/agreements for **using** the software. All SciTools software is distributed under the terms of the [**BSD-3-Clause**](https://spdx.org/licenses/BSD-3-Clause.html) licence.
 
-### 📝 Contributor Licence Agreement (CLA)
+### Contributor Licence Agreement (CLA) :pencil:
 
 The rules/agreements for **contributing** to the software. Contributions to any SciTools repository are subject to the [**SciTools Contributor Licence Agreement**](https://cla-assistant.io/SciTools/).
 
-### ✏ Development
+### Development :pencil2:
 
 The Met Office remains the driving force behind SciTools and most of our packages; however, all the packages are fundamentally developed in the open. The direction of SciTools packages is decided by the community of developers; who are always eager for more people from different areas to contribute towards Iris, Cartopy and the wider SciTools ecosystem. All types of contribution are encouraged:
 
-- 💬 Participating in conversations on existing repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
-- 🔔 Starting new repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
-- 💡 Proposing changes via repository [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
-- ✏ Developing your own software that uses or augments SciTools software package(s)
+[comment]: the list below has slightly odd formatting around the emojis to help it behave better with screen readers (keeping the page more accessible).
+
+- 1 :speech_balloon: : Participating in conversations on existing repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
+- 2 :bell: : Starting new repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
+- 3 :bulb: : Proposing changes via repository [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
+- 4 :pencil2: : Developing your own software that uses or augments SciTools software package(s)
 
 Every SciTools repository has a team of _maintainers_ - developers with GitHub permissions to make changes to the codebase (typically via approving and merging pull requests). Maintainers do their best to respond to discussions / issues / pull requests and generally keep the repositories healthy. [Many of the SciTools repositories are discussed by maintainers at regular Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info).
 
-### 📞 Contact
+### Contact :telephone_receiver:
 
 Please raise a [discussion](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests) on the appropriate SciTools repository. If your contact is not linked to a specific repository then you can use the [SciTools/.github](https://github.com/SciTools/.github) repository. The conversation can also continue in private, feel free to request this. While we prefer talking on GitHub, you can also email scitools.pub@gmail.com if necessary.
