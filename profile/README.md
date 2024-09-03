@@ -24,7 +24,7 @@ Key features of cartopy are its object oriented projection definitions, and its 
 
 You will find cartopy especially useful for large area / small scale data, where Cartesian assumptions of spherical data traditionally break down.
 
-[![GitHub link](https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white)](https://github.com/SciTools/cartopy) [![Documentation link](https://img.shields.io/badge/Documentation-blue?logo=readthedocs&logoColor=white)](https://scitools.org.uk/cartopy/docs/latest/) [![Gallery link](https://img.shields.io/badge/Gallery-%23ff00ff?logo=sphinx&logoColor=white)](https://scitools.org.uk/cartopy/docs/latest/gallery/index.html)
+[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/cartopy) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://scitools.org.uk/cartopy/docs/latest/) [![Gallery link](https://img.shields.io/badge/Gallery-f194b8?logo=sphinx&logoColor=black)](https://scitools.org.uk/cartopy/docs/latest/gallery/index.html)
 
 ### Iris
 
@@ -34,17 +34,19 @@ The Iris package implements a data model to create a data abstraction layer whic
 
 Iris currently supports read/write access to a range of data formats, including (CF-)netCDF, GRIB, and PP; fundamental data manipulation operations, such as arithmetic, interpolation, and statistics; and a range of integrated plotting options.
 
-[![GitHub link](https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white)](https://github.com/SciTools/iris) [![Documentation link](https://img.shields.io/badge/Documentation-blue?logo=readthedocs&logoColor=white)](https://scitools-iris.readthedocs.io/en/stable/) [![Gallery link](https://img.shields.io/badge/Gallery-%23ff00ff?logo=sphinx&logoColor=white)](https://scitools-iris.readthedocs.io/en/stable/generated/gallery/index.html)
+<!--- Accessible badge colour palette from https://venngage.com/tools/accessible-color-palette-generator: #b9e192 #cfebb6 #b3c7f7 #f8b8d0 #f194b8 -->
+
+[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/iris) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://scitools-iris.readthedocs.io/en/stable/) [![Gallery link](https://img.shields.io/badge/Gallery-f194b8?logo=sphinx&logoColor=black)](https://scitools-iris.readthedocs.io/en/stable/generated/gallery/index.html)
 
 ### Other highlights
 
 |   |   |
 | - | - |
-| **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris<br>[![GitHub link](https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white)](https://github.com/SciTools-incubator/iris-esmf-regrid) [![Documentation link](https://img.shields.io/badge/Documentation-blue?logo=readthedocs&logoColor=white)](https://iris-esmf-regrid.readthedocs.io/en/stable/) |
-| **cf-units** | Units of measure as required by the Climate and Forecast (CF) Metadata Conventions<br>[![GitHub link](https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white)](https://github.com/SciTools/cf-units) [![Documentation link](https://img.shields.io/badge/Documentation-blue?logo=readthedocs&logoColor=white)](https://cf-units.readthedocs.io/en/stable/) |
-| **nc-time-axis** | Provides support for a cftime axis in matplotlib<br>[![GitHub link](https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white)](https://github.com/SciTools/nc-time-axis) [![Documentation link](https://img.shields.io/badge/Documentation-blue?logo=readthedocs&logoColor=white)](https://nc-time-axis.readthedocs.io/en/stable/) |
-| **tephi** | Tephigram plotting in Python<br>[![GitHub link](https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white)](https://github.com/SciTools/tephi) [![Documentation link](https://img.shields.io/badge/Documentation-blue?logo=readthedocs&logoColor=white)](http://tephi.readthedocs.org/) |
-| **python-stratify** | Vectorized interpolators for Nd atmospheric and oceanographic data<br>[![GitHub link](https://img.shields.io/badge/GitHub-black?logo=github&logoColor=white)](https://github.com/SciTools/python-stratify) |
+| **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools-incubator/iris-esmf-regrid) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://iris-esmf-regrid.readthedocs.io/en/stable/) |
+| **cf-units** | Units of measure as required by the Climate and Forecast (CF) Metadata Conventions<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/cf-units) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://cf-units.readthedocs.io/en/stable/) |
+| **nc-time-axis** | Provides support for a cftime axis in matplotlib<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/nc-time-axis) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://nc-time-axis.readthedocs.io/en/stable/) |
+| **tephi** | Tephigram plotting in Python<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/tephi) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](http://tephi.readthedocs.org/) |
+| **python-stratify** | Vectorized interpolators for Nd atmospheric and oceanographic data<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/python-stratify) |
 
 ### See more
 
