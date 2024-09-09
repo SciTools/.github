@@ -1,4 +1,4 @@
-[Privacy Policy](privacy_policy.md) | [GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility) | [GitHub accessibility statement](https://accessibility.github.com/)
+[Privacy Policy](privacy_policy.md) &nbsp;•&nbsp; [GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility) &nbsp;•&nbsp; [GitHub accessibility statement](https://accessibility.github.com/)
 
 # SciTools
 
@@ -23,7 +23,11 @@ Key features of cartopy are its object oriented projection definitions, and its 
 
 You will find cartopy especially useful for large area / small scale data, where Cartesian assumptions of spherical data traditionally break down.
 
-[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/cartopy) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://scitools.org.uk/cartopy/docs/latest/) [![Gallery link](https://img.shields.io/badge/Gallery-f194b8?logo=sphinx&logoColor=black)](https://scitools.org.uk/cartopy/docs/latest/gallery/index.html)
+[GitHub](https://github.com/SciTools/cartopy) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12">
+&nbsp;•&nbsp;
+[Documentation](https://scitools.org.uk/cartopy/docs/latest/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12">
+&nbsp;•&nbsp;
+[Gallery](https://scitools.org.uk/cartopy/docs/latest/gallery/index.html) &nbsp;<img src="https://cdn.simpleicons.org/sphinx/_/eee?viewbox=auto" alt="Sphinx logo" height="12">
 
 ### Iris
 
@@ -35,17 +39,21 @@ Iris currently supports read/write access to a range of data formats, including 
 
 <!--- Accessible badge colour palette from https://venngage.com/tools/accessible-color-palette-generator: #b9e192 #cfebb6 #b3c7f7 #f8b8d0 #f194b8 -->
 
-[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/iris) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://scitools-iris.readthedocs.io/en/stable/) [![Gallery link](https://img.shields.io/badge/Gallery-f194b8?logo=sphinx&logoColor=black)](https://scitools-iris.readthedocs.io/en/stable/generated/gallery/index.html)
+[GitHub](https://github.com/SciTools/iris) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12">
+&nbsp;•&nbsp;
+[Documentation](https://scitools-iris.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12">
+&nbsp;•&nbsp;
+[Gallery](https://scitools-iris.readthedocs.io/en/stable/generated/gallery/index.html) &nbsp;<img src="https://cdn.simpleicons.org/sphinx/_/eee?viewbox=auto" alt="Sphinx logo" height="12">
 
 ### Other highlights
 
 |   |   |
 | - | - |
-| **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools-incubator/iris-esmf-regrid) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://iris-esmf-regrid.readthedocs.io/en/stable/) |
-| **cf-units** | Units of measure as required by the Climate and Forecast (CF) Metadata Conventions<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/cf-units) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://cf-units.readthedocs.io/en/stable/) |
-| **nc-time-axis** | Provides support for a cftime axis in matplotlib<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/nc-time-axis) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](https://nc-time-axis.readthedocs.io/en/stable/) |
-| **tephi** | Tephigram plotting in Python<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/tephi) [![Documentation link](https://img.shields.io/badge/Documentation-b3c7f7?logo=readthedocs&logoColor=black)](http://tephi.readthedocs.org/) |
-| **python-stratify** | Vectorized interpolators for Nd atmospheric and oceanographic data<br>[![GitHub link](https://img.shields.io/badge/GitHub-b9e192?logo=github&logoColor=black)](https://github.com/SciTools/python-stratify) |
+| **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris<br>[GitHub](https://github.com/SciTools-incubator/iris-esmf-regrid) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;•&nbsp; [Documentation](https://iris-esmf-regrid.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
+| **cf-units** | Units of measure as required by the Climate and Forecast (CF) Metadata Conventions<br>[GitHub](https://github.com/SciTools/cf-units) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;•&nbsp; [Documentation](https://cf-units.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
+| **nc-time-axis** | Provides support for a cftime axis in matplotlib<br>[GitHub](https://github.com/SciTools/nc-time-axis) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;•&nbsp; [Documentation](https://nc-time-axis.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
+| **tephi** | Tephigram plotting in Python<br>[GitHub](https://github.com/SciTools/tephi) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;•&nbsp; [Documentation](http://tephi.readthedocs.org/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
+| **python-stratify** | Vectorized interpolators for Nd atmospheric and oceanographic data<br>[GitHub](https://github.com/SciTools/python-stratify) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> |
 
 ### See more
 
