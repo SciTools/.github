@@ -1,4 +1,4 @@
-[Privacy Policy](privacy_policy.md) &nbsp;•&nbsp; [GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility) &nbsp;•&nbsp; [GitHub accessibility statement](https://accessibility.github.com/)
+[Privacy Policy](privacy_policy.md) &nbsp;:&nbsp; [GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility) &nbsp;:&nbsp; [GitHub accessibility statement](https://accessibility.github.com/)
 
 # SciTools
 
@@ -24,9 +24,9 @@ Key features of cartopy are its object oriented projection definitions, and its 
 You will find cartopy especially useful for large area / small scale data, where Cartesian assumptions of spherical data traditionally break down.
 
 [GitHub](https://github.com/SciTools/cartopy) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12">
-&nbsp;•&nbsp;
+&nbsp;:&nbsp;
 [Documentation](https://scitools.org.uk/cartopy/docs/latest/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12">
-&nbsp;•&nbsp;
+&nbsp;:&nbsp;
 [Gallery](https://scitools.org.uk/cartopy/docs/latest/gallery/index.html) &nbsp;<img src="https://cdn.simpleicons.org/sphinx/_/eee?viewbox=auto" alt="Sphinx logo" height="12">
 
 ### Iris
@@ -40,20 +40,20 @@ Iris currently supports read/write access to a range of data formats, including 
 <!--- Accessible badge colour palette from https://venngage.com/tools/accessible-color-palette-generator: #b9e192 #cfebb6 #b3c7f7 #f8b8d0 #f194b8 -->
 
 [GitHub](https://github.com/SciTools/iris) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12">
-&nbsp;•&nbsp;
+&nbsp;:&nbsp;
 [Documentation](https://scitools-iris.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12">
-&nbsp;•&nbsp;
+&nbsp;:&nbsp;
 [Gallery](https://scitools-iris.readthedocs.io/en/stable/generated/gallery/index.html) &nbsp;<img src="https://cdn.simpleicons.org/sphinx/_/eee?viewbox=auto" alt="Sphinx logo" height="12">
 
 ### Other highlights
 
 |   |   |
 | - | - |
-| **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris<br>[GitHub](https://github.com/SciTools-incubator/iris-esmf-regrid) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;•&nbsp; [Documentation](https://iris-esmf-regrid.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
-| **cf-units** | Units of measure as required by the Climate and Forecast (CF) Metadata Conventions<br>[GitHub](https://github.com/SciTools/cf-units) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;•&nbsp; [Documentation](https://cf-units.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
-| **nc-time-axis** | Provides support for a cftime axis in matplotlib<br>[GitHub](https://github.com/SciTools/nc-time-axis) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;•&nbsp; [Documentation](https://nc-time-axis.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
-| **tephi** | Tephigram plotting in Python<br>[GitHub](https://github.com/SciTools/tephi) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;•&nbsp; [Documentation](http://tephi.readthedocs.org/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
-| **python-stratify** | Vectorized interpolators for Nd atmospheric and oceanographic data<br>[GitHub](https://github.com/SciTools/python-stratify) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> |
+| **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris.<br>[GitHub](https://github.com/SciTools-incubator/iris-esmf-regrid) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;:&nbsp; [Documentation](https://iris-esmf-regrid.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
+| **cf-units** | Units of measure as required by the Climate and Forecast (CF) Metadata Conventions.<br>[GitHub](https://github.com/SciTools/cf-units) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;:&nbsp; [Documentation](https://cf-units.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
+| **nc-time-axis** | Provides support for a cftime axis in matplotlib.<br>[GitHub](https://github.com/SciTools/nc-time-axis) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;:&nbsp; [Documentation](https://nc-time-axis.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
+| **tephi** | Tephigram plotting in Python.<br>[GitHub](https://github.com/SciTools/tephi) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;:&nbsp; [Documentation](http://tephi.readthedocs.org/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
+| **python-stratify** | Vectorized interpolators for Nd atmospheric and oceanographic data.<br>[GitHub](https://github.com/SciTools/python-stratify) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> |
 
 ### See more
 
@@ -78,10 +78,10 @@ The Met Office remains the driving force behind SciTools and most of our package
 
 <!--- The list below has slightly odd formatting around the emojis to help it behave better with screen readers (keeping the page more accessible). -->
 
-- A :speech_balloon: : Participating in conversations on existing repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
-- B :bell: : Starting new repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
-- C :bulb: : Proposing changes via repository [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
-- D :pencil2: : Developing your own software that uses or augments SciTools software package(s)
+- 1 :speech_balloon: : Participating in conversations on existing repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues) / [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
+- 2 :bell: : Starting new repository [discussions](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/about-discussions) / [issues](https://docs.github.com/en/issues/tracking-your-work-with-issues/about-issues)
+- 3 :bulb: : Proposing changes via repository [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
+- 4 :pencil2: : Developing your own software that uses or augments SciTools software package(s)
 
 Every SciTools repository has a team of _maintainers_ - developers with GitHub permissions to make changes to the codebase (typically via approving and merging pull requests). Maintainers do their best to respond to discussions / issues / pull requests and generally keep the repositories healthy. [Many of the SciTools repositories are discussed by maintainers at regular Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info).
 
