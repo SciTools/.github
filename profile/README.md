@@ -1,16 +1,15 @@
-# Open tools for the analysis and visualisation of Earth science data
+[Privacy Policy](privacy_policy.md) | [GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility) | [GitHub accessibility statement](https://accessibility.github.com/)
+
+# SciTools
+
+## Open tools for the analysis and visualisation of Earth science data
 
 SciTools is a collaborative effort to produce powerful Python-based open-source tools for Earth scientists. Initially started at the UK [Met Office](https://www.metoffice.gov.uk/) in 2010, SciTools has grown into a diverse community of partners and collaborators from around the world. SciTools is responsible for the maintenance of a number of key packages such as Iris and Cartopy, and continues to develop new and innovative tools for the Earth scientist's toolkit.
 
-- [Privacy Policy :lock:](privacy_policy.md)
-- Accessibility :globe_with_meridians:
-  - [GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility)
-  - [GitHub accessibility statement](https://accessibility.github.com/)
+## Contents
 
-### Contents
-
-- [Packages :package:](#packages-package)
-- [More about SciTools :information_source:](#more-about-scitools-information_source)
+- [List of SciTools packages](#packages-package)
+- [More about SciTools](#more-about-scitools-information_source)
 
 ## Packages :package:
 
