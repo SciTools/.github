@@ -25,7 +25,7 @@ Cartopy is a Python package designed for geospatial data processing in order to 
 
 Key features of cartopy are its object oriented projection definitions, and its ability to transform points, lines, vectors, polygons and images between those projections.
 
-You will find cartopy especially useful for large area / small scale data, where Cartesian assumptions of spherical data traditionally break down.
+You will find Cartopy especially useful for large area / small scale data, where Cartesian assumptions of spherical data traditionally break down.
 
 **Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/cartopy)
 &nbsp;,&nbsp;
@@ -37,9 +37,9 @@ You will find cartopy especially useful for large area / small scale data, where
 
 <img src="https://raw.githubusercontent.com/SciTools/iris/main/docs/src/_static/iris-logo.svg" height="100" alt="iris logo">
 
-The Iris package implements a data model to create a data abstraction layer which isolates analysis and visualisation code from data format specifics. The data model we have chosen is the CF Data Model. The implementation of this model we have called an Iris Cube.
+The Iris package implements a data model to create a data abstraction layer which isolates analysis and visualisation code from data format specifics. The data model we have chosen is the [CF (Climate & Forecast) Data Model](https://cfconventions.org/). The implementation of this model we have called an Iris Cube.
 
-Iris currently supports read/write access to a range of data formats, including (CF-)netCDF, GRIB, and PP; fundamental data manipulation operations, such as arithmetic, interpolation, and statistics; and a range of integrated plotting options.
+Iris currently supports read/write access to a range of data formats, including (CF-)[NetCDF](https://github.com/Unidata/netcdf-c), [GRIB](https://confluence.ecmwf.int/display/CKB/What+are+GRIB+files+and+how+can+I+read+them), and [PP](https://artefacts.ceda.ac.uk/badc_datadocs/um/umdp_F3-UMDPF3.pdf); fundamental data manipulation operations, such as arithmetic, interpolation, and statistics; and a range of integrated plotting options.
 
 **Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/iris)
 &nbsp;,&nbsp;
@@ -51,10 +51,10 @@ Iris currently supports read/write access to a range of data formats, including 
 
 | Package | Description & Links |
 | - | - |
-| **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris.<br>**Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools-incubator/iris-esmf-regrid) &nbsp;,&nbsp; [Documentation](https://iris-esmf-regrid.readthedocs.io/en/stable/) |
+| **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris.<br>**Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools-incubator/iris-esmf-regrid) &nbsp;,&nbsp; [Documentation](https://iris-esmf-regrid.readthedocs.io/en/stable/) &nbsp;,&nbsp; ([ESMF](https://earthsystemmodeling.org/)) |
 | **cf-units** | Units of measure as required by the Climate and Forecast (CF) Metadata Conventions.<br>**Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/cf-units) &nbsp;,&nbsp; [Documentation](https://cf-units.readthedocs.io/en/stable/) |
-| **nc-time-axis** | Provides support for a cftime axis in matplotlib.<br>**Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/nc-time-axis) &nbsp;,&nbsp; [Documentation](https://nc-time-axis.readthedocs.io/en/stable/) |
-| **tephi** | Tephigram plotting in Python.<br>**Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/tephi) &nbsp;,&nbsp; [Documentation](http://tephi.readthedocs.org/) |
+| **nc-time-axis** | Provides support for a cftime axis in Matplotlib.<br>**Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/nc-time-axis) &nbsp;,&nbsp; [Documentation](https://nc-time-axis.readthedocs.io/en/stable/) &nbsp;,&nbsp; ([cftime](https://github.com/Unidata/cftime)) &nbsp;,&nbsp; ([Matplotlib](https://matplotlib.org/)) |
+| **tephi** | Tephigram plotting in Python.<br>**Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/tephi) &nbsp;,&nbsp; [Documentation](http://tephi.readthedocs.org/) &nbsp;,&nbsp; ([tephigrams](https://en.wikipedia.org/wiki/Tephigram)) |
 | **python-stratify** | Vectorized interpolators for Nd atmospheric and oceanographic data.<br>**Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/python-stratify) |
 
 ### See more
