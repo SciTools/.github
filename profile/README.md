@@ -47,7 +47,7 @@ Iris currently supports read/write access to a range of data formats, including 
 
 ### Other highlights
 
-|   |   |
+| Package | Description & Links |
 | - | - |
 | **iris-esmf-regrid** | A collection of structured and unstructured ESMF regridding schemes for Iris.<br>[GitHub](https://github.com/SciTools-incubator/iris-esmf-regrid) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;.&nbsp; [Documentation](https://iris-esmf-regrid.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
 | **cf-units** | Units of measure as required by the Climate and Forecast (CF) Metadata Conventions.<br>[GitHub](https://github.com/SciTools/cf-units) &nbsp;<img src="https://cdn.simpleicons.org/github/_/eee?viewbox=auto" alt="GitHub logo" height="12"> &nbsp;.&nbsp; [Documentation](https://cf-units.readthedocs.io/en/stable/) &nbsp;<img src="https://cdn.simpleicons.org/readthedocs/_/eee?viewbox=auto" alt="ReadtheDocs logo" height="12"> |
