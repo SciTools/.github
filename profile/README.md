@@ -1,8 +1,6 @@
 **Links:**&nbsp;&nbsp; [Privacy Policy](privacy_policy.md)
 &nbsp;,&nbsp;
-[GitHub accessibility settings](https://docs.github.com/en/get-started/accessibility)
-&nbsp;,&nbsp;
-[GitHub accessibility statement](https://accessibility.github.com/)
+[Accessibility Statement](accessibility_statement.md)
 
 # SciTools
 
