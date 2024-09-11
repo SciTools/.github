@@ -30,3 +30,14 @@ For concerns within the control of SciTools developers - as opposed to the devel
   - Are only used where dynamic content is needed.
   - Include alt-text.
   - Basic links instead use plain text wherever possible.
+
+## How to contact
+
+If you find anything that is not accessible, please get in touch. We will endeavour to provide you an accessible alternative and to fix the original issue. [See the Contact instructions in the README file](README.md#contact-telephone_receiver).
+
+<!--TODO:
+Review relevant files in all SciTools[-incubator/classroom] repos (e.g. README files) to see if anything falls below this standard.
+We are required to include:
+- which parts of the 'website' do not meet accessibility standards and why
+- a timeline to make content accessible
+-->
