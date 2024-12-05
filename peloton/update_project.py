@@ -930,17 +930,15 @@ class PaginatedMutation(abc.ABC):
             self._add_selector(mutation=mutation, index=ix)
 
         # Handle unpredictable GitHub timeouts.
-        attempts = 0
         result = None
         exception = None
-        while attempts < 5:
+        for attempts in range(5):
             try:
                 result = run_operation(mutation)
                 break
             except Exception as exc:
                 exception = exc
 
-            attempts += 1
             sleep(5)
 
         if result is not None:
