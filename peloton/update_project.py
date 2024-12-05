@@ -928,10 +928,29 @@ class PaginatedMutation(abc.ABC):
         mutation = sgqlc.operation.Operation(github_schema_root.mutation_type)
         for ix in self._indexes[page_slice]:
             self._add_selector(mutation=mutation, index=ix)
-        result = run_operation(mutation)
-        # Fields are accessed from mutation results via their keys.
-        payloads = [result[a] for a in self._aliases[page_slice]]
-        return payloads
+
+        # Handle unpredictable GitHub timeouts.
+        result = None
+        exception = None
+        for attempts in range(5):
+            try:
+                result = run_operation(mutation)
+                break
+            except Exception as exc:
+                exception = exc
+
+            sleep(5)
+
+        if result is not None:
+            # Fields are accessed from mutation results via their keys.
+            payloads = [result[a] for a in self._aliases[page_slice]]
+            return payloads
+        elif exception is not None:
+            raise exception
+        else:
+            message = "Unexpected: mutation returned no result and no exception."
+            raise RuntimeError(message)
+
 
     def _get_data_from_sub_mutations(self, payloads: list[list]) -> list | None:
         """
