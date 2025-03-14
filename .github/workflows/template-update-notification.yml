@@ -53,7 +53,7 @@ jobs:
     needs: check-diff
     strategy:
       matrix:
-        repo: ["iris", "iris-esmf-regrid", "iris-grib", "python-stratify", "tephi"]
+        repo: ["cf-units", "iris", "iris-esmf-regrid", "iris-grib", "nc-time-axis", "python-stratify", "tephi"]
 
     steps:
     - name: Generate Token
