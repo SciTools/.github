@@ -81,6 +81,6 @@ jobs:
           ${{ env.DIFF }}
           ```
       env:
-        GITHUB_TOKEN: ${{ secrets.Template_Token }}
+        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
         FILE: ${{ needs.check-diff.outputs.file }}
         DIFF: ${{ needs.check-diff.outputs.diff }}
