@@ -1,0 +1,86 @@
+name: Check diff between latest commits and create an issue if the is a difference.
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - templates/**
+
+  workflow_dispatch:
+
+jobs:
+
+  check-diff:
+    runs-on: ubuntu-latest
+
+    outputs:
+      diff: ${{ steps.get-diff.outputs.diff }}
+      file: ${{ steps.find-changes.outputs.file_changed }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Find file changed
+      id: find-changes
+      run: |
+        git fetch origin main
+        echo file_changed=$(git diff --name-only HEAD^ HEAD | grep '^templates/') >> $GITHUB_OUTPUT
+
+    - name: Get diff between commits
+      id: get-diff
+      run: |
+        git fetch origin main
+        COMMIT1=$(git rev-parse HEAD)
+        COMMIT2=$(git rev-parse HEAD^)
+        DIFF=$(git diff $COMMIT2 $COMMIT1 -- templates/$file_changed templates/$file_changed)
+        echo "diff<<EOF" >> $GITHUB_OUTPUT
+        echo "$DIFF" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create_issues:
+    runs-on: ubuntu-latest
+    needs: check-diff
+    strategy:
+      matrix:
+        repo: ["iris", "iris-esmf-regrid", "iris-grib", "python-stratify", "tephi"]
+
+    steps:
+    - name: Generate Token
+      id: generate_token
+      uses: tibdex/github-app-token@v1
+      with:
+        app_id: ${{ secrets.AUTH_APP_ID }}
+        private_key: ${{ secrets.AUTH_APP_PRIVATE_KEY }}
+
+    - name: Create GitHub Issues
+      uses: octokit/request-action@v2.x
+      with:
+        route: POST /repos/{owner}/{repo}/issues
+        owner: SciTools
+        repo: ${{ matrix.repo }}
+        title: "The Template for ${{ env.FILE }} has been updated"
+        body: |
+          |
+          The template for `${{ env.FILE }}` has been updated.
+          
+          Consider adopting these changes into the repo, the changes can be found below.
+          
+          The diff between the specified file is as follows.
+          ```diff
+          ${{ env.DIFF }}
+          ```
+      env:
+        GITHUB_TOKEN: ${{ secrets.Template_Token }}
+        FILE: ${{ needs.check-diff.outputs.file }}
+        DIFF: ${{ needs.check-diff.outputs.diff }}
