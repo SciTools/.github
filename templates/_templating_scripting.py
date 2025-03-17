@@ -1,3 +1,5 @@
+"""Commands and scripts for administrating templating of files across SciTools repos.
+"""
 #!/usr/bin/env python3
 
 import argparse
