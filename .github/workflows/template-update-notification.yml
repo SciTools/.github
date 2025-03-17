@@ -58,13 +58,13 @@ jobs:
     steps:
     - name: Generate Token
       id: generate_token
-      uses: tibdex/github-app-token@v1
+      uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a
       with:
         app_id: ${{ secrets.AUTH_APP_ID }}
         private_key: ${{ secrets.AUTH_APP_PRIVATE_KEY }}
 
     - name: Create GitHub Issues
-      uses: octokit/request-action@v2.x
+      uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d
       with:
         route: POST /repos/{owner}/{repo}/issues
         owner: SciTools
