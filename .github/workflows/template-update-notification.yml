@@ -20,20 +20,15 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.x'
 
     - name: Find file changed
       id: find-changes
       run: |
         git fetch origin main
-        echo file_changed=$(git diff --name-only HEAD^ HEAD | grep '^templates/') >> $GITHUB_OUTPUT
+        echo file_changed=$(git diff --name-only HEAD^ HEAD | grep '^templates/' | sed -r 's|templates/||') >> $GITHUB_OUTPUT
 
     - name: Get diff between commits
       id: get-diff
