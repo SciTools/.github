@@ -18,7 +18,7 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
       with:
-        # For HEAD^2
+        # Needed for HEAD^1
         fetch-depth: 2
 
     - name: Generate Token

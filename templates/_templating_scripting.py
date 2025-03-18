@@ -23,7 +23,7 @@ assert TEMPLATES_DIR.is_dir()
 
 class Config:
     """Convenience to give the config JSON some readable structure."""
-    class Templatee(NamedTuple):
+    class TargetRepo(NamedTuple):
         repo: str
         path_in_repo: Path
 
@@ -31,16 +31,16 @@ class Config:
         with (TEMPLATES_DIR / "_templating_config.json").open() as file_read:
             config = json.load(file_read)
 
-        self.templates: dict[Path, list[Config.Templatee]] = {}
+        self.templates: dict[Path, list[Config.TargetRepo]] = {}
 
-        for _template, _templatees in config.items():
+        for _template, _target_repos in config.items():
             template = TEMPLATES_DIR / _template
             assert template.is_file()
-            templatees = [
-                Config.Templatee(repo=repo, path_in_repo=Path(file_path))
-                for repo, file_path in _templatees.items()
+            target_repos = [
+                Config.TargetRepo(repo=repo, path_in_repo=Path(file_path))
+                for repo, file_path in _target_repos.items()
             ]
-            self.templates[template] = templatees
+            self.templates[template] = target_repos
 
 
 CONFIG = Config()
