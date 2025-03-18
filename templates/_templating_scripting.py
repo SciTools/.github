@@ -1,7 +1,6 @@
+#!/usr/bin/env python3
 """Commands and scripts for administrating templating of files across SciTools repos.
 """
-#!/usr/bin/env python3
-
 import argparse
 import json
 from pathlib import Path
