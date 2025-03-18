@@ -1,0 +1,13 @@
+{
+  "_templating_config.json": {},
+  "_templating_scripting.py": {},
+  ".pre-commit-config.yaml": {
+    "cf-units": ".pre-commit-config.yaml",
+    "iris": ".pre-commit-config.yaml",
+    "iris-esmf-regrid": ".pre-commit-config.yaml",
+    "iris-grib": ".pre-commit-config.yaml",
+    "nc-time-axis": ".pre-commit-config.yaml",
+    "python-stratify": ".pre-commit-config.yaml",
+    "tephi": ".pre-commit-config.yaml"
+  }
+}
