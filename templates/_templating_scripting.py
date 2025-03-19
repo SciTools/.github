@@ -155,7 +155,8 @@ def prompt_share() -> None:
                 "gh issue create "
                 f'--title "{title}" '
                 f"--body-file {file_write.name} "
-                "--repo SciTools/.github"
+                "--repo SciTools/.github "
+                f"--assignee {author}"
             )
             run(gh_command, check=True)
 
