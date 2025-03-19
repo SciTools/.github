@@ -9,12 +9,5 @@
     "nc-time-axis": ".pre-commit-config.yaml",
     "python-stratify": ".pre-commit-config.yaml",
     "tephi": ".pre-commit-config.yaml"
-  },
-  "test_1.py": {
-    "python-stratify": "test_1.py",
-    "tephi": "test_1.py"
-  },
-  "test_2.py": {
-    "tephi": "test_2.py"
   }
 }
