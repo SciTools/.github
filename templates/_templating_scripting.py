@@ -8,16 +8,17 @@ import shlex
 from subprocess import CalledProcessError, check_output, run
 from tempfile import NamedTemporaryFile
 from typing import NamedTuple
+from urllib.parse import urlparse
+
+
+SCITOOLS_URL = "https://github.com/SciTools"
+TEMPLATES_DIR = Path(__file__).parent.resolve()
+TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
 
 
 def git_command(command: str) -> str:
     command = shlex.split(f"git {command}")
     return check_output(command).decode("utf-8").strip()
-
-
-GIT_ROOT = Path(git_command("rev-parse --show-toplevel")).resolve()
-TEMPLATES_DIR = GIT_ROOT / "templates"
-assert TEMPLATES_DIR.is_dir()
 
 
 class Config:
@@ -41,32 +42,50 @@ class Config:
             ]
             self.templates[template] = target_repos
 
+    def find_template(self, repo: str, path_in_repo: Path) -> Path | None:
+        flattened = [
+            (template, target_repo.repo, target_repo.path_in_repo)
+            for template, target_repos in self.templates.items()
+            for target_repo in target_repos
+        ]
+        matches = [
+            template
+            for template, target_repo, target_path in flattened
+            if target_repo == repo and target_path == path_in_repo
+        ]
+        # Assumption: any given file in a given repo will only be
+        #  governed by a single template.
+        assert len(matches) <= 1
+        return matches[0] if matches else None
+
 
 CONFIG = Config()
 
 
 def notify_updates() -> None:
-    # Create issues on repos that use templates that have been updated.
+    """Create issues on repos that use templates that have been updated.
+
+    This function is intended for running on the .github repo.
+    """
     def git_diff(*args: str) -> str:
         command = "diff HEAD^ HEAD " + " ".join(args)
         return git_command(command)
 
+    git_root = Path(git_command("rev-parse --show-toplevel")).resolve()
     diff_output = git_diff("--name-only")
-    changed_files = [GIT_ROOT / line for line in diff_output.splitlines()]
+    changed_files = [git_root / line for line in diff_output.splitlines()]
     changed_templates = [
         file for file in changed_files if file.is_relative_to(TEMPLATES_DIR)
     ]
-
-    scitools_url = "https://github.com/SciTools"
 
     for template in changed_templates:
         templatees = CONFIG.templates[template]
 
         diff = git_diff("--", str(template))
         issue_title = f"The Template for `{template.name}` has been updated"
-        template_relative = template.relative_to(GIT_ROOT)
+        template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
         template_url = (
-            f"{scitools_url}/.github/blob/main/{template_relative}"
+            f"{SCITOOLS_URL}/.github/blob/main/{template_relative}"
         )
         template_link = f"[`{template_relative}`]({template_url})"
         issue_body = (
@@ -78,7 +97,7 @@ def notify_updates() -> None:
             f"```diff\n{diff}\n```"
         )
         for repo, path_in_repo in templatees:
-            file_url = f"{scitools_url}/{repo}/blob/main/{path_in_repo}"
+            file_url = f"{SCITOOLS_URL}/{repo}/blob/main/{path_in_repo}"
             file_link = f"[`{path_in_repo}`]({file_url})"
             with NamedTemporaryFile("w") as file_write:
                 file_write.write(issue_body.format(file_link=file_link))
@@ -103,22 +122,131 @@ def notify_updates() -> None:
                         run(gh_command, check=True)
 
 
+def prompt_share() -> None:
+    """Make a PR author aware that they are modifying a templated file.
+
+    This function is intended for running on a 'target repo'.
+    """
+    def gh_json(sub_command: str, field: str) -> dict:
+        command = shlex.split(f"gh {sub_command} --json {field}")
+        return json.loads(check_output(command))
+
+    pr_url = urlparse(gh_json("pr view", "url")["url"])
+    _, org, repo, pull, pr_number = pr_url.path.split("/")
+    pr_short_name = f"{org}/{repo}#{pr_number}"
+
+    author = gh_json("pr view", "author")["author"]["login"]
+
+    changed_files = gh_json("pr view", "files")["files"]
+    changed_paths = [Path(file["path"]) for file in changed_files]
+
+    def issue_exists(title: str) -> bool:
+        # Check that an issue with this title isn't already on the .github repo.
+        existing_issues = gh_json(
+            "issue list --state all --repo SciTools/.github", "title"
+        )
+        return any(issue["title"] == title for issue in existing_issues)
+
+    def create_issue(title: str, body: str) -> None:
+        with NamedTemporaryFile("w") as file_write:
+            file_write.write(body)
+            file_write.flush()
+            gh_command = shlex.split(
+                "gh issue create "
+                f'--title "{title}" '
+                f"--body-file {file_write.name} "
+                "--repo SciTools/.github"
+            )
+            run(gh_command, check=True)
+
+    for changed_path in changed_paths:
+        template = CONFIG.find_template(repo, changed_path)
+        is_templated = template is not None
+        if is_templated:
+            template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
+            template_url = (
+                f"{SCITOOLS_URL}/.github/blob/main/{template_relative}"
+            )
+            template_link = f"[`{template_relative}`]({template_url})"
+
+            issue_title = (
+                f"Apply {pr_short_name} `{changed_path}` improvements to "
+                f"`{template_relative}`?"
+            )
+            if issue_exists(issue_title):
+                continue
+
+            issue_body = (
+                f"{pr_short_name} (by {author}) includes changes to "
+                f"`{changed_path}`. This file is templated by {template_link}. "
+                "Please either:\n\n"
+                "- Action this issue with a pull request applying the changes "
+                f"to {template_link}.\n"
+                "- Close this issue if the changes are not suitable for "
+                "templating."
+            )
+            create_issue(issue_title, issue_body)
+        else:
+            # Check if the file is in 'highly templated' locations. If so, worth
+            #  prompting the user anyway.
+
+            # Remember: this is running in the context of a 'target repo', NOT
+            #  the .github repo (where the templates live).
+            git_root = Path(git_command("rev-parse --show-toplevel")).resolve()
+            changed_parent = changed_path.parent.resolve()
+            if changed_parent in (
+                git_root,
+                git_root / "benchmarks",
+                git_root / "docs" / "src",
+            ):
+                issue_title = (
+                    f"Share {pr_short_name} `{changed_path}` improvements via "
+                    f"templating?"
+                )
+                if issue_exists(issue_title):
+                    continue
+
+                templates_relative = TEMPLATES_DIR.relative_to(TEMPLATE_REPO_ROOT)
+                templates_url = f"{SCITOOLS_URL}/.github/tree/main/{templates_relative}"
+                templates_link = f"[`{templates_relative}/`]({templates_url})"
+                issue_body = (
+                    f"{pr_short_name} (by {author}) includes changes to "
+                    f"`{changed_path}`. This file is not currently templated, "
+                    "but its parent directory suggests it may be a good "
+                    "candidate. Please either:\n\n"
+                    "- Action this issue with a pull request adding a template "
+                    f"file to {templates_link}.\n"
+                    "- Close this issue if the file is not a good candidate "
+                    "for templating."
+                )
+                create_issue(issue_title, issue_body)
+            else:
+                continue
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="TemplatingScripting",
         description="Commands for administrating templating of files across SciTools repos."
     )
     subparsers = parser.add_subparsers(required=True)
+
     notify = subparsers.add_parser(
         "notify-updates",
-        description="Create issues on repos that use templates that have been updated."
+        description="Create issues on repos that use templates that have been updated.",
+        epilog="This command is intended for running on the .github repo."
     )
     notify.set_defaults(func=notify_updates)
+
+    prompt = subparsers.add_parser(
+        "prompt-share",
+        description="Make a PR author aware that they are modifying a templated file.",
+        epilog="This command is intended for running on a 'target repo'."
+    )
+    prompt.set_defaults(func=prompt_share)
+
     # TODO: command to check templates/ dir aligns with _templating_config.json.
     #  Run this on PRs for the .github repo.
-    # TODO: command to make PR authors - on templatee repos - that they are
-    #  modifying a templated file.
-    #   Run this on PRs for the templatee repos.
 
     parsed = parser.parse_args()
     parsed.func()
