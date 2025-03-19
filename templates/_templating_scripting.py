@@ -120,6 +120,8 @@ def notify_updates() -> None:
                         labels_start = gh_command.index("--label")
                         gh_command = gh_command[:labels_start]
                         run(gh_command, check=True)
+                    else:
+                        raise
 
 
 def prompt_share() -> None:
