@@ -136,7 +136,7 @@ def prompt_share(args: argparse.Namespace) -> None:
     pr_number = args.pr_number
 
     def split_github_url(url: str) -> tuple[str, str, str]:
-        _, org, repo, _, _, ref = urlparse(url).path.split("/")
+        _, org, repo, _, ref = urlparse(url).path.split("/")
         return org, repo, ref
 
     def url_to_short_ref(url: str) -> str:
