@@ -89,7 +89,7 @@ def notify_updates(args: argparse.Namespace) -> None:
             f"The template for `{template.relative_to(TEMPLATES_DIR)}` "
             "has been updated"
         )
-        template_relative = template.relative_to(GIT_ROOT)
+        template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
         template_url = (
             f"{SCITOOLS_URL}/.github/blob/main/{template_relative}"
         )
