@@ -85,25 +85,29 @@ def notify_updates(args: argparse.Namespace) -> None:
         templatees = CONFIG.templates[template]
 
         diff = git_diff("--", str(template))
-        issue_title = f"The template for `{template.name}` has been updated"
-        template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
+        issue_title = (
+            f"The template for `{template.relative_to(TEMPLATES_DIR)}` "
+            "has been updated"
+        )
+        template_relative = template.relative_to(GIT_ROOT)
         template_url = (
             f"{SCITOOLS_URL}/.github/blob/main/{template_relative}"
         )
         template_link = f"[`{template_relative}`]({template_url})"
-        issue_body = (
-            "The template for {file_link} has been updated.\n\n"
-            "Consider adopting these changes into the repo; "
-            "the changes can be found below.\n\n"
-            f"The template file can be found in the **.github** repo: {template_link}\n\n"
-            "The diff between the specified file is as follows:\n\n"
-            f"```diff\n{diff}\n```"
-        )
         for repo, path_in_repo in templatees:
             file_url = f"{SCITOOLS_URL}/{repo}/blob/main/{path_in_repo}"
             file_link = f"[`{path_in_repo}`]({file_url})"
+            issue_body = (
+                f"The template for {file_link} has been updated.\n\n"
+                "Consider adopting these changes into the repo; "
+                "the changes can be found below.\n\n"
+                "The template file can be found in the **.github** repo: "
+                f"{template_link}\n\n"
+                "The diff between the specified file is as follows:\n\n"
+                f"```diff\n{diff}\n```"
+            )
             with NamedTemporaryFile("w") as file_write:
-                file_write.write(issue_body.format(file_link=file_link))
+                file_write.write(issue_body)
                 file_write.flush()
                 gh_command = shlex.split(
                     "gh issue create "
