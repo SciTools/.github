@@ -62,11 +62,14 @@ class Config:
 CONFIG = Config()
 
 
-def notify_updates() -> None:
+def notify_updates(args: argparse.Namespace) -> None:
     """Create issues on repos that use templates that have been updated.
 
     This function is intended for running on the .github repo.
     """
+    # Always passed (by common code), but never used in this routine.
+    _ = args
+
     def git_diff(*args: str) -> str:
         command = "diff HEAD^ HEAD " + " ".join(args)
         return git_command(command)
