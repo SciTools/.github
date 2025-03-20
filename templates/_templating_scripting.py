@@ -69,19 +69,20 @@ def notify_updates() -> None:
             f"{scitools_url}/.github/blob/main/{template_relative}"
         )
         template_link = f"[`{template_relative}`]({template_url})"
-        issue_body = (
-            "The template for {file_link} has been updated.\n\n"
-            "Consider adopting these changes into the repo; "
-            "the changes can be found below.\n\n"
-            f"The template file can be found in the **.github** repo: {template_link}\n\n"
-            "The diff between the specified file is as follows:\n\n"
-            f"```diff\n{diff}\n```"
-        )
         for repo, path_in_repo in templatees:
             file_url = f"{scitools_url}/{repo}/blob/main/{path_in_repo}"
             file_link = f"[`{path_in_repo}`]({file_url})"
+            issue_body = (
+                f"The template for {file_link} has been updated.\n\n"
+                "Consider adopting these changes into the repo; "
+                "the changes can be found below.\n\n"
+                "The template file can be found in the **.github** repo: "
+                f"{template_link}\n\n"
+                "The diff between the specified file is as follows:\n\n"
+                f"```diff\n{diff}\n```"
+            )
             with NamedTemporaryFile("w") as file_write:
-                file_write.write(issue_body.format(file_link=file_link))
+                file_write.write(issue_body)
                 file_write.flush()
                 gh_command = shlex.split(
                     "gh issue create "
