@@ -163,16 +163,14 @@ def prompt_share(args: argparse.Namespace) -> None:
         with NamedTemporaryFile("w") as file_write:
             file_write.write(body)
             file_write.flush()
-            issue_url = gh_json(
-                (
-                    "issue create "
-                    f'--title "{title}" '
-                    f"--body-file {file_write.name} "
-                    "--repo SciTools/.github "
-                    f"--assignee {author}"
-                ),
-                "url",
-            )["url"]
+            gh_command = shlex.split(
+                "gh issue create "
+                f'--title "{title}" '
+                f"--body-file {file_write.name} "
+                "--repo SciTools/.github "
+                f"--assignee {author}"
+            )
+            issue_url = check_output(gh_command).decode("utf-8").strip()
         short_ref = url_to_short_ref(issue_url)
         review_body = f"Please see {short_ref}"
         gh_command = shlex.split(
