@@ -9,5 +9,17 @@
     "nc-time-axis": ".pre-commit-config.yaml",
     "python-stratify": ".pre-commit-config.yaml",
     "tephi": ".pre-commit-config.yaml"
+  },
+  "benchmarks/custom_bms/install.py": {
+    "iris": "benchmarks/custom_bms/install.py",
+    "iris-esmf-regrid": "benchmarks/custom_bms/install.py"
+  },
+  "benchmarks/custom_bms/tracemallocbench.py": {
+    "iris": "benchmarks/custom_bms/tracemallocbench.py",
+    "iris-esmf-regrid": "benchmarks/custom_bms/tracemallocbench.py"
+  },
+  "benchmarks/custom_bms/README.md": {
+    "iris": "benchmarks/custom_bms/README.md",
+    "iris-esmf-regrid": "benchmarks/custom_bms/README.md"
   }
 }
