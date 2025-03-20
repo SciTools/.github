@@ -135,37 +135,53 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     pr_number = args.pr_number
 
-    pr_url = urlparse(gh_json(f"pr view {pr_number}", "url")["url"])
-    _, org, repo, pull, _ = pr_url.path.split("/")
-    pr_short_name = f"{org}/{repo}#{pr_number}"
+    def split_github_url(url: str) -> tuple[str, str, str]:
+        _, org, repo, _, _, ref = urlparse(url).path.split("/")
+        return org, repo, ref
+
+    def url_to_short_ref(url: str) -> str:
+        org, repo, ref = split_github_url(url)
+        return f"{org}/{repo}#{ref}"
+
+    pr_url = gh_json(f"pr view {pr_number}", "url")["url"]
+    pr_short_ref = url_to_short_ref(pr_url)
+    pr_repo = split_github_url(pr_url)[1]
 
     author = gh_json(f"pr view {pr_number}", "author")["author"]["login"]
 
     changed_files = gh_json(f"pr view {pr_number}", "files")["files"]
     changed_paths = [Path(file["path"]) for file in changed_files]
 
-    def issue_exists(title: str) -> bool:
+    def create_issue(title: str, body: str) -> None:
         # Check that an issue with this title isn't already on the .github repo.
         existing_issues = gh_json(
             "issue list --state all --repo SciTools/.github", "title"
         )
-        return any(issue["title"] == title for issue in existing_issues)
+        if any(issue["title"] == title for issue in existing_issues):
+            return
 
-    def create_issue(title: str, body: str) -> None:
         with NamedTemporaryFile("w") as file_write:
             file_write.write(body)
             file_write.flush()
-            gh_command = shlex.split(
-                "gh issue create "
-                f'--title "{title}" '
-                f"--body-file {file_write.name} "
-                "--repo SciTools/.github "
-                f"--assignee {author}"
-            )
-            run(gh_command, check=True)
+            issue_url = gh_json(
+                (
+                    "issue create "
+                    f"--title {title} "
+                    f"--body-file {file_write.name} "
+                    "--repo SciTools/.github "
+                    f"--assignee {author}"
+                ),
+                "url",
+            )["url"]
+        short_ref = url_to_short_ref(issue_url)
+        review_body = f"Please action {short_ref}"
+        gh_command = shlex.split(
+            f'gh pr review {pr_number} --request-changes --body "{review_body}"'
+        )
+        run(gh_command, check=True)
 
     for changed_path in changed_paths:
-        template = CONFIG.find_template(repo, changed_path)
+        template = CONFIG.find_template(pr_repo, changed_path)
         is_templated = template is not None
         if is_templated:
             template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
@@ -175,14 +191,12 @@ def prompt_share(args: argparse.Namespace) -> None:
             template_link = f"[`{template_relative}`]({template_url})"
 
             issue_title = (
-                f"Apply {pr_short_name} `{changed_path}` improvements to "
+                f"Apply {pr_short_ref} `{changed_path}` improvements to "
                 f"`{template_relative}`?"
             )
-            if issue_exists(issue_title):
-                continue
 
             issue_body = (
-                f"{pr_short_name} (by @{author}) includes changes to "
+                f"{pr_short_ref} (by @{author}) includes changes to "
                 f"`{changed_path}`. This file is templated by {template_link}. "
                 "Please either:\n\n"
                 "- Action this issue with a pull request applying the changes "
@@ -205,17 +219,15 @@ def prompt_share(args: argparse.Namespace) -> None:
                 git_root / "docs" / "src",
             ):
                 issue_title = (
-                    f"Share {pr_short_name} `{changed_path}` improvements via "
+                    f"Share {pr_short_ref} `{changed_path}` improvements via "
                     f"templating?"
                 )
-                if issue_exists(issue_title):
-                    continue
 
                 templates_relative = TEMPLATES_DIR.relative_to(TEMPLATE_REPO_ROOT)
                 templates_url = f"{SCITOOLS_URL}/.github/tree/main/{templates_relative}"
                 templates_link = f"[`{templates_relative}/`]({templates_url})"
                 issue_body = (
-                    f"{pr_short_name} (by @{author}) includes changes to "
+                    f"{pr_short_ref} (by @{author}) includes changes to "
                     f"`{changed_path}`. This file is not currently templated, "
                     "but its parent directory suggests it may be a good "
                     "candidate. Please either:\n\n"
