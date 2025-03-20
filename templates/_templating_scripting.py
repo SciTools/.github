@@ -63,7 +63,10 @@ def notify_updates() -> None:
         templatees = CONFIG.templates[template]
 
         diff = git_diff("--", str(template))
-        issue_title = f"The Template for `{template.name}` has been updated"
+        issue_title = (
+            f"The Template for `{template.relative_to(TEMPLATES_DIR)}` "
+            "has been updated"
+        )
         template_relative = template.relative_to(GIT_ROOT)
         template_url = (
             f"{scitools_url}/.github/blob/main/{template_relative}"
