@@ -85,7 +85,7 @@ def notify_updates(args: argparse.Namespace) -> None:
         templatees = CONFIG.templates[template]
 
         diff = git_diff("--", str(template))
-        issue_title = f"The Template for `{template.name}` has been updated"
+        issue_title = f"The template for `{template.name}` has been updated"
         template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
         template_url = (
             f"{SCITOOLS_URL}/.github/blob/main/{template_relative}"
@@ -264,7 +264,7 @@ def main() -> None:
     prompt.add_argument(
         "pr_number",
         type=int,
-        help="The number of the PR to prompt the author of."
+        help="The number of the PR with content that might deserve templating."
     )
     prompt.set_defaults(func=prompt_share)
 
