@@ -174,7 +174,7 @@ def prompt_share(args: argparse.Namespace) -> None:
                 "url",
             )["url"]
         short_ref = url_to_short_ref(issue_url)
-        review_body = f"Please action {short_ref}"
+        review_body = f"Please see {short_ref}"
         gh_command = shlex.split(
             f'gh pr review {pr_number} --request-changes --body "{review_body}"'
         )
