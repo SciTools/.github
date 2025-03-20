@@ -166,7 +166,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             issue_url = gh_json(
                 (
                     "issue create "
-                    f"--title {title} "
+                    f'--title "{title}" '
                     f"--body-file {file_write.name} "
                     "--repo SciTools/.github "
                     f"--assignee {author}"
