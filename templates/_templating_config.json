@@ -8,7 +8,9 @@
     "iris-grib": ".pre-commit-config.yaml",
     "nc-time-axis": ".pre-commit-config.yaml",
     "python-stratify": ".pre-commit-config.yaml",
-    "tephi": ".pre-commit-config.yaml"
+    "tephi": ".pre-commit-config.yaml",
+    "workflows": ".pre-commit-config.yaml",
+    "test-iris-imagehash": ".pre-commit-config.yaml"
   },
   "benchmarks/custom_bms/install.py": {
     "iris": "benchmarks/custom_bms/install.py",
