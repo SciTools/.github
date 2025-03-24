@@ -159,6 +159,37 @@ def prompt_share(args: argparse.Namespace) -> None:
     changed_files = gh_json(f"pr view {pr_number}", "files")["files"]
     changed_paths = [Path(file["path"]) for file in changed_files]
 
+    def get_all_authors() -> set[str]:
+        """Get all the authors of all the commits in the PR."""
+        commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
+
+        def get_commit_authors(commit_json: dict) -> list[str]:
+            return [a["login"] for a in commit_json["authors"]]
+
+        return set(
+            commit_author
+            for commit in commits
+            for commit_author in get_commit_authors(commit)
+        )
+
+    if get_all_authors() - {"dependabot[bot]", "pre-commit-ci[bot]"} == set():
+        review_body = (
+            f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
+            "Version numbers are not typically covered by templating. It is "
+            "expected that this PR is 100% about advancing version numbers, "
+            "which would not require any templating follow-up. **Please double-"
+            "check for any other changes that might be suitable for "
+            "templating**."
+        )
+        with NamedTemporaryFile("w") as file_write:
+            file_write.write(review_body)
+            file_write.flush()
+            gh_command = shlex.split(
+                f"gh pr review {pr_number} --comment --body-file {file_write.name}"
+            )
+            run(gh_command, check=True)
+        return
+
     def create_issue(title: str, body: str) -> None:
         # Check that an issue with this title isn't already on the .github repo.
         existing_issues = gh_json(
