@@ -98,12 +98,23 @@ def notify_updates(args: argparse.Namespace) -> None:
             file_url = f"{SCITOOLS_URL}/{repo}/blob/main/{path_in_repo}"
             file_link = f"[`{path_in_repo}`]({file_url})"
             issue_body = (
-                f"The template for {file_link} has been updated.\n\n"
-                "Consider adopting these changes into the repo; "
-                "the changes can be found below.\n\n"
-                "The template file can be found in the **.github** repo: "
-                f"{template_link}\n\n"
-                "The diff between the specified file is as follows:\n\n"
+                f"The template for `{path_in_repo}` has been updated; see the "
+                "diff below. Please either:\n\n"
+                
+                "- Action this issue with a pull request applying some/all of "
+                f"these changes to `{path_in_repo}`.\n"
+                "- Close this issue if _none_ of these changes are appropriate "
+                "for this repo.\n\n"
+                "Also consider reviewing a full diff between the template and "
+                f"`{path_in_repo}`, in case other valuable shared conventions "
+                f"have previously been missed.\n\n"
+
+                "## File Links\n\n"
+                f"- The file in this repo: {file_link}\n"
+                f"- The template file in the **.github** repo: {template_link}\n\n"
+                # TODO: a link to the whole diff compared to the template?
+
+                "## Diff\n\n"
                 f"```diff\n{diff}\n```"
             )
             with NamedTemporaryFile("w") as file_write:
