@@ -40,6 +40,10 @@ scripts.
 - Files that are useful to have in a consistent format, e.g. 
 `.pre-commit-config.yaml`.
 
+Files DO NOT need to be identical - they are human-readable not 
+machine-readable, so can include whatever placeholders / optional content is
+considered appropriate.
+
 ## Please contribute!
 
 This directory needs to grow. Any files you can think to template will be a 
