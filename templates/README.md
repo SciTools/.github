@@ -25,7 +25,7 @@ comments. It is called by two GitHub Actions workflows:
 
 - [`template-update-notification.yml`](../.github/workflows/template-update-notification.yml)
 uses the `notify_updates()` function to raise issues on all relevant
-repositories when a template is updated.
+repositories when a template is updated, or a new one created.
 - [SciTools/workflows `ci-template-check.yml`](https://github.com/SciTools/workflows/blob/main/.github/workflows/ci-template-check.yml)
 uses the `prompt_share()` function to remind repository developers if they are
 modifying a templated file and should consider sharing the change.
