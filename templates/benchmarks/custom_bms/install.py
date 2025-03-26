@@ -17,17 +17,17 @@ this_dir = Path(__file__).parent
 
 
 def package_files(new_dir: Path) -> None:
-    """Package REPONAME's custom benchmarks for detection by ASV.
+    """Package SciTools' custom benchmarks for detection by ASV.
 
     Parameters
     ----------
     new_dir : Path
         The directory to package the custom benchmarks in.
     """
-    asv_bench_REPONAME = new_dir / "asv_bench_REPONAME"
-    benchmarks = asv_bench_REPONAME / "benchmarks"
+    asv_bench_scitools = new_dir / "asv_bench_scitools"
+    benchmarks = asv_bench_scitools / "benchmarks"
     benchmarks.mkdir(parents=True)
-    (asv_bench_REPONAME / "__init__.py").touch()
+    (asv_bench_scitools / "__init__.py").touch()
 
     for py_file in this_dir.glob("*.py"):
         if py_file != Path(__file__):
@@ -39,7 +39,7 @@ def package_files(new_dir: Path) -> None:
     py_project.write_text(
         """
         [project]
-        name = "asv_bench_REPONAME"
+        name = "asv_bench_scitools"
         version = "0.1"
         """
     )
