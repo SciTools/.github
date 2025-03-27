@@ -1,7 +1,6 @@
 {
   "_templating_config.json": {},
   "_templating_scripting.py": {},
-  "non-existing-template.py": {},
   ".pre-commit-config.yaml": {
     "cf-units": ".pre-commit-config.yaml",
     "iris": ".pre-commit-config.yaml",
