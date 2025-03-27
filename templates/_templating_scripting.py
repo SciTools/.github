@@ -35,7 +35,7 @@ class Config:
 
         for _template, _target_repos in config.items():
             template = TEMPLATES_DIR / _template
-            assert template.is_file()
+            assert template.is_file(), f"{template} does not exist."
             target_repos = [
                 Config.TargetRepo(repo=repo, path_in_repo=Path(file_path))
                 for repo, file_path in _target_repos.items()
