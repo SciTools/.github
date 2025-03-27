@@ -159,6 +159,37 @@ def prompt_share(args: argparse.Namespace) -> None:
     changed_files = gh_json(f"pr view {pr_number}", "files")["files"]
     changed_paths = [Path(file["path"]) for file in changed_files]
 
+    def get_all_authors() -> set[str]:
+        """Get all the authors of all the commits in the PR."""
+        commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
+
+        def get_commit_authors(commit_json: dict) -> list[str]:
+            return [a["login"] for a in commit_json["authors"]]
+
+        return set(
+            commit_author
+            for commit in commits
+            for commit_author in get_commit_authors(commit)
+        )
+
+    if get_all_authors() - {"dependabot[bot]", "pre-commit-ci[bot]"} == set():
+        review_body = (
+            f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
+            "Version numbers are not typically covered by templating. It is "
+            "expected that this PR is 100% about advancing version numbers, "
+            "which would not require any templating follow-up. **Please double-"
+            "check for any other changes that might be suitable for "
+            "templating**."
+        )
+        with NamedTemporaryFile("w") as file_write:
+            file_write.write(review_body)
+            file_write.flush()
+            gh_command = shlex.split(
+                f"gh pr review {pr_number} --comment --body-file {file_write.name}"
+            )
+            run(gh_command, check=True)
+        return
+
     def create_issue(title: str, body: str) -> None:
         # Check that an issue with this title isn't already on the .github repo.
         existing_issues = gh_json(
@@ -245,6 +276,34 @@ def prompt_share(args: argparse.Namespace) -> None:
             else:
                 continue
 
+def check_dir(args: argparse.Namespace) -> None:
+    """
+    x = get all changed file names in templates directory
+    y = dictionary from _templating_config.json
+    if x not in y:
+        request changes on the PR
+    """
+    def git_diff(*args: str) -> str:
+        command = "diff HEAD^ HEAD " + " ".join(args)
+        return git_command(command)
+
+    pr_number = args.pr_number
+
+    git_root = Path(git_command("rev-parse --show-toplevel")).resolve()
+    diff_output = git_diff("--name-only")
+    changed_files = [git_root / line for line in diff_output.splitlines()]
+    changed_templates = [
+        file for file in changed_files if file.is_relative_to(TEMPLATES_DIR)
+    ]
+    for template in changed_templates:
+        if template not in CONFIG.templates:
+            review_body = f"{template} is not found in _templating_config.json."
+            gh_command = shlex.split(
+                f'gh pr review {pr_number} --request-changes --body "{review_body}"'
+            )
+            run(gh_command, check=True)
+
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -272,8 +331,17 @@ def main() -> None:
     )
     prompt.set_defaults(func=prompt_share)
 
-    # TODO: command to check templates/ dir aligns with _templating_config.json.
-    #  Run this on PRs for the .github repo.
+    check = subparsers.add_parser(
+        "check_dir",
+        description="Check templates/ dir aligns with _templating_config.json.",
+        epilog="This command is intended for running on the .github repo."
+    )
+    prompt.add_argument(
+        "pr_number",
+        type=int,
+        help="The number of the PR with templates not placed in the config."
+    )
+    check.set_defaults(func=check_dir)
 
     parsed = parser.parse_args()
     parsed.func(parsed)
