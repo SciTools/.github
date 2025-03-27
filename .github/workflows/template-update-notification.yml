@@ -37,9 +37,3 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
       run: templates/_templating_scripting.py notify-updates
-
-    - name: Diff and Create GitHub Issues
-      id: check stuff
-      env:
-        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
-      run: templates/_templating_scripting.py check_dir
