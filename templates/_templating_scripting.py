@@ -282,7 +282,8 @@ def check_dir(args: argparse.Namespace) -> None:
 
     changed_templates = [Path(TEMPLATES_DIR, template_name) for template_name in TEMPLATES_DIR.rglob("*")]
     for template in changed_templates:
-        assert template in CONFIG.templates, f"{template} is not in _templating_config.json"
+        if template.is_file():
+            assert template in CONFIG.templates, f"{template} is not in _templating_config.json"
 
 
 def main() -> None:
