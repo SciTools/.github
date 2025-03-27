@@ -1,0 +1,28 @@
+name: Ensures template/ dir and config file are aligned.
+
+on:
+  pull_request:
+    paths:
+      - templates/**
+
+jobs:
+
+  notify-diff:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        # Needed for HEAD^1
+        fetch-depth: 2
+
+    - name: Set up Python
+      # templates/_templating_scripting.py only needs builtins to run.
+      uses: actions/setup-python@v5
+
+    - name: Check templates/ dir
+      id: check_dir
+      env:
+        GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+      run: templates/_templating_scripting.py check_dir ${{ inputs.pr_number }}

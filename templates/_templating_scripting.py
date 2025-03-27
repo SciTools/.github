@@ -250,9 +250,9 @@ def prompt_share(args: argparse.Namespace) -> None:
             git_root = Path(git_command("rev-parse --show-toplevel")).resolve()
             changed_parent = changed_path.parent.resolve()
             if changed_parent in (
-                git_root,
-                git_root / "benchmarks",
-                git_root / "docs" / "src",
+                    git_root,
+                    git_root / "benchmarks",
+                    git_root / "docs" / "src",
             ):
                 issue_title = (
                     f"Share {pr_short_ref} `{changed_path}` improvements via "
@@ -275,6 +275,14 @@ def prompt_share(args: argparse.Namespace) -> None:
                 create_issue(issue_title, issue_body)
             else:
                 continue
+
+
+def check_dir(args: argparse.Namespace) -> None:
+    # Ensures templates/ dir aligns with _templating_config.json.
+
+    changed_templates = [Path(TEMPLATES_DIR, template_name) for template_name in TEMPLATES_DIR.rglob("*")]
+    for template in changed_templates:
+        assert template in CONFIG.templates
 
 
 def main() -> None:
@@ -303,8 +311,12 @@ def main() -> None:
     )
     prompt.set_defaults(func=prompt_share)
 
-    # TODO: command to check templates/ dir aligns with _templating_config.json.
-    #  Run this on PRs for the .github repo.
+    check = subparsers.add_parser(
+        "check_dir",
+        description="Check templates/ dir aligns with _templating_config.json.",
+        epilog="This command is intended for running on the .github repo."
+    )
+    check.set_defaults(func=check_dir)
 
     parsed = parser.parse_args()
     parsed.func(parsed)
