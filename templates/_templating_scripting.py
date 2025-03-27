@@ -250,9 +250,9 @@ def prompt_share(args: argparse.Namespace) -> None:
             git_root = Path(git_command("rev-parse --show-toplevel")).resolve()
             changed_parent = changed_path.parent.resolve()
             if changed_parent in (
-                    git_root,
-                    git_root / "benchmarks",
-                    git_root / "docs" / "src",
+                git_root,
+                git_root / "benchmarks",
+                git_root / "docs" / "src",
             ):
                 issue_title = (
                     f"Share {pr_short_ref} `{changed_path}` improvements via "
@@ -278,10 +278,16 @@ def prompt_share(args: argparse.Namespace) -> None:
 
 
 def check_dir(args: argparse.Namespace) -> None:
-    # Ensures templates/ dir aligns with _templating_config.json.
+    """Ensures templates/ dir aligns with _templating_config.json.
 
-    changed_templates = [Path(TEMPLATES_DIR, template_name) for template_name in TEMPLATES_DIR.rglob("*")]
-    for template in changed_templates:
+    This function is intended for running on the .github repo.
+    """
+
+    # Always passed (by common code), but never used in this routine.
+    _ = args
+
+    templates = [Path(TEMPLATES_DIR, template_name) for template_name in TEMPLATES_DIR.rglob("*")]
+    for template in templates:
         if template.is_file():
             assert template in CONFIG.templates, f"{template} is not in _templating_config.json"
 
