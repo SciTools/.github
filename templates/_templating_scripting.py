@@ -233,7 +233,7 @@ def prompt_share(args: argparse.Namespace) -> None:
     for changed_path in changed_paths:
         template = CONFIG.find_template(pr_repo, changed_path)
         is_templated = template is not None
-        ignored = changed_path in ignore_dict(pr_repo)
+        ignored = changed_path in ignore_dict[pr_repo]
         if ignored:
             continue
         if is_templated:
