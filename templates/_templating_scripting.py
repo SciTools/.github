@@ -28,7 +28,7 @@ class Config:
         path_in_repo: Path
 
     def __init__(self):
-        with (TEMPLATES_DIR / "_templating_config.json").open() as file_read:
+        with (TEMPLATES_DIR / "_templating_include.json").open() as file_read:
             config = json.load(file_read)
 
         self.templates: dict[Path, list[Config.TargetRepo]] = {}
@@ -170,6 +170,9 @@ def prompt_share(args: argparse.Namespace) -> None:
     changed_files = gh_json(f"pr view {pr_number}", "files")["files"]
     changed_paths = [Path(file["path"]) for file in changed_files]
 
+    with (TEMPLATES_DIR / "_templating_exclude.json").open() as file_read:
+        ignore_dict = json.load(file_read)
+
     def get_all_authors() -> set[str]:
         """Get all the authors of all the commits in the PR."""
         commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
@@ -228,68 +231,70 @@ def prompt_share(args: argparse.Namespace) -> None:
         run(gh_command, check=True)
 
     for changed_path in changed_paths:
-        template = CONFIG.find_template(pr_repo, changed_path)
-        is_templated = template is not None
-        if is_templated:
-            template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
-            template_url = (
-                f"{SCITOOLS_URL}/.github/blob/main/{template_relative}"
-            )
-            template_link = f"[`{template_relative}`]({template_url})"
+        ignored = changed_path in ignore_dict(pr_repo)
+        if not ignored:
+            template = CONFIG.find_template(pr_repo, changed_path)
+            is_templated = template is not None
+            if is_templated:
+                template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
+                template_url = (
+                    f"{SCITOOLS_URL}/.github/blob/main/{template_relative}"
+                )
+                template_link = f"[`{template_relative}`]({template_url})"
 
-            issue_title = (
-                f"Apply {pr_short_ref} `{changed_path}` improvements to "
-                f"`{template_relative}`?"
-            )
-
-            issue_body = (
-                f"{pr_short_ref} (by @{author}) includes changes to "
-                f"`{changed_path}`. This file is templated by {template_link}. "
-                "Please either:\n\n"
-                "- Action this issue with a pull request applying the changes "
-                f"to {template_link}.\n"
-                "- Close this issue if the changes are not suitable for "
-                "templating."
-            )
-            create_issue(issue_title, issue_body)
-        else:
-            # Check if the file is in 'highly templated' locations. If so, worth
-            #  prompting the user anyway.
-
-            # Remember: this is running in the context of a 'target repo', NOT
-            #  the .github repo (where the templates live).
-            git_root = Path(git_command("rev-parse --show-toplevel")).resolve()
-            changed_parent = changed_path.parent.resolve()
-            if changed_parent in (
-                git_root,
-                git_root / "benchmarks",
-                git_root / "docs" / "src",
-            ):
                 issue_title = (
-                    f"Share {pr_short_ref} `{changed_path}` improvements via "
-                    f"templating?"
+                    f"Apply {pr_short_ref} `{changed_path}` improvements to "
+                    f"`{template_relative}`?"
                 )
 
-                templates_relative = TEMPLATES_DIR.relative_to(TEMPLATE_REPO_ROOT)
-                templates_url = f"{SCITOOLS_URL}/.github/tree/main/{templates_relative}"
-                templates_link = f"[`{templates_relative}/`]({templates_url})"
                 issue_body = (
                     f"{pr_short_ref} (by @{author}) includes changes to "
-                    f"`{changed_path}`. This file is not currently templated, "
-                    "but its parent directory suggests it may be a good "
-                    "candidate. Please either:\n\n"
-                    "- Action this issue with a pull request adding a template "
-                    f"file to {templates_link}.\n"
-                    "- Close this issue if the file is not a good candidate "
-                    "for templating."
+                    f"`{changed_path}`. This file is templated by {template_link}. "
+                    "Please either:\n\n"
+                    "- Action this issue with a pull request applying the changes "
+                    f"to {template_link}.\n"
+                    "- Close this issue if the changes are not suitable for "
+                    "templating."
                 )
                 create_issue(issue_title, issue_body)
             else:
-                continue
+                # Check if the file is in 'highly templated' locations. If so, worth
+                #  prompting the user anyway.
+
+                # Remember: this is running in the context of a 'target repo', NOT
+                #  the .github repo (where the templates live).
+                git_root = Path(git_command("rev-parse --show-toplevel")).resolve()
+                changed_parent = changed_path.parent.resolve()
+                if changed_parent in (
+                    git_root,
+                    git_root / "benchmarks",
+                    git_root / "docs" / "src",
+                ):
+                    issue_title = (
+                        f"Share {pr_short_ref} `{changed_path}` improvements via "
+                        f"templating?"
+                    )
+
+                    templates_relative = TEMPLATES_DIR.relative_to(TEMPLATE_REPO_ROOT)
+                    templates_url = f"{SCITOOLS_URL}/.github/tree/main/{templates_relative}"
+                    templates_link = f"[`{templates_relative}/`]({templates_url})"
+                    issue_body = (
+                        f"{pr_short_ref} (by @{author}) includes changes to "
+                        f"`{changed_path}`. This file is not currently templated, "
+                        "but its parent directory suggests it may be a good "
+                        "candidate. Please either:\n\n"
+                        "- Action this issue with a pull request adding a template "
+                        f"file to {templates_link}.\n"
+                        "- Close this issue if the file is not a good candidate "
+                        "for templating."
+                    )
+                    create_issue(issue_title, issue_body)
+                else:
+                    continue
 
 
 def check_dir(args: argparse.Namespace) -> None:
-    """Ensures templates/ dir aligns with _templating_config.json.
+    """Ensures templates/ dir aligns with _templating_include.json.
 
     This function is intended for running on the .github repo.
     """
@@ -300,7 +305,7 @@ def check_dir(args: argparse.Namespace) -> None:
     templates = [Path(TEMPLATES_DIR, template_name) for template_name in TEMPLATES_DIR.rglob("*")]
     for template in templates:
         if template.is_file():
-            assert template in CONFIG.templates, f"{template} is not in _templating_config.json"
+            assert template in CONFIG.templates, f"{template} is not in _templating_include.json"
 
 
 def main() -> None:
@@ -331,7 +336,7 @@ def main() -> None:
 
     check = subparsers.add_parser(
         "check_dir",
-        description="Check templates/ dir aligns with _templating_config.json.",
+        description="Check templates/ dir aligns with _templating_include.json.",
         epilog="This command is intended for running on the .github repo."
     )
     check.set_defaults(func=check_dir)

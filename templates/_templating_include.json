@@ -1,5 +1,6 @@
 {
-  "_templating_config.json": {},
+  "_templating_include.json": {},
+  "_templating_exclude.json": {},
   "_templating_scripting.py": {},
   "README.md": {},
   ".pre-commit-config.yaml": {
