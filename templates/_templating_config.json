@@ -23,5 +23,8 @@
   "benchmarks/custom_bms/README.md": {
     "iris": "benchmarks/custom_bms/README.md",
     "iris-esmf-regrid": "benchmarks/custom_bms/README.md"
+  },
+  "linkcheck/ci-linkchecks.yml": {
+    "iris": ".github/workflows/ci-linkchecks.yml"
   }
 }
