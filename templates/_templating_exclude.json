@@ -1,3 +1,13 @@
 {
-  "tephi" : []
+  "iris" : [],
+  "iris-grib" : [],
+  "tephi" : [
+    "index.ipynb"
+  ],
+  "python-stratify" : [],
+  "iris-esmf-regrid":  [],
+  "cf-units" : [],
+  "nc-time-axis" : [],
+  "workflows" : [],
+  "test-iris-imagehash" : []
 }
