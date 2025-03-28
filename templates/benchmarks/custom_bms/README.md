@@ -1,4 +1,4 @@
-# REPONAME custom benchmarks
+# SciTools custom benchmarks
 
 To be recognised by ASV, these benchmarks must be packaged and installed in 
 line with the
