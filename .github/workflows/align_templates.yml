@@ -1,0 +1,23 @@
+name: Ensure templates/ dir and config file are aligned.
+
+on:
+  pull_request:
+    paths:
+      - templates/**
+
+jobs:
+
+  align-dirs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      # templates/_templating_scripting.py only needs builtins to run.
+      uses: actions/setup-python@v5
+
+    - name: Check templates/ dir
+      id: check_dir
+      run: templates/_templating_scripting.py check_dir

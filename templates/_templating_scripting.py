@@ -35,7 +35,7 @@ class Config:
 
         for _template, _target_repos in config.items():
             template = TEMPLATES_DIR / _template
-            assert template.is_file()
+            assert template.is_file(), f"{template} does not exist."
             target_repos = [
                 Config.TargetRepo(repo=repo, path_in_repo=Path(file_path))
                 for repo, file_path in _target_repos.items()
@@ -288,6 +288,21 @@ def prompt_share(args: argparse.Namespace) -> None:
                 continue
 
 
+def check_dir(args: argparse.Namespace) -> None:
+    """Ensures templates/ dir aligns with _templating_config.json.
+
+    This function is intended for running on the .github repo.
+    """
+
+    # Always passed (by common code), but never used in this routine.
+    _ = args
+
+    templates = [Path(TEMPLATES_DIR, template_name) for template_name in TEMPLATES_DIR.rglob("*")]
+    for template in templates:
+        if template.is_file():
+            assert template in CONFIG.templates, f"{template} is not in _templating_config.json"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="TemplatingScripting",
@@ -314,8 +329,12 @@ def main() -> None:
     )
     prompt.set_defaults(func=prompt_share)
 
-    # TODO: command to check templates/ dir aligns with _templating_config.json.
-    #  Run this on PRs for the .github repo.
+    check = subparsers.add_parser(
+        "check_dir",
+        description="Check templates/ dir aligns with _templating_config.json.",
+        epilog="This command is intended for running on the .github repo."
+    )
+    check.set_defaults(func=check_dir)
 
     parsed = parser.parse_args()
     parsed.func(parsed)
