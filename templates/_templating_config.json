@@ -1,6 +1,7 @@
 {
   "_templating_config.json": {},
   "_templating_scripting.py": {},
+  "README.md": {},
   ".pre-commit-config.yaml": {
     "cf-units": ".pre-commit-config.yaml",
     "iris": ".pre-commit-config.yaml",
