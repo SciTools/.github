@@ -16,7 +16,7 @@ installable package or similar - less overhead and easier to follow.
 
 ## How it works
 
-[`_templating_config.json`](_templating_config.json) is the 'index' of all the
+[`_templating_include.json`](_templating_include.json) is the 'index' of all the
 templates and how they map to files in the SciTools repositories.
 
 [`_templating_scripting.py`](_templating_scripting.py) contains the logic for
@@ -48,4 +48,4 @@ considered appropriate.
 
 This directory needs to grow. Any files you can think to template will be a 
 valuable addition.
-**Remember to update [`_templating_config.json`](_templating_config.json).**
+**Remember to update [`_templating_include.json`](_templating_include.json).**
