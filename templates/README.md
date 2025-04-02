@@ -23,11 +23,6 @@ templates and how they map to files in the SciTools repositories.
 files that are found in commonly templated directories within the SciTools repositories,
 but that we do not wish to template.
 
-- If there is a file that you think should be templated, but can't be done imminently, and
-the constant reminders are hindering your workflow, consider ensuring the task is detailed in 
-the [`checklist`](https://github.com/SciTools/.github/issues/42), and then add it to the exclude
-list.
-
 [`_templating_scripting.py`](_templating_scripting.py) contains the logic for
 communicating template updates around SciTools - using GitHub issues and
 comments. It is called by two GitHub Actions workflows:
@@ -52,6 +47,11 @@ scripts.
 Files DO NOT need to be identical - they are human-readable not 
 machine-readable, so can include whatever placeholders / optional content is
 considered appropriate.
+
+If there is a file that you think should be templated, but can't be done imminently, and
+the constant reminders are hindering your workflow, consider ensuring the task is detailed in 
+the [`checklist`](https://github.com/SciTools/.github/issues/42), and then add it to the exclude
+list.
 
 ## Please contribute!
 
