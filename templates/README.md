@@ -21,7 +21,7 @@ templates and how they map to files in the SciTools repositories.
 
 [`_templating_exclude.json`](_templating_exclude.json) is the 'index' of all the
 files that are found in commonly templated directories within the SciTools repositories,
-but that we do not wish to template. 
+but that we do not wish to template.
 
 [`_templating_scripting.py`](_templating_scripting.py) contains the logic for
 communicating template updates around SciTools - using GitHub issues and
@@ -53,3 +53,4 @@ considered appropriate.
 This directory needs to grow. Any files you can think to template will be a 
 valuable addition.
 **Remember to update [`_templating_include.json`](_templating_include.json).**
+
