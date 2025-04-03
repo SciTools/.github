@@ -28,7 +28,7 @@ class Config:
         path_in_repo: Path
 
     def __init__(self):
-        with (TEMPLATES_DIR / "_templating_config.json").open() as file_read:
+        with (TEMPLATES_DIR / "_templating_include.json").open() as file_read:
             config = json.load(file_read)
 
         self.templates: dict[Path, list[Config.TargetRepo]] = {}
@@ -170,6 +170,9 @@ def prompt_share(args: argparse.Namespace) -> None:
     changed_files = gh_json(f"pr view {pr_number}", "files")["files"]
     changed_paths = [Path(file["path"]) for file in changed_files]
 
+    with (TEMPLATES_DIR / "_templating_exclude.json").open() as file_read:
+        ignore_dict = json.load(file_read)
+
     def get_all_authors() -> set[str]:
         """Get all the authors of all the commits in the PR."""
         commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
@@ -230,6 +233,9 @@ def prompt_share(args: argparse.Namespace) -> None:
     for changed_path in changed_paths:
         template = CONFIG.find_template(pr_repo, changed_path)
         is_templated = template is not None
+        ignored = changed_path in ignore_dict[pr_repo]
+        if ignored:
+            continue
         if is_templated:
             template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
             template_url = (
@@ -289,7 +295,7 @@ def prompt_share(args: argparse.Namespace) -> None:
 
 
 def check_dir(args: argparse.Namespace) -> None:
-    """Ensures templates/ dir aligns with _templating_config.json.
+    """Ensures templates/ dir aligns with _templating_include.json.
 
     This function is intended for running on the .github repo.
     """
@@ -300,7 +306,7 @@ def check_dir(args: argparse.Namespace) -> None:
     templates = [Path(TEMPLATES_DIR, template_name) for template_name in TEMPLATES_DIR.rglob("*")]
     for template in templates:
         if template.is_file():
-            assert template in CONFIG.templates, f"{template} is not in _templating_config.json"
+            assert template in CONFIG.templates, f"{template} is not in _templating_include.json"
 
 
 def main() -> None:
@@ -331,7 +337,7 @@ def main() -> None:
 
     check = subparsers.add_parser(
         "check_dir",
-        description="Check templates/ dir aligns with _templating_config.json.",
+        description="Check templates/ dir aligns with _templating_include.json.",
         epilog="This command is intended for running on the .github repo."
     )
     check.set_defaults(func=check_dir)

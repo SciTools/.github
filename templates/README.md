@@ -16,8 +16,12 @@ installable package or similar - less overhead and easier to follow.
 
 ## How it works
 
-[`_templating_config.json`](_templating_config.json) is the 'index' of all the
+[`_templating_include.json`](_templating_include.json) is the 'index' of all the
 templates and how they map to files in the SciTools repositories.
+
+[`_templating_exclude.json`](_templating_exclude.json) is the 'index' of all the
+files that are found in commonly templated directories within the SciTools repositories,
+but that we do not wish to template.
 
 [`_templating_scripting.py`](_templating_scripting.py) contains the logic for
 communicating template updates around SciTools - using GitHub issues and
@@ -44,8 +48,14 @@ Files DO NOT need to be identical - they are human-readable not
 machine-readable, so can include whatever placeholders / optional content is
 considered appropriate.
 
+If there is a file that you think should be templated, but can't be done imminently, and
+the constant reminders are hindering your workflow, consider ensuring the task is detailed in 
+the [`checklist`](https://github.com/SciTools/.github/issues/42), and then add it to the exclude
+list.
+
 ## Please contribute!
 
 This directory needs to grow. Any files you can think to template will be a 
 valuable addition.
-**Remember to update [`_templating_config.json`](_templating_config.json).**
+**Remember to update [`_templating_include.json`](_templating_include.json).**
+
