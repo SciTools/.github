@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
 TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
+BOT_AUTHORS = {"dependabot[bot]", "pre-commit-ci[bot]"}
 
 
 def git_command(command: str) -> str:
@@ -173,12 +174,12 @@ def prompt_share(args: argparse.Namespace) -> None:
     with (TEMPLATES_DIR / "_templating_exclude.json").open() as file_read:
         ignore_dict = json.load(file_read)
 
+    def get_commit_authors(commit_json: dict) -> list[str]:
+        return [a["login"] for a in commit_json["authors"]]
+
     def get_all_authors() -> set[str]:
         """Get all the authors of all the commits in the PR."""
         commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
-
-        def get_commit_authors(commit_json: dict) -> list[str]:
-            return [a["login"] for a in commit_json["authors"]]
 
         return set(
             commit_author
@@ -186,7 +187,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             for commit_author in get_commit_authors(commit)
         )
 
-    if get_all_authors() - {"dependabot[bot]", "pre-commit-ci[bot]"} == set():
+    if get_all_authors() - BOT_AUTHORS == set():
         review_body = (
             f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
             "Version numbers are not typically covered by templating. It is "
@@ -211,6 +212,10 @@ def prompt_share(args: argparse.Namespace) -> None:
         )
         if any(issue["title"] == title for issue in existing_issues):
             return
+        if author in BOT_AUTHORS:
+            # if the author is a bot, we don't want to assign the issue to the bot,
+            # so instead choose a human author from the latest commit
+            author = get_commit_authors(commits[-1])[0]
 
         with NamedTemporaryFile("w") as file_write:
             file_write.write(body)
