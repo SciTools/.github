@@ -186,8 +186,8 @@ def prompt_share(args: argparse.Namespace) -> None:
             for commit in commits
             for commit_author in get_commit_authors(commit)
         )
-
-    if get_all_authors() - BOT_AUTHORS == set():
+    human_authors = get_all_authors() - BOT_AUTHORS
+    if human_authors == set():
         review_body = (
             f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
             "Version numbers are not typically covered by templating. It is "
@@ -215,7 +215,7 @@ def prompt_share(args: argparse.Namespace) -> None:
         if author in BOT_AUTHORS:
             # if the author is a bot, we don't want to assign the issue to the bot,
             # so instead choose a human author from the latest commit
-            author = get_commit_authors(commits[-1])[0]
+            author = human_authors[0]
 
         with NamedTemporaryFile("w") as file_write:
             file_write.write(body)
