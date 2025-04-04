@@ -186,6 +186,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             for commit in commits
             for commit_author in get_commit_authors(commit)
         )
+
     human_authors = get_all_authors() - BOT_AUTHORS
     if human_authors == set():
         review_body = (
@@ -206,16 +207,17 @@ def prompt_share(args: argparse.Namespace) -> None:
         return
 
     def create_issue(title: str, body: str) -> None:
+        assignee = author
         # Check that an issue with this title isn't already on the .github repo.
         existing_issues = gh_json(
             "issue list --state all --repo SciTools/.github", "title"
         )
         if any(issue["title"] == title for issue in existing_issues):
             return
-        if author in BOT_AUTHORS:
+        if assignee in BOT_AUTHORS:
             # if the author is a bot, we don't want to assign the issue to the bot,
             # so instead choose a human author from the latest commit
-            author = human_authors[0]
+            assignee = human_authors[0]
 
         with NamedTemporaryFile("w") as file_write:
             file_write.write(body)
@@ -225,7 +227,7 @@ def prompt_share(args: argparse.Namespace) -> None:
                 f'--title "{title}" '
                 f"--body-file {file_write.name} "
                 "--repo SciTools/.github "
-                f"--assignee {author}"
+                f"--assignee {assignee}"
             )
             issue_url = check_output(gh_command).decode("utf-8").strip()
         short_ref = url_to_short_ref(issue_url)
