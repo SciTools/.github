@@ -153,7 +153,7 @@ def prompt_share(args: argparse.Namespace) -> None:
         command = shlex.split(f"gh {sub_command} --json {field}")
         return json.loads(check_output(command))
 
-    pr_number = "https://github.com/SciTools/cf-units/pull/571"
+    pr_number = args.pr_number
 
     def split_github_url(url: str) -> tuple[str, str, str]:
         _, org, repo, _, ref = urlparse(url).path.split("/")
