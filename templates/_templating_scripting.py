@@ -14,7 +14,9 @@ from urllib.parse import urlparse
 SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
 TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
-BOT_AUTHORS = {"dependabot[bot]", "pre-commit-ci[bot]"}
+# bots are named differently depending on their relationship to the PR
+# just put the base name here, the rest is calculated later
+BOTS = ["dependabot", "pre-commit-ci"]
 
 
 def git_command(command: str) -> str:
@@ -152,7 +154,7 @@ def prompt_share(args: argparse.Namespace) -> None:
         command = shlex.split(f"gh {sub_command} --json {field}")
         return json.loads(check_output(command))
 
-    pr_number = args.pr_number
+    pr_number = "https://github.com/SciTools/cf-units/pull/571"
 
     def split_github_url(url: str) -> tuple[str, str, str]:
         _, org, repo, _, ref = urlparse(url).path.split("/")
@@ -187,7 +189,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             for commit_author in get_commit_authors(commit)
         )
 
-    human_authors = get_all_authors() - BOT_AUTHORS
+    human_authors = get_all_authors() - set(["app/" + bot for bot in BOTS]) - set([bot + "[bot]" for bot in BOTS])
     if human_authors == set():
         review_body = (
             f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
@@ -208,16 +210,16 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     def create_issue(title: str, body: str) -> None:
         assignee = author
+
         # Check that an issue with this title isn't already on the .github repo.
         existing_issues = gh_json(
             "issue list --state all --repo SciTools/.github", "title"
         )
         if any(issue["title"] == title for issue in existing_issues):
             return
-        if assignee in BOT_AUTHORS:
-            # if the author is a bot, we don't want to assign the issue to the bot,
-            # so instead choose a human author from the latest commit
-            assignee = human_authors[0]
+        if assignee in (bot + "[bot]" for bot in BOTS) or assignee in ("app/" + bot for bot in BOTS):
+            # if the author is a bot, we don't want to assign the issue to the bot
+            assignee = list(human_authors)[0]
 
         with NamedTemporaryFile("w") as file_write:
             file_write.write(body)
