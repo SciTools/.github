@@ -14,9 +14,8 @@ from urllib.parse import urlparse
 SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
 TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
-# bots are named differently depending on their relationship to the PR
-# just put the base name here, the rest is calculated later
-BOTS = ["dependabot", "pre-commit-ci"]
+# ensure any new bots have both a "app/" prefix and a "[bot]" prefix version
+BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-commit-ci"]
 
 
 def git_command(command: str) -> str:
@@ -189,7 +188,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             for commit_author in get_commit_authors(commit)
         )
 
-    human_authors = get_all_authors() - set(["app/" + bot for bot in BOTS]) - set([bot + "[bot]" for bot in BOTS])
+    human_authors = get_all_authors() - set(BOTS)
     if human_authors == set():
         review_body = (
             f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
@@ -217,7 +216,7 @@ def prompt_share(args: argparse.Namespace) -> None:
         )
         if any(issue["title"] == title for issue in existing_issues):
             return
-        if assignee in (bot + "[bot]" for bot in BOTS) or assignee in ("app/" + bot for bot in BOTS):
+        if assignee in BOTS:
             # if the author is a bot, we don't want to assign the issue to the bot
             assignee = list(human_authors)[0]
 
