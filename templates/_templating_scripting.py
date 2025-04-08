@@ -14,7 +14,8 @@ from urllib.parse import urlparse
 SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
 TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
-BOT_AUTHORS = {"dependabot[bot]", "pre-commit-ci[bot]"}
+# ensure any new bots have both a "app/" prefix and a "[bot]" postfix version
+BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-commit-ci"]
 
 
 def git_command(command: str) -> str:
@@ -187,7 +188,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             for commit_author in get_commit_authors(commit)
         )
 
-    human_authors = get_all_authors() - BOT_AUTHORS
+    human_authors = get_all_authors() - set(BOTS)
     if human_authors == set():
         review_body = (
             f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
@@ -208,16 +209,18 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     def create_issue(title: str, body: str) -> None:
         assignee = author
+
         # Check that an issue with this title isn't already on the .github repo.
         existing_issues = gh_json(
             "issue list --state all --repo SciTools/.github", "title"
         )
         if any(issue["title"] == title for issue in existing_issues):
             return
-        if assignee in BOT_AUTHORS:
-            # if the author is a bot, we don't want to assign the issue to the bot,
+
+        if assignee in BOTS:
+            # if the author is a bot, we don't want to assign the issue to the bot
             # so instead choose a human author from the latest commit
-            assignee = human_authors[0]
+            assignee = list(human_authors)[0]
 
         with NamedTemporaryFile("w") as file_write:
             file_write.write(body)
