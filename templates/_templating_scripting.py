@@ -216,8 +216,10 @@ def prompt_share(args: argparse.Namespace) -> None:
         )
         if any(issue["title"] == title for issue in existing_issues):
             return
+
         if assignee in BOTS:
             # if the author is a bot, we don't want to assign the issue to the bot
+            # so instead choose a human author from the latest commit
             assignee = list(human_authors)[0]
 
         with NamedTemporaryFile("w") as file_write:
