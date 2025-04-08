@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
 TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
-# ensure any new bots have both a "app/" prefix and a "[bot]" prefix version
+# ensure any new bots have both a "app/" prefix and a "[bot]" postfix version
 BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-commit-ci"]
 
 
