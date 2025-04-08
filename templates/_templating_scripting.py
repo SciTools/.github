@@ -149,11 +149,51 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     This function is intended for running on a PR on a 'target repo'.
     """
+    pr_number = args.pr_number
+
     def gh_json(sub_command: str, field: str) -> dict:
         command = shlex.split(f"gh {sub_command} --json {field}")
         return json.loads(check_output(command))
 
-    pr_number = args.pr_number
+    # Get all commits in the PR.
+    commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
+
+    # Get all authors found in the commits
+    all_authors = set(
+        commit_author
+        for commit in commits
+        for commit_author in commits
+    )
+    # Remove bots to get only *human* authors
+    human_authors = get_all_authors() - BOTS
+
+    if not human_authors:
+        # It is a bot PR, which generally means it only updates version numbers.
+        # In this case we just add a review comment to the PR.
+        review_body = (
+            f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
+            "Version numbers are not typically covered by templating. It is "
+            "expected that this PR is 100% about advancing version numbers, "
+            "which would not require any templating follow-up. **Please double-"
+            "check for any other changes that might be suitable for "
+            "templating**."
+        )
+        with NamedTemporaryFile("w") as file_write:
+            file_write.write(review_body)
+            file_write.flush()
+            gh_command = shlex.split(
+                f"gh pr review {pr_number} --comment --body-file {file_write.name}"
+            )
+            run(gh_command, check=True)
+
+    if not human_authors:
+        # We added a review comment to a bot PR, don't do any more in this case.
+        return
+
+    # "ELSE" :
+    # for each changed file, create an issue, assigned to the author, suggesting that:
+    #   - *either* changes are fed back to an existing template,
+    #   - *or* the (untemplated) file might be added to the templates.
 
     def split_github_url(url: str) -> tuple[str, str, str]:
         _, org, repo, _, ref = urlparse(url).path.split("/")
@@ -178,34 +218,6 @@ def prompt_share(args: argparse.Namespace) -> None:
     def get_commit_authors(commit_json: dict) -> list[str]:
         return [a["login"] for a in commit_json["authors"]]
 
-    def get_all_authors() -> set[str]:
-        """Get all the authors of all the commits in the PR."""
-        commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
-
-        return set(
-            commit_author
-            for commit in commits
-            for commit_author in get_commit_authors(commit)
-        )
-
-    human_authors = get_all_authors() - set(BOTS)
-    if human_authors == set():
-        review_body = (
-            f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
-            "Version numbers are not typically covered by templating. It is "
-            "expected that this PR is 100% about advancing version numbers, "
-            "which would not require any templating follow-up. **Please double-"
-            "check for any other changes that might be suitable for "
-            "templating**."
-        )
-        with NamedTemporaryFile("w") as file_write:
-            file_write.write(review_body)
-            file_write.flush()
-            gh_command = shlex.split(
-                f"gh pr review {pr_number} --comment --body-file {file_write.name}"
-            )
-            run(gh_command, check=True)
-        return
 
     def create_issue(title: str, body: str) -> None:
         assignee = author
