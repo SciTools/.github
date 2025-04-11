@@ -157,15 +157,15 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     # Get all commits in the PR.
     commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
-
-    # Get all authors found in the commits
-    all_authors = set(
-        commit_author
+    # Get the authors of each commit
+    commit_authors = [
+        [a["login"] for a in commit["authors"]]
         for commit in commits
-        for commit_author in commits
-    )
-    # Remove bots to get only *human* authors
-    human_authors = get_all_authors() - BOTS
+    ]
+    # Sum over all commits, and remove duplicates, to get all unique authors
+    all_authors = set(sum(commit_authors, []))
+    # Finally, remove any bots, to get *human authors* only
+    human_authors = all_authors - set(BOTS)
 
     if not human_authors:
         # It is a bot PR, which generally means it only updates version numbers.
@@ -214,10 +214,6 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     with (TEMPLATES_DIR / "_templating_exclude.json").open() as file_read:
         ignore_dict = json.load(file_read)
-
-    def get_commit_authors(commit_json: dict) -> list[str]:
-        return [a["login"] for a in commit_json["authors"]]
-
 
     def create_issue(title: str, body: str) -> None:
         assignee = author
