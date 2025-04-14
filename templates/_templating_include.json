@@ -44,13 +44,13 @@
     "iris-esmf-regrid": "benchmarks/asv_delegated.py"
   },
   "benchmarks/asv_delegated_REPONAME.py": {},
-  "benchmarks/benchmarks/bm_runner.py": {
-    "iris": "benchmarks/benchmarks/bm_runner.py",
-    "iris-esmf-regrid": "benchmarks/benchmarks/bm_runner.py"
+  "benchmarks/bm_runner.py": {
+    "iris": "benchmarks/bm_runner.py",
+    "iris-esmf-regrid": "benchmarks/bm_runner.py"
   },
-  "benchmarks/benchmarks/README.md": {
-    "iris": "benchmarks/benchmarks/README.md",
-    "iris-esmf-regrid": "benchmarks/benchmarks/README.md"
+  "benchmarks/README.md": {
+    "iris": "benchmarks/README.md",
+    "iris-esmf-regrid": "benchmarks/README.md"
   },
 
   "github/workflows/ci-linkchecks.yml": {
