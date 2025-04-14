@@ -10,8 +10,7 @@ Organisational level things such as the SciTools README and organisation workflo
 [SciTools Peloton project](https://github.com/orgs/SciTools/projects/13?pane=info).
   See also [`.github/workflows/peloton.yml`](.github/workflows/peloton.yml).
 - [`./templates`](./templates) - tooling for standardising files across
-SciTools repos. See also 
-[`.github/workflows/template-sync.yml`](.github/workflows/template-sync.yml).
+SciTools repos.
 
 ## Possible future uses
 

@@ -14,6 +14,8 @@ from urllib.parse import urlparse
 SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
 TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
+# ensure any new bots have both a "app/" prefix and a "[bot]" postfix version
+BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-commit-ci"]
 
 
 def git_command(command: str) -> str:
@@ -28,14 +30,14 @@ class Config:
         path_in_repo: Path
 
     def __init__(self):
-        with (TEMPLATES_DIR / "_templating_config.json").open() as file_read:
+        with (TEMPLATES_DIR / "_templating_include.json").open() as file_read:
             config = json.load(file_read)
 
         self.templates: dict[Path, list[Config.TargetRepo]] = {}
 
         for _template, _target_repos in config.items():
             template = TEMPLATES_DIR / _template
-            assert template.is_file()
+            assert template.is_file(), f"{template} does not exist."
             target_repos = [
                 Config.TargetRepo(repo=repo, path_in_repo=Path(file_path))
                 for repo, file_path in _target_repos.items()
@@ -98,12 +100,23 @@ def notify_updates(args: argparse.Namespace) -> None:
             file_url = f"{SCITOOLS_URL}/{repo}/blob/main/{path_in_repo}"
             file_link = f"[`{path_in_repo}`]({file_url})"
             issue_body = (
-                f"The template for {file_link} has been updated.\n\n"
-                "Consider adopting these changes into the repo; "
-                "the changes can be found below.\n\n"
-                "The template file can be found in the **.github** repo: "
-                f"{template_link}\n\n"
-                "The diff between the specified file is as follows:\n\n"
+                f"The template for `{path_in_repo}` has been updated; see the "
+                "diff below. Please either:\n\n"
+                
+                "- Action this issue with a pull request applying some/all of "
+                f"these changes to `{path_in_repo}`.\n"
+                "- Close this issue if _none_ of these changes are appropriate "
+                "for this repo.\n\n"
+                "Also consider reviewing a full diff between the template and "
+                f"`{path_in_repo}`, in case other valuable shared conventions "
+                f"have previously been missed.\n\n"
+
+                "## File Links\n\n"
+                f"- The file in this repo: {file_link}\n"
+                f"- The template file in the **.github** repo: {template_link}\n\n"
+                # TODO: a link to the whole diff compared to the template?
+
+                "## Diff\n\n"
                 f"```diff\n{diff}\n```"
             )
             with NamedTemporaryFile("w") as file_write:
@@ -159,12 +172,15 @@ def prompt_share(args: argparse.Namespace) -> None:
     changed_files = gh_json(f"pr view {pr_number}", "files")["files"]
     changed_paths = [Path(file["path"]) for file in changed_files]
 
+    with (TEMPLATES_DIR / "_templating_exclude.json").open() as file_read:
+        ignore_dict = json.load(file_read)
+
+    def get_commit_authors(commit_json: dict) -> list[str]:
+        return [a["login"] for a in commit_json["authors"]]
+
     def get_all_authors() -> set[str]:
         """Get all the authors of all the commits in the PR."""
         commits = gh_json(f"pr view {pr_number}", "commits")["commits"]
-
-        def get_commit_authors(commit_json: dict) -> list[str]:
-            return [a["login"] for a in commit_json["authors"]]
 
         return set(
             commit_author
@@ -172,7 +188,8 @@ def prompt_share(args: argparse.Namespace) -> None:
             for commit_author in get_commit_authors(commit)
         )
 
-    if get_all_authors() - {"dependabot[bot]", "pre-commit-ci[bot]"} == set():
+    human_authors = get_all_authors() - set(BOTS)
+    if human_authors == set():
         review_body = (
             f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
             "Version numbers are not typically covered by templating. It is "
@@ -191,12 +208,19 @@ def prompt_share(args: argparse.Namespace) -> None:
         return
 
     def create_issue(title: str, body: str) -> None:
+        assignee = author
+
         # Check that an issue with this title isn't already on the .github repo.
         existing_issues = gh_json(
             "issue list --state all --repo SciTools/.github", "title"
         )
         if any(issue["title"] == title for issue in existing_issues):
             return
+
+        if assignee in BOTS:
+            # if the author is a bot, we don't want to assign the issue to the bot
+            # so instead choose a human author from the latest commit
+            assignee = list(human_authors)[0]
 
         with NamedTemporaryFile("w") as file_write:
             file_write.write(body)
@@ -206,7 +230,7 @@ def prompt_share(args: argparse.Namespace) -> None:
                 f'--title "{title}" '
                 f"--body-file {file_write.name} "
                 "--repo SciTools/.github "
-                f"--assignee {author}"
+                f"--assignee {assignee}"
             )
             issue_url = check_output(gh_command).decode("utf-8").strip()
         short_ref = url_to_short_ref(issue_url)
@@ -219,6 +243,9 @@ def prompt_share(args: argparse.Namespace) -> None:
     for changed_path in changed_paths:
         template = CONFIG.find_template(pr_repo, changed_path)
         is_templated = template is not None
+        ignored = changed_path in ignore_dict[pr_repo]
+        if ignored:
+            continue
         if is_templated:
             template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
             template_url = (
@@ -277,6 +304,21 @@ def prompt_share(args: argparse.Namespace) -> None:
                 continue
 
 
+def check_dir(args: argparse.Namespace) -> None:
+    """Ensures templates/ dir aligns with _templating_include.json.
+
+    This function is intended for running on the .github repo.
+    """
+
+    # Always passed (by common code), but never used in this routine.
+    _ = args
+
+    templates = [Path(TEMPLATES_DIR, template_name) for template_name in TEMPLATES_DIR.rglob("*")]
+    for template in templates:
+        if template.is_file():
+            assert template in CONFIG.templates, f"{template} is not in _templating_include.json"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="TemplatingScripting",
@@ -303,8 +345,12 @@ def main() -> None:
     )
     prompt.set_defaults(func=prompt_share)
 
-    # TODO: command to check templates/ dir aligns with _templating_config.json.
-    #  Run this on PRs for the .github repo.
+    check = subparsers.add_parser(
+        "check_dir",
+        description="Check templates/ dir aligns with _templating_include.json.",
+        epilog="This command is intended for running on the .github repo."
+    )
+    check.set_defaults(func=check_dir)
 
     parsed = parser.parse_args()
     parsed.func(parsed)
