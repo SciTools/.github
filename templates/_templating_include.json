@@ -14,6 +14,15 @@
     "workflows": ".pre-commit-config.yaml",
     "test-iris-imagehash": ".pre-commit-config.yaml"
   },
+
+  "benchmarks/benchmarks/__init__.py": {
+    "iris": "benchmarks/benchmarks/__init__.py",
+    "iris-esmf-regrid": "benchmarks/benchmarks/__init__.py"
+  },
+  "benchmarks/benchmarks/generate_data/__init__.py": {
+    "iris": "benchmarks/benchmarks/generate_data/__init__.py",
+    "iris-esmf-regrid": "benchmarks/benchmarks/generate_data/__init__.py"
+  },
   "benchmarks/custom_bms/install.py": {
     "iris": "benchmarks/custom_bms/install.py",
     "iris-esmf-regrid": "benchmarks/custom_bms/install.py"
@@ -26,6 +35,24 @@
     "iris": "benchmarks/custom_bms/README.md",
     "iris-esmf-regrid": "benchmarks/custom_bms/README.md"
   },
+  "benchmarks/asv.conf.json": {
+    "iris": "benchmarks/asv.conf.json",
+    "iris-esmf-regrid": "benchmarks/asv.conf.json"
+  },
+  "benchmarks/asv_delegated.py": {
+    "iris": "benchmarks/asv_delegated.py",
+    "iris-esmf-regrid": "benchmarks/asv_delegated.py"
+  },
+  "benchmarks/asv_delegated_REPONAME.py": {},
+  "benchmarks/benchmarks/bm_runner.py": {
+    "iris": "benchmarks/benchmarks/bm_runner.py",
+    "iris-esmf-regrid": "benchmarks/benchmarks/bm_runner.py"
+  },
+  "benchmarks/benchmarks/README.md": {
+    "iris": "benchmarks/benchmarks/README.md",
+    "iris-esmf-regrid": "benchmarks/benchmarks/README.md"
+  },
+
   "github/workflows/ci-linkchecks.yml": {
     "iris": ".github/workflows/ci-linkchecks.yml"
   }
