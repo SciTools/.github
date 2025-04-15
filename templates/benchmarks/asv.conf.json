@@ -1,0 +1,26 @@
+{
+    "version": 1,
+    "project": "REPONAME according to pip, e.g. scitools-iris",
+    "project_url": "https://github.com/SciTools/REPONAME",
+    "repo": "..",
+    "environment_type": "delegated-REPONAME",
+    "show_commit_url": "https://github.com/scitools/REPONAME/commit/",
+    "branches": ["upstream/main"],
+
+    "benchmark_dir": "./benchmarks",
+    "env_dir": ".asv/env",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html",
+    "plugins": [".asv_delegated_REPONAME"],
+
+    "command_comment": [
+        "Can get some speedup by skipping project build, install and ",
+        "uninstall IF POSSIBLE. See Iris' asv.conf.json for a working example.",
+
+        "We do however need to install the custom benchmarks for them to be",
+        "usable."
+    ],
+    "install_command": [],
+    "uninstall_command": [],
+    "build_command": ["python {conf_dir}/custom_bms/install.py"]
+}
