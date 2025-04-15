@@ -123,7 +123,11 @@ def _setup_common() -> None:
     echo("Setup complete.")
 
 
-def _asv_compare(*commits: str, overnight_mode: bool = False) -> None:
+def _asv_compare(
+    *commits: str,
+    overnight_mode: bool = False,
+    fail_on_regression: bool = False,
+) -> None:
     """Run through a list of commits comparing each one to the next."""
     commits = tuple(commit[:8] for commit in commits)
     for i in range(len(commits) - 1):
@@ -140,6 +144,13 @@ def _asv_compare(*commits: str, overnight_mode: bool = False) -> None:
         if shifts or (not overnight_mode):
             # For the overnight run: only post if there are shifts.
             _gh_create_reports(after, comparison, shifts)
+
+        if shifts and fail_on_regression:
+            # fail_on_regression supports setups that expect CI failures.
+            message = (
+                f"Performance shifts detected between commits {before} and {after}.\n"
+            )
+            raise RuntimeError(message)
 
 
 def _gh_create_reports(commit_sha: str, results_full: str, results_shifts: str) -> None:

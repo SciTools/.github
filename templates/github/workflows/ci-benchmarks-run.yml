@@ -123,7 +123,7 @@ jobs:
 
       - name: Upload any benchmark reports
         # Uploading enables more downstream processing e.g. posting a PR comment.
-        if: success() || steps.overnight.outcome == 'failure'
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: benchmark_reports
