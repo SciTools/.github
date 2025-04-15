@@ -30,9 +30,15 @@ comments. It is called by two GitHub Actions workflows:
 - [`template-update-notification.yml`](../.github/workflows/template-update-notification.yml)
 uses the `notify_updates()` function to raise issues on all relevant
 repositories when a template is updated, or a new one created.
+
 - [SciTools/workflows `ci-template-check.yml`](https://github.com/SciTools/workflows/blob/main/.github/workflows/ci-template-check.yml)
 uses the `prompt_share()` function to remind repository developers if they are
 modifying a templated file and should consider sharing the change.
+
+- `SPRING_CLEANING` flag in [`_templating_scripting.py`](_templating_scripting.py):
+a mechanism for disabling the issues and comments if the dev team is
+deliberately doing intense work on templates and templated files (the volume
+of un-actioned notifications would be overwhelming).
 
 All other files in this directory are the templates themselves.
 
