@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If SciTools played an important role in your research then please add us to your reference list by using the references below."
+title: "SciTools"
+keywords:
+    - "Relevant keywords"
+authors:
+    - name: "SciTools repository contributors"
+abstract: "Repository description"
+license: "BSD-3-Clause"
+license-url: "https://spdx.org/licenses/BSD-3-Clause.html"
+doi: "SciTools repository DOI"
+url: "http://www.scitools.org.uk/"
+repository-code: "https://github.com/SciTools/repository"
+type: "software"

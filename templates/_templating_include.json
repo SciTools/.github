@@ -26,7 +26,28 @@
     "iris": "benchmarks/custom_bms/README.md",
     "iris-esmf-regrid": "benchmarks/custom_bms/README.md"
   },
+  "CITATION.cff": {
+    "iris": "CITATION.cff",
+    "iris-esmf-regrid": "CITATION.cff",
+    "python-stratify": "CITATION.cff",
+    "nc-time-axis": "CITATION.cff",
+    "tephi": "CITATION.cff"
+  },
+  "CODE_OF_CONDUCT.md": {
+    "iris": "CODE_OF_CONDUCT.md",
+    "iris-grib": "CODE_OF_CONDUCT.md"
+  },
   "github/workflows/ci-linkchecks.yml": {
     "iris": ".github/workflows/ci-linkchecks.yml"
+  },
+  "LICENSE": {
+    "iris": "LICENSE",
+    "iris-grib": "LICENSE",
+    "tephi": "LICENSE",
+    "python-stratify": "LICENSE",
+    "iris-esmf-regrid": "LICENSE",
+    "cf-units": "LICENSE",
+    "nc-time-axis": "LICENSE",
+    "test-iris-imagehash": "LICENSE"
   }
 }
