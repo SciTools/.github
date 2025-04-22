@@ -13,7 +13,7 @@
     "tephi": "MANIFEST.in",
     "workflows": "MANIFEST.in",
     "test-iris-imagehash": "MANIFEST.in"
-  },,
+  },
   ".pre-commit-config.yaml": {
     "cf-units": ".pre-commit-config.yaml",
     "iris": ".pre-commit-config.yaml",
