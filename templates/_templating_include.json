@@ -3,6 +3,17 @@
   "_templating_exclude.json": {},
   "_templating_scripting.py": {},
   "README.md": {},
+  "MANIFEST.in": {
+    "cf-units": "MANIFEST.in",
+    "iris": "MANIFEST.in",
+    "iris-esmf-regrid": "MANIFEST.in",
+    "iris-grib": "MANIFEST.in",
+    "nc-time-axis": "MANIFEST.in",
+    "python-stratify": "MANIFEST.in",
+    "tephi": "MANIFEST.in",
+    "workflows": "MANIFEST.in",
+    "test-iris-imagehash": "MANIFEST.in"
+  },,
   ".pre-commit-config.yaml": {
     "cf-units": ".pre-commit-config.yaml",
     "iris": ".pre-commit-config.yaml",
