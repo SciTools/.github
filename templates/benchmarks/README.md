@@ -35,7 +35,7 @@ are not already. This can be done in several ways:
   file system as the Conda package cache.
 - Using an alternative Conda package cache location during the benchmark run,
   e.g. via the `$CONDA_PKGS_DIRS` environment variable.
-- Moving your Iris repo to the same file system as the Conda package cache.
+- Moving your repo checkout to the same file system as the Conda package cache.
 
 ### Environment variables
 
@@ -60,7 +60,8 @@ requirements will not be delayed by repeated environment setup - especially
 relevant given the [benchmark runner](bm_runner.py)'s use of
 [--interleave-rounds](https://asv.readthedocs.io/en/stable/commands.html?highlight=interleave-rounds#asv-run),
 or any time you know you will repeatedly benchmark the same commit. **NOTE:**
-Iris environments are large so this option can consume a lot of disk space.
+SciTools environments tend to large so this option can consume a lot of disk 
+space.
 
 [//]: # (ANY OTHER REPO-SPECIFIC ENVIRONMENT VARIABLES 
 E.G. OVERRIDE_TEST_DATA_REPOSITORY)
@@ -98,7 +99,7 @@ solution; read more detail there.
 ### ASV re-run behaviour
 
 Note that ASV re-runs a benchmark multiple times between its `setup()` routine.
-This is a problem for benchmarking certain Iris operations such as data
+This is a problem for benchmarking certain SciTools operations such as data
 realisation, since the data will no longer be lazy after the first run.
 Consider writing extra steps to restore objects' original state _within_ the
 benchmark itself.
@@ -126,10 +127,10 @@ limited available runtime and risk of false-positives. It remains useful for
 manual investigations).**
 
 When comparing performance between commits/file-type/whatever it can be helpful
-to know if the differences exist in scaling or non-scaling parts of the Iris
-functionality in question. This can be done using a size parameter, setting
-one value to be as small as possible (e.g. a scalar `Cube`), and the other to
-be significantly larger (e.g. a 1000x1000 `Cube`). Performance differences
+to know if the differences exist in scaling or non-scaling parts of the 
+operation under test. This can be done using a size parameter, setting
+one value to be as small as possible (e.g. a scalar value), and the other to
+be significantly larger (e.g. a 1000x1000 array). Performance differences
 might only be seen for the larger value, or the smaller, or both, getting you
 closer to the root cause.
 
@@ -146,7 +147,8 @@ suites for the UK Met Office NG-VAT project.
 ## Benchmark environments
 
 We have disabled ASV's standard environment management, instead using an
-environment built using the same scripts that set up Iris' test environments. 
+environment built using the same scripts that set up the package test 
+environments. 
 This is done using ASV's plugin architecture - see
 [`asv_delegated.py`](asv_delegated.py) and associated 
 references in [`asv.conf.json`](asv.conf.json) (`environment_type` and 
