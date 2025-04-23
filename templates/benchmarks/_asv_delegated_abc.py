@@ -10,7 +10,9 @@ benchmarking environment.
 This module is intended as the generic code that can be shared between
 repositories. Providing a functional benchmarking environment relies on correct
 subclassing of the :class:`_DelegatedABC` class to specialise it for the repo in
-question.
+question. The parent and subclass are separated into their own dedicated files,
+which isolates ALL repo-specific code to a single file, thus simplifying the
+templating process.
 
 """
 
