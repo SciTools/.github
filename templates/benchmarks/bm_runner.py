@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# Copyright REPONAME contributors
+# Copyright SciTools contributors
 #
-# This file is part of REPONAME and is released under the BSD license.
+# This file is part of SciTools and is released under the BSD license.
 # See LICENSE in the root of the repository for full licensing details.
 """Argparse conveniences for executing common types of benchmark runs."""
 
@@ -634,7 +634,7 @@ class GhPost(_SubParserGenerator):
 def main():
     parser = argparse.ArgumentParser(
         description=(
-            "Run the REPONAME performance benchmarks (using Airspeed Velocity)."
+            "Run the repository performance benchmarks (using Airspeed Velocity)."
         ),
         epilog=(
             "More help is available within each sub-command."

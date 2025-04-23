@@ -1,11 +1,11 @@
-# Copyright REPONAME contributors
+# Copyright SciTools contributors
 #
-# This file is part of REPONAME and is released under the BSD license.
+# This file is part of SciTools and is released under the BSD license.
 # See LICENSE in the root of the repository for full licensing details.
 """Scripts for generating supporting data for benchmarking.
 
-Data generated using REPONAME should use :func:`run_function_elsewhere`, which
-means that data is generated using a fixed version of REPONAME and a fixed
+Data generated using this repo should use :func:`run_function_elsewhere`, which
+means that data is generated using a fixed version of this repo and a fixed
 environment, rather than those that get changed when the benchmarking run
 checks out a new commit.
 
@@ -28,7 +28,7 @@ from iris.fileformats import netcdf
 
 #: Python executable used by :func:`run_function_elsewhere`, set via env
 #:  variable of same name. Must be path of Python within an environment that
-#:  includes REPONAME (including dependencies and test modules).
+#:  includes this repo (including dependencies and test modules).
 try:
     DATA_GEN_PYTHON = environ["DATA_GEN_PYTHON"]
     _ = check_output([DATA_GEN_PYTHON, "-c", "a = True"])

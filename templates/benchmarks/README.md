@@ -31,7 +31,7 @@ on the same [file system](https://en.wikipedia.org/wiki/File_system), if they
 are not already. This can be done in several ways:
 
 - Temporarily reconfiguring `env_parent` in
-  [`asv_delegated.py`](asv_delegated.py) to reference a location on the same 
+  [`_asv_delegated_abc`](_asv_delegated_abc.py) to reference a location on the same 
   file system as the Conda package cache.
 - Using an alternative Conda package cache location during the benchmark run,
   e.g. via the `$CONDA_PKGS_DIRS` environment variable.
@@ -148,7 +148,7 @@ suites for the UK Met Office NG-VAT project.
 We have disabled ASV's standard environment management, instead using an
 environment built using the same scripts that set up Iris' test environments. 
 This is done using ASV's plugin architecture - see
-[`asv_delegated_REPONAME.py`](asv_delegated_REPONAME.py) and associated 
+[`asv_delegated.py`](asv_delegated.py) and associated 
 references in [`asv.conf.json`](asv.conf.json) (`environment_type` and 
 `plugins`).
 
