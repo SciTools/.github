@@ -39,11 +39,14 @@
     "iris": "benchmarks/asv.conf.json",
     "iris-esmf-regrid": "benchmarks/asv.conf.json"
   },
+  "benchmarks/_asv_delegated_abc": {
+    "iris": "benchmarks/_asv_delegated_abc",
+    "iris-esmf-regrid": "benchmarks/_asv_delegated_abc"
+  },
   "benchmarks/asv_delegated.py": {
     "iris": "benchmarks/asv_delegated.py",
     "iris-esmf-regrid": "benchmarks/asv_delegated.py"
   },
-  "benchmarks/asv_delegated_REPONAME.py": {},
   "benchmarks/bm_runner.py": {
     "iris": "benchmarks/bm_runner.py",
     "iris-esmf-regrid": "benchmarks/bm_runner.py"
