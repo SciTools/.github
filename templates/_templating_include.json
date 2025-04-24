@@ -39,9 +39,9 @@
     "iris": "benchmarks/asv.conf.json",
     "iris-esmf-regrid": "benchmarks/asv.conf.json"
   },
-  "benchmarks/_asv_delegated_abc": {
-    "iris": "benchmarks/_asv_delegated_abc",
-    "iris-esmf-regrid": "benchmarks/_asv_delegated_abc"
+  "benchmarks/_asv_delegated_abc.py": {
+    "iris": "benchmarks/_asv_delegated_abc.py",
+    "iris-esmf-regrid": "benchmarks/_asv_delegated_abc.py"
   },
   "benchmarks/asv_delegated.py": {
     "iris": "benchmarks/asv_delegated.py",
