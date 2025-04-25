@@ -1,0 +1,205 @@
+[build-system]
+# Defined by PEP 518
+requires = [
+# Some packages will require extra additions to this list. E.g "Cython" or "Numpy"
+  "setuptools>=61",
+  "setuptools_scm[toml]>=7",
+  "wheel"
+]
+# Defined by PEP 517
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [
+    {name = "<PACKAGE_NAME> Contributors", email = "scitools.pub@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: THIS VARIES BY REPOSITORY",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: SUPPORTED PYTHON VERSIONS",
+    # e.g "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Topic :: Scientific/Engineering :: VARIES BY REPOSITORY",
+]
+dynamic = [
+    "dependencies",
+    "readme",
+    "version",
+]
+description = "A powerful, format-agnostic, community-driven Python package for analysing and visualising Earth science data"
+keywords = [
+    "<PACKAGE_KEYWORDS>",
+]
+license = {text = "BSD-3-Clause"}
+name = "scitools-<PACKAGE_NAME>" #e.g "scitools-iris"
+requires-python = "<MIN_PYTHON_VERSION>"
+
+[project.urls]
+Code = "https://github.com/SciTools/<PACKAGE_NAME>"
+Discussions = "https://github.com/SciTools/<PACKAGE_NAME>/discussions" # If discussions are enabled.
+Documentation = "https://scitools-iris.readthedocs.io/" # If you have a documentation site.
+Issues = "https://github.com/SciTools/<PACKAGE_NAME>/issues" # If issues are enabled.
+
+[tool.check-manifest]
+# Ignores here will vary by repository.
+ignore = []
+
+[tool.codespell]
+ignore-words-list = []
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+]
+
+[tool.coverage.run]
+branch = true
+include = [
+    "<PACKAGE_NAME>/*",
+]
+omit = [
+    "<PATH_TO_TESTS>/*", # e.g "cf_units/tests/*" or "lib/iris/tests/*"
+]
+
+[tool.mypy]
+disable_error_code = [] # Include any error codes that you want to ignore
+enable_error_code = [
+    "ignore-without-code",
+    # "redundant-expr",		# TODO: Add back in when above ignores fixed
+    "truthy-bool",
+]
+exclude = [
+]
+ignore_missing_imports = true
+strict = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.numpydoc_validation]
+# We have agreed a that some of the numpydoc rules that we are going to ignore.
+# Our repositories are going to have extra rules that they are ignoring that is expected, but they are not included here.
+checks = [
+    "all",  # Enable all numpydoc validation rules, apart from the following:
+
+    # -> Docstring text (summary) should start in the line immediately
+    #    after the opening quotes (not in the same line, or leaving a
+    #    blank line in between)
+    "GL01",  # Permit summary line on same line as docstring opening quotes.
+
+    # -> Closing quotes should be placed in the line after the last text
+    #    in the docstring (do not close the quotes in the same line as
+    #    the text, or leave a blank line between the last text and the
+    # quotes)
+    "GL02",  # Permit a blank line before docstring closing quotes.
+
+    #    -> Double line break found; please use only one blank line to
+    #    separate sections or paragraphs, and do not leave blank lines
+    #    at the end of docstrings
+    "GL03",  # Ignoring.
+
+    # -> See Also section not found
+    "SA01",  # Not all docstrings require a "See Also" section.
+
+    # -> No extended summary found
+    "ES01",  # Not all docstrings require an "Extended Summary" section.
+
+    # -> No examples section found
+    "EX01",  # Not all docstrings require an "Examples" section.
+
+    # -> No Yields section found
+    "YD01",  # Not all docstrings require a "Yields" section.
+
+]
+exclude = [
+    '\.__eq__$',
+    '\.__ne__$',
+    '\.__repr__$',
+]
+
+[tool.pytest.ini_options]
+# This list varies by repository
+addopts = ["-ra", "-v", "--strict-config", "--strict-markers", "--doctest-modules"]
+testpaths = "<PATH_TO_MAIN_CODE>" # e.g "cf_units" or "lib/iris"
+
+[tool.repo-review]
+# A list of the currently failing repo-review checks, to be fixed later, different for every repository.
+ignore = []
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.format]
+preview = false
+
+[tool.ruff.lint]
+# We have agreed that we will permanently ignore the ruff rules in this ignore list.
+ignore = [
+    # NOTE: Non-permanent exclusions should be added to the ".ruff.toml" file.
+
+    # flake8-commas (COM)
+    # https://docs.astral.sh/ruff/rules/#flake8-commas-com
+    "COM812",  # Trailing comma missing.
+    "COM819",  # Trailing comma prohibited.
+
+    # flake8-implicit-str-concat (ISC)
+    # https://docs.astral.sh/ruff/rules/single-line-implicit-string-concatenation/
+    # NOTE: This rule may cause conflicts when used with "ruff format".
+    "ISC001",  # Implicitly concatenate string literals on one line.
+]
+preview = false
+select = [
+    "ALL",
+    # Note: the above "all" disables conflicting rules, if you want that
+    # rule it needs to be explicitly enabled below:
+    "D212",  # Multi-line docstring summary should start at the first line
+]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["<PACKAGE_NAME>"]  # e.g "iris" or "cf_units"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 22
+
+[tool.ruff.lint.per-file-ignores]
+# All test scripts
+"cf_units/tests/*.py" = [
+    # https://docs.astral.sh/ruff/rules/undocumented-public-module/
+    "D104",  # Missing docstring in public module
+    "D106",  # Missing docstring in public nested class
+    "D205",  # 1 blank line required between summary line and description
+    "D401",  # 1 First line of docstring should be in imperative mood
+    "SLOT000",  # Subclasses of `str` should define `__slots__`
+    "N999",  # Invalid module name
+]
+"setup.py" = [
+    "FBT003",  # Boolean positional value in function call
+    "ICN001",  # `numpy` should be imported as `np`
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.setuptools]
+license-files = ["LICENSE"]
+zip-safe = false
+
+[tool.setuptools.dynamic]
+dependencies = {file = "MAIN_REQUIREMENTS_FILE"} # e.g requirements/pypi-core.txt
+readme = {file = "README.md", content-type = "text/markdown"}
+
+[tool.setuptools.packages.find]
+include = ["<PACKAGE_NAME>"]
+
+[tool.setuptools_scm]
+local_scheme = "dirty-tag"
+write_to = "<PATH_TO_SOURCE_ROOT>/_version.py" # e.g "lib/iris" or "cf-units"
