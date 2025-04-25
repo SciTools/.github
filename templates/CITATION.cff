@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "If <PACKAGE_NAME> played an important role in your research then please add us to your reference list by using the references below."
+title: "<PACKAGE_NAME>"
+keywords:
+    - "<RELEVANT KEYWORDS>"
+authors:
+    - name: "<PACKAGE_NAME> repository contributors"
+abstract: "<REPOSITORY ABSTRACT>"
+license: "BSD-3-Clause"
+license-url: "https://spdx.org/licenses/BSD-3-Clause.html"
+doi: "<REPOSITORY DOI>"
+url: "http://www.scitools.org.uk/"
+repository-code: "https://github.com/SciTools/<PACKAGE_NAME>"
+type: "software"
