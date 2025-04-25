@@ -31,11 +31,18 @@
     "iris-esmf-regrid": "CITATION.cff",
     "python-stratify": "CITATION.cff",
     "nc-time-axis": "CITATION.cff",
-    "tephi": "CITATION.cff"
+    "tephi": "CITATION.cff",
+    "iris-grib": "CITATION.cff",
+    "cf-units": "CITATION.cff"
   },
   "CODE_OF_CONDUCT.md": {
     "iris": "CODE_OF_CONDUCT.md",
-    "iris-grib": "CODE_OF_CONDUCT.md"
+    "iris-grib": "CODE_OF_CONDUCT.md",
+    "cf-units": "CODE_OF_CONDUCT.md",
+    "iris-esmf-regrid": "CODE_OF_CONDUCT.md",
+    "python-stratify": "CODE_OF_CONDUCT.md",
+    "tephi": "CODE_OF_CONDUCT.md",
+    "nc-time-axis": "CODE_OF_CONDUCT.md"
   },
   "github/workflows/ci-linkchecks.yml": {
     "iris": ".github/workflows/ci-linkchecks.yml"
@@ -48,6 +55,15 @@
     "iris-esmf-regrid": "LICENSE",
     "cf-units": "LICENSE",
     "nc-time-axis": "LICENSE",
-    "test-iris-imagehash": "LICENSE"
+    "test-iris-imagehash": "LICENSE",
+    "libmo_unpack": "LICENSE",
+    ".github": "LICENSE",
+    "workflows": "LICENSE",
+    "mo_pack": "LICENSE",
+    "marketing": "LICENSE",
+    "test-tephi-imagehash": "LICENSE",
+    "iris-abf": "LICENSE",
+    "voted_issues": "LICENSE",
+    "twitter-scitools-iris": "LICENSE"
   }
 }
