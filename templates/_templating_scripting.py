@@ -10,6 +10,10 @@ from tempfile import NamedTemporaryFile
 from typing import NamedTuple
 from urllib.parse import urlparse
 
+# A mechanism for disabling the issues and comments if the dev team is
+#  deliberately doing intense work on templates and templated files (the volume
+#  of un-actioned notifications would be overwhelming).
+SPRING_CLEANING = True
 
 SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
@@ -71,6 +75,12 @@ def notify_updates(args: argparse.Namespace) -> None:
     """
     # Always passed (by common code), but never used in this routine.
     _ = args
+
+    if SPRING_CLEANING:
+        print(
+            "Spring cleaning is in effect; no issues/comments will be posted."
+        )
+        return
 
     def git_diff(*args: str) -> str:
         command = "diff HEAD^ HEAD " + " ".join(args)
@@ -149,6 +159,12 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     This function is intended for running on a PR on a 'target repo'.
     """
+    if SPRING_CLEANING:
+        print(
+            "Spring cleaning is in effect; no issues/comments will be posted."
+        )
+        return
+
     def gh_json(sub_command: str, field: str) -> dict:
         command = shlex.split(f"gh {sub_command} --json {field}")
         return json.loads(check_output(command))

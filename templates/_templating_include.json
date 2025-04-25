@@ -14,18 +14,6 @@
     "workflows": ".pre-commit-config.yaml",
     "test-iris-imagehash": ".pre-commit-config.yaml"
   },
-  "benchmarks/custom_bms/install.py": {
-    "iris": "benchmarks/custom_bms/install.py",
-    "iris-esmf-regrid": "benchmarks/custom_bms/install.py"
-  },
-  "benchmarks/custom_bms/tracemallocbench.py": {
-    "iris": "benchmarks/custom_bms/tracemallocbench.py",
-    "iris-esmf-regrid": "benchmarks/custom_bms/tracemallocbench.py"
-  },
-  "benchmarks/custom_bms/README.md": {
-    "iris": "benchmarks/custom_bms/README.md",
-    "iris-esmf-regrid": "benchmarks/custom_bms/README.md"
-  },
   "CITATION.cff": {
     "iris": "CITATION.cff",
     "iris-esmf-regrid": "CITATION.cff",
@@ -43,9 +31,6 @@
     "python-stratify": "CODE_OF_CONDUCT.md",
     "tephi": "CODE_OF_CONDUCT.md",
     "nc-time-axis": "CODE_OF_CONDUCT.md"
-  },
-  "github/workflows/ci-linkchecks.yml": {
-    "iris": ".github/workflows/ci-linkchecks.yml"
   },
   "LICENSE": {
     "iris": "LICENSE",
@@ -65,5 +50,57 @@
     "iris-abf": "LICENSE",
     "voted_issues": "LICENSE",
     "twitter-scitools-iris": "LICENSE"
+  },
+
+  "benchmarks/benchmarks/__init__.py": {
+    "iris": "benchmarks/benchmarks/__init__.py",
+    "iris-esmf-regrid": "benchmarks/benchmarks/__init__.py"
+  },
+  "benchmarks/benchmarks/generate_data/__init__.py": {
+    "iris": "benchmarks/benchmarks/generate_data/__init__.py",
+    "iris-esmf-regrid": "benchmarks/benchmarks/generate_data/__init__.py"
+  },
+  "benchmarks/custom_bms/install.py": {
+    "iris": "benchmarks/custom_bms/install.py",
+    "iris-esmf-regrid": "benchmarks/custom_bms/install.py"
+  },
+  "benchmarks/custom_bms/tracemallocbench.py": {
+    "iris": "benchmarks/custom_bms/tracemallocbench.py",
+    "iris-esmf-regrid": "benchmarks/custom_bms/tracemallocbench.py"
+  },
+  "benchmarks/custom_bms/README.md": {
+    "iris": "benchmarks/custom_bms/README.md",
+    "iris-esmf-regrid": "benchmarks/custom_bms/README.md"
+  },
+  "benchmarks/asv.conf.json": {
+    "iris": "benchmarks/asv.conf.json",
+    "iris-esmf-regrid": "benchmarks/asv.conf.json"
+  },
+  "benchmarks/_asv_delegated_abc.py": {
+    "iris": "benchmarks/_asv_delegated_abc.py",
+    "iris-esmf-regrid": "benchmarks/_asv_delegated_abc.py"
+  },
+  "benchmarks/asv_delegated.py": {
+    "iris": "benchmarks/asv_delegated.py",
+    "iris-esmf-regrid": "benchmarks/asv_delegated.py"
+  },
+  "benchmarks/bm_runner.py": {
+    "iris": "benchmarks/bm_runner.py",
+    "iris-esmf-regrid": "benchmarks/bm_runner.py"
+  },
+  "benchmarks/README.md": {
+    "iris": "benchmarks/README.md",
+    "iris-esmf-regrid": "benchmarks/README.md"
+  },
+
+  "github/workflows/ci-benchmarks-report.yml": {
+    "iris": ".github/workflows/benchmarks_report.yml"
+  },
+  "github/workflows/ci-benchmarks-run.yml": {
+    "iris": ".github/workflows/benchmarks_run.yml",
+    "iris-esmf-regrid": ".github/workflows/benchmark.yml"
+  },
+  "github/workflows/ci-linkchecks.yml": {
+    "iris": ".github/workflows/ci-linkchecks.yml"
   }
 }
