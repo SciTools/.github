@@ -1,8 +1,8 @@
-# Copyright {REPONAME} contributors
+# Copyright SciTools contributors
 #
-# This file is part of {REPONAME} and is released under the BSD license.
+# This file is part of SciTools and is released under the BSD license.
 # See LICENSE in the root of the repository for full licensing details.
-"""Install REPONAME's custom benchmarks for detection by ASV.
+"""Install the SciTools custom benchmarks for detection by ASV.
 
 See the requirements for being detected as an ASV plugin:
 https://asv.readthedocs.io/projects/asv-runner/en/latest/development/benchmark_plugins.html
