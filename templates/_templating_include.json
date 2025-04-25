@@ -8,6 +8,7 @@
     "iris": "MANIFEST.in",
     "iris-esmf-regrid": "MANIFEST.in",
     "iris-grib": "MANIFEST.in",
+    "mo_pack": "MANIFEST.in",
     "nc-time-axis": "MANIFEST.in",
     "python-stratify": "MANIFEST.in",
     "tephi": "MANIFEST.in",
