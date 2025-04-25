@@ -51,9 +51,9 @@ recursive-include requirements *.txt
 #---------
 # SECTION: root files
 exclude .flake8
+exclude .git-blame-ignore-revs
 exclude .git_archival.txt
 exclude .gitattributes
-exclude .git-blame-ignore-revs
 exclude .gitignore
 exclude .lycheeignore
 exclude .mailmap
@@ -62,12 +62,12 @@ exclude .readthedocs.yml
 exclude .ruff.toml
 exclude CHANGES
 include CITATION.cff
-exclude codecov.yml
 exclude CODE_OF_CONDUCT.md
 include COPYING
 include COPYING.LESSER
 include LICENSE
 exclude Makefile
+exclude codecov.yml
 include noxfile.py
     # principles:
     #    - *ANY* file in the root should be explicitly "include"- or "exclude"-d
