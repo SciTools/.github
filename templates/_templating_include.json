@@ -65,7 +65,7 @@
   },
   ".lycheeignore": {
     "iris": ".lycheeignore"
-  }
+  },
 
   "benchmarks/benchmarks/__init__.py": {
     "iris": "benchmarks/benchmarks/__init__.py",
