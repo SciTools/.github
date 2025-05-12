@@ -63,6 +63,9 @@
     "voted_issues": "LICENSE",
     "twitter-scitools-iris": "LICENSE"
   },
+  ".lycheeignore": {
+    "iris": ".lycheeignore"
+  }
 
   "benchmarks/benchmarks/__init__.py": {
     "iris": "benchmarks/benchmarks/__init__.py",
