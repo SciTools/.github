@@ -22,7 +22,7 @@
   "iris-esmf-regrid":  [
     "noxfile.py",
     "README.md",
-    "CHANGELOG.md",
+    "CHANGELOG.md"
   ],
   "cf-units" : [
     "tox.ini",
