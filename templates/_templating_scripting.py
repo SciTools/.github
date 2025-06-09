@@ -232,8 +232,8 @@ def prompt_share(args: argparse.Namespace) -> None:
         existing_issues = gh_json(
             "issue list --state all --repo SciTools/.github", "title"
         )
-        # if any(issue["title"] == title for issue in existing_issues):
-        #     return
+        if any(issue["title"] == title for issue in existing_issues):
+            return
 
         if assignee in BOTS:
             # if the author is a bot, we don't want to assign the issue to the bot
