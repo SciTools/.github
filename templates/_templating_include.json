@@ -115,6 +115,10 @@
     "iris": ".github/workflows/benchmarks_run.yml",
     "iris-esmf-regrid": ".github/workflows/benchmark.yml"
   },
+  "github/workflows/ci-benchmarks-validate.yml": {
+    "iris": ".github/workflows/benchmarks_validate.yml",
+    "iris-esmf-regrid": ".github/workflows/benchmarks_validate.yml"
+  },
   "github/workflows/ci-linkchecks.yml": {
     "iris": ".github/workflows/ci-linkchecks.yml"
   }
