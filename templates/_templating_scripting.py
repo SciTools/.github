@@ -171,7 +171,7 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     pr_number = args.pr_number
     # Can use a URL here for local debugging:
-    pr_number = "https://github.com/SciTools/iris/pull/6496"
+    # pr_number = "https://github.com/SciTools/iris/pull/6496"
 
     def split_github_url(url: str) -> tuple[str, str, str]:
         _, org, repo, _, ref = urlparse(url).path.split("/")
@@ -232,8 +232,8 @@ def prompt_share(args: argparse.Namespace) -> None:
         existing_issues = gh_json(
             "issue list --state all --repo SciTools/.github", "title"
         )
-        if any(issue["title"] == title for issue in existing_issues):
-            return
+        # if any(issue["title"] == title for issue in existing_issues):
+        #     return
 
         if assignee in BOTS:
             # if the author is a bot, we don't want to assign the issue to the bot
@@ -253,7 +253,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             issue_url = check_output(gh_command).decode("utf-8").strip()
         short_ref = url_to_short_ref(issue_url)
         # GitHub renders the full text of a cross-ref when it is in a list.
-        review_body = f"- [ ] Please see {short_ref}"
+        review_body = f"- [ ] Please see: {short_ref}"
         gh_command = shlex.split(
             f'gh pr review {pr_number} --request-changes --body "{review_body}"'
         )
@@ -317,8 +317,6 @@ def prompt_share(args: argparse.Namespace) -> None:
                 git_root,
                 git_root / "benchmarks",
                 git_root / "docs" / "src",
-                # TODO: remove, this is a demo
-                git_root / ".github" / ".github" / "workflows",
             ):
                 candidates_list.append(f"- [ ] `{changed_path}`")
 
