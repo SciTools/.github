@@ -63,8 +63,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install ASV
-        run: pip install asv
+      - name: Install run dependencies
+        run: pip install asv  # Some repos also need Nox
 
       - name: Cache environment directories
         id: cache-env-dir
