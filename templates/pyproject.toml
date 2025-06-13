@@ -20,8 +20,7 @@ classifiers = [
     "Operating System :: THIS VARIES BY REPOSITORY",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: SUPPORTED PYTHON VERSIONS",
-    # e.g "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: SUPPORTED PYTHON VERSIONS", # e.g "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
     "Topic :: Scientific/Engineering :: Atmospheric Science",
@@ -32,11 +31,12 @@ dynamic = [
     "readme",
     "version",
 ]
-description = "A powerful, format-agnostic, community-driven Python package for analysing and visualising Earth science data"
+description = "<PACKAGE_DESCRIPTION>" # e.g. Iris: A powerful, format-agnostic, community-driven Python package for analysing and visualising Earth science data
 keywords = [
     "<PACKAGE_KEYWORDS>",
 ]
-license = {text = "BSD-3-Clause"}
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
 name = "scitools-<PACKAGE_NAME>" #e.g "scitools-iris"
 requires-python = "<MIN_PYTHON_VERSION>"
 
@@ -48,45 +48,42 @@ Issues = "https://github.com/SciTools/<PACKAGE_NAME>/issues" # If issues are ena
 
 [tool.check-manifest]
 # Ignores here will vary by repository.
-ignore = []
+ignore = ["<PATH_TO_SOURCE_ROOT>/_version.py"] # e.g "lib/iris" or "cf-units"
 
 [tool.codespell]
-ignore-words-list = []
+ignore-words-list = "alpha-numeric,assertIn,degreee,discontiguities,lazyness,meaned,nin,re-use,re-uses,re-using,re-used,anc,abl,ND,Nd" # This is the full list of words that we ignore in all repositories.
 
 [tool.coverage.report]
 exclude_lines = [
     "pragma: no cover",
-    "def __repr__",
     "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
 ]
 
 [tool.coverage.run]
 branch = true
 include = [
-    "<PACKAGE_NAME>/*",
+    "<PATH_TO_PACKAGE>/*", # e.g "cf_units/*" or "lib/iris/*"
 ]
 omit = [
     "<PATH_TO_TESTS>/*", # e.g "cf_units/tests/*" or "lib/iris/tests/*"
 ]
 
 [tool.mypy]
+# https://mypy.readthedocs.io/en/stable/error_code_list2.html
 disable_error_code = [] # Include any error codes that you want to ignore
 enable_error_code = [
     "ignore-without-code",
-    # "redundant-expr",		# TODO: Add back in when above ignores fixed
+    "redundant-expr",
     "truthy-bool",
 ]
-exclude = [
-]
-ignore_missing_imports = true
 strict = true
 warn_unreachable = true
-warn_unused_configs = true
-warn_unused_ignores = true
 
 [tool.numpydoc_validation]
 # We have agreed a that some of the numpydoc rules that we are going to ignore.
 # Our repositories are going to have extra rules that they are ignoring that is expected, but they are not included here.
+# https://numpydoc.readthedocs.io/en/latest/validation.html#validation-checks
 checks = [
     "all",  # Enable all numpydoc validation rules, apart from the following:
 
@@ -125,9 +122,8 @@ exclude = [
     '\.__repr__$',
 ]
 
-[tool.pytest.ini_options]
-# This list varies by repository
-addopts = ["-ra", "-v", "--strict-config", "--strict-markers", "--doctest-modules"]
+[tool.pytest.ini_options] # The list of keys vary by repository
+addopts = ["-ra", "-v", "--strict-config", "--strict-markers", "--doctest-modules"] # This addopts list varies by repository
 testpaths = "<PATH_TO_MAIN_CODE>" # e.g "cf_units" or "lib/iris"
 
 [tool.repo-review]
@@ -172,25 +168,17 @@ max-complexity = 22
 
 [tool.ruff.lint.per-file-ignores]
 # All test scripts
-"cf_units/tests/*.py" = [
-    # https://docs.astral.sh/ruff/rules/undocumented-public-module/
-    "D104",  # Missing docstring in public module
-    "D106",  # Missing docstring in public nested class
+"<PATH_TO_TESTS>/*.py" = [ # e.g "cf_units/tests" or "lib/iris/tests"
+    # https://docs.astral.sh/ruff/rules
+    "D100",  # Missing docstring in public module
     "D205",  # 1 blank line required between summary line and description
     "D401",  # 1 First line of docstring should be in imperative mood
-    "SLOT000",  # Subclasses of `str` should define `__slots__`
-    "N999",  # Invalid module name
-]
-"setup.py" = [
-    "FBT003",  # Boolean positional value in function call
-    "ICN001",  # `numpy` should be imported as `np`
 ]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
 [tool.setuptools]
-license-files = ["LICENSE"]
 zip-safe = false
 
 [tool.setuptools.dynamic]
@@ -198,8 +186,11 @@ dependencies = {file = "MAIN_REQUIREMENTS_FILE"} # e.g requirements/pypi-core.tx
 readme = {file = "README.md", content-type = "text/markdown"}
 
 [tool.setuptools.packages.find]
-include = ["<PACKAGE_NAME>"]
+include = ["<PACKAGE_NAME>"] # e.g. "cf_units" or "iris"
+where = ["<PARENT_DIRECTORY>"] # e.g. "lib" (not needed for 'root repos' like cf-units)
 
 [tool.setuptools_scm]
 local_scheme = "dirty-tag"
+# https://setuptools-scm.readthedocs.io/en/latest/extending/#version-number-construction
+version_scheme = "<CORRECT_SETTING>" # e.g. Iris = "release-branch-semver"
 write_to = "<PATH_TO_SOURCE_ROOT>/_version.py" # e.g "lib/iris" or "cf-units"
