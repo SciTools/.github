@@ -24,7 +24,8 @@
     "python-stratify": ".pre-commit-config.yaml",
     "tephi": ".pre-commit-config.yaml",
     "workflows": ".pre-commit-config.yaml",
-    "test-iris-imagehash": ".pre-commit-config.yaml"
+    "test-iris-imagehash": ".pre-commit-config.yaml",
+    "mo_pack": ".pre-commit-config.yaml"
   },
   
   "CITATION.cff": {
@@ -34,7 +35,8 @@
     "nc-time-axis": "CITATION.cff",
     "tephi": "CITATION.cff",
     "iris-grib": "CITATION.cff",
-    "cf-units": "CITATION.cff"
+    "cf-units": "CITATION.cff",
+    "mo_pack": "CITATION.cff"
   },
   "CODE_OF_CONDUCT.md": {
     "iris": "CODE_OF_CONDUCT.md",
@@ -43,7 +45,8 @@
     "iris-esmf-regrid": "CODE_OF_CONDUCT.md",
     "python-stratify": "CODE_OF_CONDUCT.md",
     "tephi": "CODE_OF_CONDUCT.md",
-    "nc-time-axis": "CODE_OF_CONDUCT.md"
+    "nc-time-axis": "CODE_OF_CONDUCT.md",
+    "mo_pack": "CODE_OF_CONDUCT.md"
   },
   "LICENSE": {
     "iris": "LICENSE",
