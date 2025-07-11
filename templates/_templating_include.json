@@ -26,6 +26,7 @@
     "workflows": ".pre-commit-config.yaml",
     "test-iris-imagehash": ".pre-commit-config.yaml"
   },
+  
   "CITATION.cff": {
     "iris": "CITATION.cff",
     "iris-esmf-regrid": "CITATION.cff",
@@ -107,7 +108,6 @@
     "iris": "benchmarks/README.md",
     "iris-esmf-regrid": "benchmarks/README.md"
   },
-
   "github/workflows/ci-benchmarks-report.yml": {
     "iris": ".github/workflows/benchmarks_report.yml"
   },
@@ -121,5 +121,19 @@
   },
   "github/workflows/ci-linkchecks.yml": {
     "iris": ".github/workflows/ci-linkchecks.yml"
+  },
+  "pyproject.toml": {
+    "iris": "pyproject.toml",
+    "iris-esmf-regrid": "pyproject.toml",
+    "iris-grib": "pyproject.toml",
+    "nc-time-axis": "pyproject.toml",
+    "python-stratify": "pyproject.toml",
+    "tephi": "pyproject.toml",
+    "cf-units": "pyproject.toml",
+    "workflows": "pyproject.toml",
+    "mo-pack": "pyproject.toml",
+    "test-iris-imagehash": "pyproject.toml",
+    "iris-sample-data": "pyproject.toml",
+    "iris-abfs": "pyproject.toml"
   }
 }

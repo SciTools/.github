@@ -1,0 +1,202 @@
+[build-system]
+# Defined by PEP 518
+requires = [
+# Some packages will require extra additions to this list. E.g "Cython" or "Numpy"
+  "setuptools>=77.0.3",
+  "setuptools_scm[toml]>=8",
+  "wheel"
+]
+# Defined by PEP 517
+build-backend = "setuptools.build_meta"
+
+[project]
+authors = [
+    {name = "<PACKAGE_NAME> Contributors", email = "scitools.pub@gmail.com"},
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Operating System :: THIS VARIES BY REPOSITORY",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: SUPPORTED PYTHON VERSIONS", # e.g "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Topic :: Scientific/Engineering :: VARIES BY REPOSITORY",
+]
+dynamic = [
+    "dependencies",
+    "readme",
+    "version",
+]
+description = "<PACKAGE_DESCRIPTION>" # e.g. Iris: A powerful, format-agnostic, community-driven Python package for analysing and visualising Earth science data
+keywords = [
+    "<PACKAGE_KEYWORDS>",
+]
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+name = "scitools-<PACKAGE_NAME>" #e.g "scitools-iris"
+requires-python = "<MIN_PYTHON_VERSION>"
+
+[project.urls]
+Code = "https://github.com/SciTools/<PACKAGE_NAME>"
+Discussions = "https://github.com/SciTools/<PACKAGE_NAME>/discussions" # If discussions are enabled.
+Documentation = "https://scitools-iris.readthedocs.io/" # If you have a documentation site.
+Issues = "https://github.com/SciTools/<PACKAGE_NAME>/issues" # If issues are enabled.
+
+[tool.check-manifest]
+# Ignores here will vary by repository.
+ignore = ["<PATH_TO_SOURCE_ROOT>/_version.py"] # e.g "lib/iris" or "cf-units"
+
+[tool.codespell]
+ignore-words-list = "alpha-numeric,assertIn,degreee,discontiguities,lazyness,meaned,nin,re-use,re-uses,re-using,re-used,anc,abl,ND,Nd" # This is the full list of words that we ignore in all repositories.
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.coverage.run]
+branch = true
+include = [
+    "<PATH_TO_PACKAGE>/*", # e.g "cf_units/*" or "lib/iris/*"
+]
+omit = [
+    "<PATH_TO_TESTS>/*", # e.g "cf_units/tests/*" or "lib/iris/tests/*"
+]
+
+[tool.mypy]
+# https://mypy.readthedocs.io/en/stable/error_code_list2.html
+disable_error_code = [] # Include any error codes that you want to ignore
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+]
+strict = true
+warn_unreachable = true
+
+[tool.numpydoc_validation]
+# We have agreed a that some of the numpydoc rules that we are going to ignore.
+# Our repositories are going to have extra rules that they are ignoring that is expected, but they are not included here.
+# https://numpydoc.readthedocs.io/en/latest/validation.html#validation-checks
+checks = [
+    "all",  # Enable all numpydoc validation rules, apart from the following:
+
+    # -> Docstring text (summary) should start in the line immediately
+    #    after the opening quotes (not in the same line, or leaving a
+    #    blank line in between)
+    # Reason for ignore: A chosen house-style
+    "GL01",  # Permit summary line on same line as docstring opening quotes.
+
+    # -> Closing quotes should be placed in the line after the last text
+    #    in the docstring (do not close the quotes in the same line as
+    #    the text, or leave a blank line between the last text and the
+    # quotes)
+    # Reason for ignore: A chosen house-style
+    "GL02",  # Permit a blank line before docstring closing quotes.
+
+    #    -> Double line break found; please use only one blank line to
+    #    separate sections or paragraphs, and do not leave blank lines
+    #    at the end of docstrings
+    # Reason for ignore: We benefit from more flexability in formatting
+    "GL03",  # Ignoring.
+
+    # -> See Also section not found
+    "SA01",  # Not all docstrings require a "See Also" section.
+
+    # -> No extended summary found
+    "ES01",  # Not all docstrings require an "Extended Summary" section.
+
+    # -> No examples section found
+    "EX01",  # Not all docstrings require an "Examples" section.
+
+    # -> No Yields section found
+    "YD01",  # Not all docstrings require a "Yields" section.
+
+]
+exclude = [
+    '\.__eq__$',
+    '\.__ne__$',
+    '\.__repr__$',
+]
+
+[tool.pytest.ini_options] # The list of keys vary by repository
+addopts = ["-ra", "-v", "--strict-config", "--strict-markers", "--doctest-modules"] # This addopts list varies by repository
+testpaths = "<PATH_TO_MAIN_CODE>" # e.g "cf_units" or "lib/iris"
+
+[tool.repo-review]
+# A list of the currently failing repo-review checks, to be fixed later, different for every repository.
+ignore = [
+    # https://learn.scientific-python.org/development/guides/style/#PC180
+    # Not possible to run on the hardware used by the majority of our developers. Might change in future!
+    "PC180", # Uses prettier.
+]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.format]
+preview = false
+
+[tool.ruff.lint]
+# We have agreed that we will permanently ignore the ruff rules in this ignore list.
+ignore = [
+    # NOTE: Non-permanent exclusions should be added to the ".ruff.toml" file.
+
+    # flake8-commas (COM)
+    # https://docs.astral.sh/ruff/rules/#flake8-commas-com
+    "COM812",  # Trailing comma missing.
+    "COM819",  # Trailing comma prohibited.
+
+    # flake8-implicit-str-concat (ISC)
+    # https://docs.astral.sh/ruff/rules/single-line-implicit-string-concatenation/
+    # NOTE: This rule may cause conflicts when used with "ruff format".
+    "ISC001",  # Implicitly concatenate string literals on one line.
+]
+preview = false
+select = [
+    "ALL",
+    # Note: the above "all" disables conflicting rules, if you want that
+    # rule it needs to be explicitly enabled below:
+    "D212",  # Multi-line docstring summary should start at the first line
+]
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["<PACKAGE_NAME>"]  # e.g "iris" or "cf_units"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 22
+
+[tool.ruff.lint.per-file-ignores]
+# All test scripts
+"<PATH_TO_TESTS>/*.py" = [ # e.g "cf_units/tests" or "lib/iris/tests"
+    # https://docs.astral.sh/ruff/rules
+    "D100",  # Missing docstring in public module
+    "D205",  # 1 blank line required between summary line and description
+    "D401",  # 1 First line of docstring should be in imperative mood
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.dynamic]
+dependencies = {file = "MAIN_REQUIREMENTS_FILE"} # e.g requirements/pypi-core.txt
+readme = {file = "README.md", content-type = "text/markdown"}
+
+[tool.setuptools.packages.find]
+include = ["<PACKAGE_NAME>"] # e.g. "cf_units" or "iris"
+where = ["<PARENT_DIRECTORY>"] # e.g. "lib" (not needed for 'root repos' like cf-units)
+
+[tool.setuptools_scm]
+local_scheme = "dirty-tag"
+# https://setuptools-scm.readthedocs.io/en/latest/extending/#version-number-construction
+version_scheme = "<CORRECT_SETTING>" # e.g. Iris = "release-branch-semver"
+write_to = "<PATH_TO_SOURCE_ROOT>/_version.py" # e.g "lib/iris" or "cf-units"
