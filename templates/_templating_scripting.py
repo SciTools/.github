@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 # A mechanism for disabling the issues and comments if the dev team is
 #  deliberately doing intense work on templates and templated files (the volume
 #  of un-actioned notifications would be overwhelming).
-SPRING_CLEANING = False
+SPRING_CLEANING = True
 
 SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
