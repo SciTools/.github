@@ -3,6 +3,18 @@
   "_templating_exclude.json": {},
   "_templating_scripting.py": {},
   "README.md": {},
+  "MANIFEST.in": {
+    "cf-units": "MANIFEST.in",
+    "iris": "MANIFEST.in",
+    "iris-esmf-regrid": "MANIFEST.in",
+    "iris-grib": "MANIFEST.in",
+    "mo_pack": "MANIFEST.in",
+    "nc-time-axis": "MANIFEST.in",
+    "python-stratify": "MANIFEST.in",
+    "tephi": "MANIFEST.in",
+    "workflows": "MANIFEST.in",
+    "test-iris-imagehash": "MANIFEST.in"
+  },
   ".pre-commit-config.yaml": {
     "cf-units": ".pre-commit-config.yaml",
     "iris": ".pre-commit-config.yaml",
@@ -14,6 +26,48 @@
     "workflows": ".pre-commit-config.yaml",
     "test-iris-imagehash": ".pre-commit-config.yaml"
   },
+  
+  "CITATION.cff": {
+    "iris": "CITATION.cff",
+    "iris-esmf-regrid": "CITATION.cff",
+    "python-stratify": "CITATION.cff",
+    "nc-time-axis": "CITATION.cff",
+    "tephi": "CITATION.cff",
+    "iris-grib": "CITATION.cff",
+    "cf-units": "CITATION.cff"
+  },
+  "CODE_OF_CONDUCT.md": {
+    "iris": "CODE_OF_CONDUCT.md",
+    "iris-grib": "CODE_OF_CONDUCT.md",
+    "cf-units": "CODE_OF_CONDUCT.md",
+    "iris-esmf-regrid": "CODE_OF_CONDUCT.md",
+    "python-stratify": "CODE_OF_CONDUCT.md",
+    "tephi": "CODE_OF_CONDUCT.md",
+    "nc-time-axis": "CODE_OF_CONDUCT.md"
+  },
+  "LICENSE": {
+    "iris": "LICENSE",
+    "iris-grib": "LICENSE",
+    "tephi": "LICENSE",
+    "python-stratify": "LICENSE",
+    "iris-esmf-regrid": "LICENSE",
+    "cf-units": "LICENSE",
+    "nc-time-axis": "LICENSE",
+    "test-iris-imagehash": "LICENSE",
+    "libmo_unpack": "LICENSE",
+    ".github": "LICENSE",
+    "workflows": "LICENSE",
+    "mo_pack": "LICENSE",
+    "marketing": "LICENSE",
+    "test-tephi-imagehash": "LICENSE",
+    "iris-abf": "LICENSE",
+    "voted_issues": "LICENSE",
+    "twitter-scitools-iris": "LICENSE"
+  },
+  ".lycheeignore": {
+    "iris": ".lycheeignore"
+  },
+
   "benchmarks/benchmarks/__init__.py": {
     "iris": "benchmarks/benchmarks/__init__.py",
     "iris-esmf-regrid": "benchmarks/benchmarks/__init__.py"
@@ -60,6 +114,10 @@
   "github/workflows/ci-benchmarks-run.yml": {
     "iris": ".github/workflows/benchmarks_run.yml",
     "iris-esmf-regrid": ".github/workflows/benchmark.yml"
+  },
+  "github/workflows/ci-benchmarks-validate.yml": {
+    "iris": ".github/workflows/benchmarks_validate.yml",
+    "iris-esmf-regrid": ".github/workflows/benchmarks_validate.yml"
   },
   "github/workflows/ci-linkchecks.yml": {
     "iris": ".github/workflows/ci-linkchecks.yml"

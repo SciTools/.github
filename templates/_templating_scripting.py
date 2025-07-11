@@ -170,6 +170,8 @@ def prompt_share(args: argparse.Namespace) -> None:
         return json.loads(check_output(command))
 
     pr_number = args.pr_number
+    # Can use a URL here for local debugging:
+    # pr_number = "https://github.com/SciTools/iris/pull/6496"
 
     def split_github_url(url: str) -> tuple[str, str, str]:
         _, org, repo, _, ref = urlparse(url).path.split("/")
@@ -250,11 +252,41 @@ def prompt_share(args: argparse.Namespace) -> None:
             )
             issue_url = check_output(gh_command).decode("utf-8").strip()
         short_ref = url_to_short_ref(issue_url)
-        review_body = f"Please see {short_ref}"
+        # GitHub renders the full text of a cross-ref when it is in a list.
+        review_body = f"- [ ] Please see: {short_ref}"
         gh_command = shlex.split(
             f'gh pr review {pr_number} --request-changes --body "{review_body}"'
         )
         run(gh_command, check=True)
+
+    issue_title = f"Share {pr_short_ref} changes via templating?"
+
+    templates_relative = TEMPLATES_DIR.relative_to(TEMPLATE_REPO_ROOT)
+    templates_url = f"{SCITOOLS_URL}/.github/tree/main/{templates_relative}"
+    body_intro = (
+        f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates/README.md)\n\n"
+        f"{pr_short_ref} (by @{author}) includes changes that may be worth "
+        "sharing via templating. For each file listed below, please "
+        "either:\n\n"
+        "- Action the suggestion via a pull request editing/adding the "
+        f"relevant file in the [templates directory]({templates_url}).\n"
+        "- Dismiss the suggestion if the changes are not suitable for "
+        "templating."
+    )
+
+    templated_list = []
+    body_templated = (
+        "\n### Templated files\n\n"
+        "The following changed files are templated:\n"
+    )
+
+    candidates_list = []
+    body_candidates = (
+        "\n### Template candidates\n\n"
+        "The following changed files are not currently templated, but their "
+        "parent directories suggest they may be good candidates for "
+        "a new template to be created:\n"
+    )
 
     for changed_path in changed_paths:
         template = CONFIG.find_template(pr_repo, changed_path)
@@ -269,21 +301,10 @@ def prompt_share(args: argparse.Namespace) -> None:
             )
             template_link = f"[`{template_relative}`]({template_url})"
 
-            issue_title = (
-                f"Apply {pr_short_ref} `{changed_path}` improvements to "
-                f"`{template_relative}`?"
+            templated_list.append(
+                f"- [ ] `{changed_path}`, templated by {template_link}"
             )
 
-            issue_body = (
-                f"{pr_short_ref} (by @{author}) includes changes to "
-                f"`{changed_path}`. This file is templated by {template_link}. "
-                "Please either:\n\n"
-                "- Action this issue with a pull request applying the changes "
-                f"to {template_link}.\n"
-                "- Close this issue if the changes are not suitable for "
-                "templating."
-            )
-            create_issue(issue_title, issue_body)
         else:
             # Check if the file is in 'highly templated' locations. If so, worth
             #  prompting the user anyway.
@@ -297,27 +318,19 @@ def prompt_share(args: argparse.Namespace) -> None:
                 git_root / "benchmarks",
                 git_root / "docs" / "src",
             ):
-                issue_title = (
-                    f"Share {pr_short_ref} `{changed_path}` improvements via "
-                    f"templating?"
-                )
+                candidates_list.append(f"- [ ] `{changed_path}`")
 
-                templates_relative = TEMPLATES_DIR.relative_to(TEMPLATE_REPO_ROOT)
-                templates_url = f"{SCITOOLS_URL}/.github/tree/main/{templates_relative}"
-                templates_link = f"[`{templates_relative}/`]({templates_url})"
-                issue_body = (
-                    f"{pr_short_ref} (by @{author}) includes changes to "
-                    f"`{changed_path}`. This file is not currently templated, "
-                    "but its parent directory suggests it may be a good "
-                    "candidate. Please either:\n\n"
-                    "- Action this issue with a pull request adding a template "
-                    f"file to {templates_link}.\n"
-                    "- Close this issue if the file is not a good candidate "
-                    "for templating."
-                )
-                create_issue(issue_title, issue_body)
-            else:
-                continue
+    if templated_list or candidates_list:
+        body_args = [body_intro]
+        if templated_list:
+            body_args.append(body_templated)
+            body_args.extend(templated_list)
+        if candidates_list:
+            body_args.append(body_candidates)
+            body_args.extend(candidates_list)
+
+        issue_body = "\n".join(body_args)
+        create_issue(issue_title, issue_body)
 
 
 def check_dir(args: argparse.Namespace) -> None:
