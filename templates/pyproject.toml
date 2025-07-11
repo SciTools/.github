@@ -89,17 +89,20 @@ checks = [
     # -> Docstring text (summary) should start in the line immediately
     #    after the opening quotes (not in the same line, or leaving a
     #    blank line in between)
+    # Reason for ignore: A chosen house-style
     "GL01",  # Permit summary line on same line as docstring opening quotes.
 
     # -> Closing quotes should be placed in the line after the last text
     #    in the docstring (do not close the quotes in the same line as
     #    the text, or leave a blank line between the last text and the
     # quotes)
+    # Reason for ignore: A chosen house-style
     "GL02",  # Permit a blank line before docstring closing quotes.
 
     #    -> Double line break found; please use only one blank line to
     #    separate sections or paragraphs, and do not leave blank lines
     #    at the end of docstrings
+    # Reason for ignore: We benefit from more flexability in formatting
     "GL03",  # Ignoring.
 
     # -> See Also section not found
@@ -127,7 +130,11 @@ testpaths = "<PATH_TO_MAIN_CODE>" # e.g "cf_units" or "lib/iris"
 
 [tool.repo-review]
 # A list of the currently failing repo-review checks, to be fixed later, different for every repository.
-ignore = []
+ignore = [
+    # https://learn.scientific-python.org/development/guides/style/#PC180
+    # Not possible to run on the hardware used by the majority of our developers. Might change in future!
+    "PC180", # Uses prettier.
+]
 
 [tool.ruff]
 line-length = 88
