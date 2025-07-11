@@ -2,8 +2,8 @@
 # Defined by PEP 518
 requires = [
 # Some packages will require extra additions to this list. E.g "Cython" or "Numpy"
-  "setuptools>=61",
-  "setuptools_scm[toml]>=7",
+  "setuptools>=77.0.3",
+  "setuptools_scm[toml]>=8",
   "wheel"
 ]
 # Defined by PEP 517
@@ -16,7 +16,6 @@ authors = [
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: BSD License",
     "Operating System :: THIS VARIES BY REPOSITORY",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3 :: Only",
