@@ -2,8 +2,10 @@
 """Commands and scripts for administrating templating of files across SciTools repos.
 """
 import argparse
+import contextlib
 import json
 from pathlib import Path
+import re
 import shlex
 from subprocess import CalledProcessError, check_output, run
 from tempfile import NamedTemporaryFile
@@ -21,10 +23,19 @@ TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
 # ensure any new bots have both a "app/" prefix and a "[bot]" postfix version
 BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-commit-ci"]
 
+_MAGIC_PREFIX = "@scitools-templating: please"
+MAGIC_NO_PROMPT = re.compile(rf"{_MAGIC_PREFIX} no share prompt")
+MAGIC_NO_NOTIFY = re.compile(rf"{_MAGIC_PREFIX} no update notification on: (\w+)")
+
 
 def git_command(command: str) -> str:
     command = shlex.split(f"git {command}")
     return check_output(command).decode("utf-8").strip()
+
+
+def gh_json(sub_command: str, field: str) -> dict:
+    command = shlex.split(f"gh {sub_command} --json {field}")
+    return json.loads(check_output(command))
 
 
 class Config:
@@ -82,6 +93,20 @@ def notify_updates(args: argparse.Namespace) -> None:
         )
         return
 
+    # Check if the commit's PR (if applicable) had a magic no-notify comment.
+    repo_exclude = ""  # Default to no repo exclusion.
+    commit_sha = git_command("rev-parse HEAD")
+    pr_list = gh_json(
+        f"pr list --search {commit_sha} --state merged --json number", "number"
+    )
+    if pr_list:
+        (pr,) = pr_list
+        pr_number = pr["number"]
+        pr_body = gh_json(f"pr view {pr_number}", "body")["body"]
+        search = MAGIC_NO_NOTIFY.search(pr_body)
+        with contextlib.suppress(AttributeError, IndexError):
+            repo_exclude = search.group(1)
+
     def git_diff(*args: str) -> str:
         command = "diff HEAD^ HEAD " + " ".join(args)
         return git_command(command)
@@ -92,6 +117,9 @@ def notify_updates(args: argparse.Namespace) -> None:
     changed_templates = [
         file for file in changed_files if file.is_relative_to(TEMPLATES_DIR)
     ]
+
+    # DEBUG
+    # changed_templates = [TEMPLATES_DIR / "LICENSE"]
 
     for template in changed_templates:
         templatees = CONFIG.templates[template]
@@ -107,6 +135,13 @@ def notify_updates(args: argparse.Namespace) -> None:
         )
         template_link = f"[`{template_relative}`]({template_url})"
         for repo, path_in_repo in templatees:
+            if repo.casefold() == repo_exclude.casefold():
+                print(
+                    f"Skipping {repo} because it is excluded by the magic "
+                    "no-notify comment."
+                )
+                continue
+
             file_url = f"{SCITOOLS_URL}/{repo}/blob/main/{path_in_repo}"
             file_link = f"[`{path_in_repo}`]({file_url})"
             issue_body = (
@@ -114,7 +149,7 @@ def notify_updates(args: argparse.Namespace) -> None:
                 "diff below. Please either:\n\n"
                 
                 "- Action this issue with a pull request applying some/all of "
-                f"these changes to `{path_in_repo}`.\n"
+                f"these changes to `{path_in_repo}`[^1].\n"
                 "- Close this issue if _none_ of these changes are appropriate "
                 "for this repo.\n\n"
                 "Also consider reviewing a full diff between the template and "
@@ -127,7 +162,11 @@ def notify_updates(args: argparse.Namespace) -> None:
                 # TODO: a link to the whole diff compared to the template?
 
                 "## Diff\n\n"
-                f"```diff\n{diff}\n```"
+                f"```diff\n{diff}\n```\n\n"
+                
+                "[^1]: **Include this text in the PR body to avoid any prompts "
+                "about applying your changes back to the template!**\n"
+                f"``{MAGIC_NO_PROMPT.pattern}``"
             )
             with NamedTemporaryFile("w") as file_write:
                 file_write.write(issue_body)
@@ -165,13 +204,17 @@ def prompt_share(args: argparse.Namespace) -> None:
         )
         return
 
-    def gh_json(sub_command: str, field: str) -> dict:
-        command = shlex.split(f"gh {sub_command} --json {field}")
-        return json.loads(check_output(command))
-
     pr_number = args.pr_number
     # Can use a URL here for local debugging:
     # pr_number = "https://github.com/SciTools/iris/pull/6496"
+
+    body = gh_json(f"pr view {pr_number}", "body")["body"]
+    if MAGIC_NO_PROMPT.search(body):
+        print(
+            f"Skipping PR {pr_number} because the body contains the magic "
+            "no-share-prompt comment."
+        )
+        return
 
     def split_github_url(url: str) -> tuple[str, str, str]:
         _, org, repo, _, ref = urlparse(url).path.split("/")
@@ -269,7 +312,7 @@ def prompt_share(args: argparse.Namespace) -> None:
         "sharing via templating. For each file listed below, please "
         "either:\n\n"
         "- Action the suggestion via a pull request editing/adding the "
-        f"relevant file in the [templates directory]({templates_url}).\n"
+        f"relevant file in the [templates directory]({templates_url}). [^1]\n"
         "- Dismiss the suggestion if the changes are not suitable for "
         "templating."
     )
@@ -328,6 +371,15 @@ def prompt_share(args: argparse.Namespace) -> None:
         if candidates_list:
             body_args.append(body_candidates)
             body_args.extend(candidates_list)
+
+        pattern = MAGIC_NO_NOTIFY.pattern
+        pattern_repo = ": ".join(pattern.split(": ")[:-1] + [pr_repo])
+        body_args.append(
+            "\n\n[^1]: **Include this text in the PR body to avoid any "
+            "notifications about applying the template changes back to the "
+            "source repo!**\n"
+            f"``{pattern_repo}``"
+        )
 
         issue_body = "\n".join(body_args)
         create_issue(issue_title, issue_body)
