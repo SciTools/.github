@@ -372,8 +372,8 @@ def prompt_share(args: argparse.Namespace) -> None:
             body_args.append(body_candidates)
             body_args.extend(candidates_list)
 
-        pattern = MAGIC_NO_NOTIFY.pattern
-        pattern_repo = ": ".join(pattern.split(": ")[:-1] + [pr_repo])
+        tag, prose, word = MAGIC_NO_NOTIFY.pattern.split(": ")
+        pattern_repo = ": ".join([tag, prose, pr_repo])
         body_args.append(
             "\n\n[^1]: **Include this text in the PR body to avoid any "
             "notifications about applying the template changes back to the "
