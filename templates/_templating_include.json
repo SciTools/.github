@@ -11,9 +11,7 @@
     "mo_pack": "MANIFEST.in",
     "nc-time-axis": "MANIFEST.in",
     "python-stratify": "MANIFEST.in",
-    "tephi": "MANIFEST.in",
-    "workflows": "MANIFEST.in",
-    "test-iris-imagehash": "MANIFEST.in"
+    "tephi": "MANIFEST.in"
   },
   ".pre-commit-config.yaml": {
     "cf-units": ".pre-commit-config.yaml",
