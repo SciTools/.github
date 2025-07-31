@@ -25,7 +25,7 @@ BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-comm
 
 _MAGIC_PREFIX = "@scitools-templating: please"
 MAGIC_NO_PROMPT = re.compile(rf"{_MAGIC_PREFIX} no share prompt")
-MAGIC_NO_NOTIFY = re.compile(rf"{_MAGIC_PREFIX} no update notification on: (\w+)")
+MAGIC_NO_NOTIFY = re.compile(rf"{_MAGIC_PREFIX} no update notification on: ([\w-]+)")
 
 
 def git_command(command: str) -> str:
