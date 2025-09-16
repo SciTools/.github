@@ -1,66 +1,30 @@
-Privacy policy pending feedback from legal experts.
+# Privacy Policy
 
-The below is adapted from the privacy policy at https://scitools.org.uk/privacy.html, updated having checked https://www.metoffice.gov.uk/policies/privacy. Edits are shown using ~~strikethrough~~ and <ins>underline</ins>.
+Collaborative software development via GitHub involves sharing certain personal data. The types of this personal data may vary depending on how a person interacts with the repositories, but typically include the below:
 
-- I can see that there are large text blocks missing when compared to the one on metoffice.gov.uk - I cannot tell if this is deviation over the passage of time, or whether these blocks are considered not applicable to our case?
-- What is the correct way to reference GitHub's own privacy policies?
-- What is the correct way to reference that the Contributor Licence Agreement is handled by a third party, which includes independent data storage?
-  - [From the CLA](https://cla-assistant.io/SciTools/): "Your GitHub username will also be recorded on the CLA Assistant database to permit Developers of SciTools Projects to ascertain that your Contribution is covered by a signed CLA. Your Personal Data will be stored on a Cosmos DB (MongoDB compatible) database hosted on Microsoft Azure in Europe and owned by CLA Assistant. For further information, please see Microsoft’s 🔗 Privacy Policy and 🔗 CLA Assistant on GitHub."
-  - We also periodically download the data from the CLA onto Met Office machinery, just in case the service goes down.
+- GitHub username, together with public profile information
+  ([GitHub: About your profile](https://docs.github.com/en/account-and-profile/concepts/about-your-profile))
+- Name and email address, as recorded in commits
+  - ([GitHub: Setting your username in Git](https://docs.github.com/en/get-started/git-basics/setting-your-username-in-git))
+  - ([GitHub: Setting your commit email address](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-email-preferences/setting-your-commit-email-address))
+- Any other personal data a person chooses to share in text bodies that they write:
+  - Code comments
+  - Documentation
+  - Git commit messages
+  - GitHub issues, pull requests, discussions, etcetera.
 
----
+Personal data shared on the SciTools GitHub repositories is covered by the privacy policies listed below.
 
-The Met Office takes the privacy of its customers very seriously. This privacy policy explains how we use any personal information we collect about you when you use ~~this website scitools.org.uk~~ <ins>the SciTools GitHub organizations (SciTools, SciTools-incubator, SciTools-classroom).</ins> ~~We also comply fully with the Data Protection Act 1998 (the "Act").~~
+## Met Office
 
-~~For the purposes of the Act,~~ The data controller is the Met Office, FitzRoy Road, Exeter, Devon, EX1 3PB <ins>on behalf of the Department for Science, Innovation and Technology of the United Kingdrom of Great Britain and Northern Ireland. The Met Office is an Executive Agency of DSIT and is registered with the Supervisory Authority (in the name of DSIT), Registration No. ZB546218.</ins> ~~The Met Office is an Executive Agency of the United Kingdom's Department for Business, Innovations and Skills. The Met Office is registered under the Data Protection Act 1998 (in the name of the Department for Business Innovation and Skills), Registration No. Z1839175.~~
+The Met Office will collect, use and process your personal data for the purposes of supporting the development of the SciTools Projects and recording ownership of contributions. Your personal data will be processed in accordance with the [Met Office Privacy Policy](https://www.metoffice.gov.uk/policies/privacy). The legal basis for processing is **contractual necessity**.
 
-### <ins>The right to lodge a complaint with the Supervisory Authority:</ins>
+## GitHub
 
-<ins>If you have any concerns relating to the handling of your personal data, you may refer the matter to the Supervisory Authority, the Information Commissioner’s Office, who can be contacted at: Information Commissioner's Office, Wycliffe House, Water Lane, Wilmslow, Cheshire, SK9 5AF https://ico.org.uk/.  Telephone: 0303 123 1113.</ins>
+Your personal data will be stored on GitHub repositories and may therefore result in data leaving the UK / European Economic Area. For further information, please see the [GitHub General Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
 
-## Personal information we collect about you
+## CLA Assistant
 
-We may collect and process the following data about you:
+Your GitHub username will also be recorded on the CLA Assistant database. This data is stored on a Cosmos DB (MongoDB compatible) database hosted on Microsoft Azure in Europe. For further information, please see the [Microsoft Privacy Statement](https://privacy.microsoft.com/en-gb/privacystatement) and [CLA Assistant on GitHub](https://github.com/cla-assistant/cla-assistant).
 
- - Information that you provide <ins>when agreeing to the SciTools Contributor Licence Agreement.</ins>~~by filling in the Contributor Licence Agreement form.~~
- - <ins>Information that you provide to us when posting content on GitHub.</ins>
- - Information that you provide to us when you write to us (including by email and fax) or when we speak to you by telephone.
-
-## How we may use information about you
-
-We may use information about you in the following ways:
-
- - To carry out our obligations and enforce our rights arising from any contracts entered into between you and us.
- - To process source code contributions.
- - To contact you so you can review your stored personal details.
- - To contact you regarding events about Scitools library development.
-
-We do not sell or rent out personal information to any other organisations.
-
-## Where we store and process your personal information
-
-The Met Office is responsible for the processing of your personal information <ins>and is based in the United Kingdom (UK)</ins>.
-
-~~We will take all steps reasonably necessary to ensure that your information is treated securely and in accordance with this privacy policy.~~
-
-<ins>We will not transfer your personal information outside the UK or European Economic Area (EEA) unless suitable safeguards are in place.</ins> ~~Your personal information will not be transferred abroad, but your GitHub profile name will be published on the website so source code contributions can be processed by the Developers.~~
-
-<ins>GitHub users with the `admin` role for the SciTools organization will have access to the details you provide when agreeing to the SciTools Contributor Licence Agreement (CLA)</ins> ~~CLA Administrators will have access to all your personal data.~~ This is to permit processing of the CLA. ~~and publication of your GitHub profile name for the Developers.~~
-
-## Cookies
-
-<ins>See: https://docs.github.com/en/site-policy/privacy-policies/github-cookies</ins> ~~We do not collect cookies on this site.~~
-
-## Access to your information and correction
-
-Access to personal information which we may hold about you can be requested in writing to the Data Protection Officer at the address below or by sending an email to <ins>legal@metoffice.gov.uk</ins> ~~dataprotection@metoffice.gov.uk~~. We may require proof of identity in relation to any such request and may also make a small charge for this service.
-
-Data Protection Officer
-Met Office
-FitzRoy Road
-Exeter
-Devon
-EX1 3PB
-United Kingdom
-
-We want to make sure that your personal information is accurate and up to date. You may ask us to correct or remove information you think is inaccurate.
+View the CLA here: [SciTools Contributor Licence Agreement](https://cla-assistant.io/SciTools/)
