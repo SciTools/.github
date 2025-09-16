@@ -27,9 +27,9 @@ You will find Cartopy especially useful for large area / small scale data, where
 
 **Links:**&nbsp;&nbsp; [GitHub](https://github.com/SciTools/cartopy)
 &nbsp;,&nbsp;
-[Documentation](https://scitools.org.uk/cartopy/docs/latest/)
+[Documentation](https://cartopy.readthedocs.io/stable/)
 &nbsp;,&nbsp;
-[Gallery](https://scitools.org.uk/cartopy/docs/latest/gallery/index.html)
+[Gallery](https://cartopy.readthedocs.io/stable/gallery/index.html)
 
 ### Iris
 
