@@ -44,7 +44,7 @@ CML?
 - Branching strat
 - PRs
   - review policy
-  - self-merging
+  - self-merging is fine for inconsequential PRs ONLY. Things like typos etc. Anything else needs a full review
   - We review PRs regularly. If we haven't gotten to yours yet, please bear with us, we will!
 
 ## Reporting a Bug
