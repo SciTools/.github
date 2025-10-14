@@ -694,6 +694,7 @@ class DiscussionsQuery(IssuesQuery):
     Discussions share a lot of properties with Issues, so we can reuse
     much of the parent class.
     """
+    _PAGINATION = 25
     _selector_kwargs = IssuesQuery._selector_kwargs | dict(type="DISCUSSION")
     _item_types = (github_schema.Discussion,)
 
