@@ -1,6 +1,6 @@
 **Links:**&nbsp;&nbsp; [Privacy Policy](privacy_policy.md)
 &nbsp;,&nbsp;
-[Accessibility Statement](accessibility_statement.md)
+[Accessibility Statement](../ACCESSIBILITY.md)
 
 # SciTools
 
