@@ -1,0 +1,43 @@
+{
+  "iris" : [
+    "noxfile.py",
+    "README.md",
+    "docs/src/why_iris.rst"
+  ],
+  "iris-grib" : [
+    "noxfile.py",
+    "README.md"
+  ],
+  "tephi" : [
+    "tox.ini",
+    "README.md",
+    "index.ipynb"
+  ],
+  "python-stratify" : [
+    "README.md",
+    "Dockerfile",
+    "index.ipynb",
+    "summary.png"
+  ],
+  "iris-esmf-regrid":  [
+    "noxfile.py",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "cf-units" : [
+    "tox.ini",
+    "README.md"
+  ],
+  "nc-time-axis" : [
+    "README.md",
+    "example_plot.png"
+  ],
+  "workflows" : [
+    "README.md",
+    "version.txt"
+  ],
+  "test-iris-imagehash" : [
+    ".cirrus.yml",
+    "README.rst"
+  ]
+}

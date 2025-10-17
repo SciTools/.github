@@ -1,0 +1,36 @@
+name: Linkcheck
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "00 06 * * *"  # TEMPLATE EXAMPLE: schedule = every day at 6am
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write # required for peter-evans/create-issue-from-file
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Link Checker
+        id: lychee
+        uses: lycheeverse/lychee-action@f613c4a64e50d792e0b31ec34bbcbba12263c6a6
+        with:
+          token: ${{secrets.GITHUB_TOKEN}}
+          fail: false
+          # TEMPLATE EXAMPLE: check files = RST and INC in docs, PY in source
+          args: "--verbose --max-concurrency 1 './docs/**/*.rst' './docs/**/*.inc' './lib/**/*.py'"
+
+      - name: Create Issue From File
+        if: steps.lychee.outputs.exit_code != 0
+        uses: peter-evans/create-issue-from-file@e8ef132d6df98ed982188e460ebb3b5d4ef3a9cd
+        with:
+          title: Link Checker Report
+          content-filepath: ./lychee/out.md
+          labels: "Bot, Type: Documentation, Type: Bug" # TEMPLATE EXAMPLE = failure Issue labels
+
+      - name: Fail Workflow On Link Errors
+        if: steps.lychee.outputs.exit_code != 0
+        run:
+          exit {{ steps.lychee.outputs.exit_code }}
