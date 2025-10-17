@@ -81,8 +81,6 @@ against the appropriate **SciTools** repository, or against
 **Please attach the `Accessibility` Type to the issue.**
 - Email: scitools.pub@gmail.com
 
-[//]: # (TODO: adapt Peloton script to run an additional `type:Accessibility` query)
-
 The **SciTools** development team review all communications weekly (part of the
 [SciTools Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info)),
 at which point we will respond to discuss possible actions with you.
