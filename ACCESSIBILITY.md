@@ -81,8 +81,10 @@ against the appropriate **SciTools** repository, or against
 **Please attach the `Accessibility` Type to the issue.**
 - Email: scitools.pub@gmail.com
 
-The **SciTools** development team review all communications weekly (part of the
-[SciTools Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info)),
+The **SciTools** development team review all communications weekly 
+(GitHub communication is reviewed during the
+[SciTools Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info),
+the email Inbox is monitored at least weekly),
 at which point we will respond to discuss possible actions with you.
 
 [w3.org have shared some tips on contacting organisations about accessibility](http://www.w3.org/WAI/users/inaccessible).
