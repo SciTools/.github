@@ -85,7 +85,7 @@ The **SciTools** development team review all communications weekly (part of the
 [SciTools Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info)),
 at which point we will respond to discuss possible actions with you.
 
-[w3.org have shared some tips on contacting organisations about accessibility](http://www.w3.org/WAI/users/inaccessible)
+[w3.org have shared some tips on contacting organisations about accessibility](http://www.w3.org/WAI/users/inaccessible).
 
 ## Enforcement procedure
 
@@ -120,7 +120,7 @@ typically be limited to the _end_ of a sentence or paragraph - see
 The text remains understandable if you are aware of this potential disruption.
 We will be improving our understanding of correct emoji usage during our
 manual testing routine
-([SciTools/.github#213](https://github.com/SciTools/.github/issues/213)
+([SciTools/.github#213](https://github.com/SciTools/.github/issues/213)).
 - SVG 'badges' are used within many `README` files to communicate repository
 health/status. These are images of text, which would be more accessible as
 plain text. See
