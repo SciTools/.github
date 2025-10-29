@@ -3,8 +3,8 @@
 This accessibility statement applies to the content hosted on the repositories
 of the **SciTools** GitHub organisation.
 
-The **SciTools** GitHub organisation is run by the 'AVD' team at the 
-UK [Met Office](https://www.metoffice.gov.uk/).
+The **SciTools** GitHub organisation is run by the 'AVD' team ('Analysis and
+Visualisation of Data') at the UK [Met Office](https://www.metoffice.gov.uk/).
 
 **SciTools** development presents particularly exciting opportunities around
 inclusivity. Climate science affects all of us, and people from all walks of
@@ -204,7 +204,8 @@ This statement was prepared on 17th October 2025. It was last reviewed on 17th
 October 2025.
 
 The **SciTools** GitHub organisation was last tested on 11th September 2024. The
-test was carried out by the 'AVD' Team at the UK Met Office. The test included
+test was carried out by the 'AVD' team ('Analysis and Visualisation of Data') 
+at the UK Met Office. The test included
 parsing the **SciTools** organisational `README` file using the
 [NVDA screen reader](https://www.nvaccess.org/) on Windows 11, and the
 `Read aloud` function in Microsoft Edge on Windows 11.
