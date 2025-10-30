@@ -359,7 +359,11 @@ def prompt_share(args: argparse.Namespace) -> None:
             if changed_parent in (
                 git_root,
                 git_root / "benchmarks",
-                git_root / "docs" / "src",
+            ):
+                candidates_list.append(f"- [ ] `{changed_path}`")
+            if changed_path in (
+                git_root / "docs" / "src" / "conf.py",
+                git_root / "docs" / "src" / "Makefile",
             ):
                 candidates_list.append(f"- [ ] `{changed_path}`")
 
