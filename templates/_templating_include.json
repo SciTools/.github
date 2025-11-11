@@ -131,10 +131,8 @@
     "python-stratify": "pyproject.toml",
     "tephi": "pyproject.toml",
     "cf-units": "pyproject.toml",
-    "workflows": "pyproject.toml",
     "mo_pack": "pyproject.toml",
     "test-iris-imagehash": "pyproject.toml",
-    "iris-sample-data": "pyproject.toml",
-    "iris-abfs": "pyproject.toml"
+    "iris-abf": "pyproject.toml"
   }
 }
