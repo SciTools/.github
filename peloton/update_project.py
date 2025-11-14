@@ -38,23 +38,6 @@ import github_schema
 github_schema = github_schema
 github_schema_root = github_schema.github_schema
 
-
-GITHUB_QUERY_CONDITIONS = (
-    "org:SciTools org:SciTools-incubator org:SciTools-classroom "
-    # Note `-` negates the condition that follows it.
-    "-repo:SciTools/cartopy "
-    "repo:bjlittle/geovista repo:pp-mo/ncdata repo:pp-mo/ugrid-checks "
-)
-"""
-https://github.com/search?q=org%3ASciTools+org%3ASciTools-incubator
-+org%3ASciTools-classroom+-repo%3ASciTools%2Fcartopy
-+repo%3Abjlittle%2Fgeovista+repo%3App-mo%2Fncdata+repo%3App-mo%2Fugrid-checks
-"""
-CLOSED_THRESHOLD = date.today() - timedelta(days=28)
-# Using the negating syntax returns everything that is NOT closed AND
-#  everything that was closed after CLOSED_THRESHOLD.
-GITHUB_QUERY_CONDITIONS += f" -closed:<{CLOSED_THRESHOLD}"
-
 PELOTON_PROJECT_ID = "PVT_kwDOABU7f84ALhAI"
 
 # Set an interval to avoid update loops over-stressing the GraphQL server.
@@ -72,6 +55,46 @@ logging.basicConfig(
     filename="latest_peloton_update.log",
     filemode="w",
 )
+
+
+def build_github_query(
+    all_accessibility: bool = False,
+    updates_since: datetime = None,
+):
+    base_conditions = (
+        "org:SciTools org:SciTools-incubator org:SciTools-classroom "
+        "repo:bjlittle/geovista repo:pp-mo/ncdata repo:pp-mo/ugrid-checks "
+    )
+    """
+    https://github.com/search?q=org%3ASciTools+org%3ASciTools-incubator
+    +org%3ASciTools-classroom
+    +repo%3Abjlittle%2Fgeovista+repo%3App-mo%2Fncdata+repo%3App-mo%2Fugrid-checks
+    """
+
+    if all_accessibility:
+        filter_condition = "type:Accessibility"
+    else:
+        # Note `-` negates the condition that follows it.
+        filter_condition = "-repo:SciTools/cartopy"
+
+    closed_threshold = date.today() - timedelta(days=28)
+    # Using the negating syntax returns everything that is NOT closed AND
+    #  everything that was closed after closed_threshold.
+    closure_condition = f"-closed:<{closed_threshold}"
+
+    if updates_since is not None:
+        updated_condition = (
+            f"updated:>={updates_since.strftime('%Y-%m-%dT%H:%M:%SZ')}"
+        )
+    else:
+        updated_condition = ""
+
+    return " ".join([
+        base_conditions,
+        filter_condition,
+        closure_condition,
+        updated_condition,
+    ])
 
 
 def datetime_str_to_date_str(datetimes: str | pd.Series) -> str:
@@ -1282,25 +1305,31 @@ def main():
         project = ProjectItemsQuery()
         logging.debug(f"    Project has {len(project.data_frame)} items.")
 
-        query_string = GITHUB_QUERY_CONDITIONS
-        if updates_only:
-            query_string = (
-                f"{GITHUB_QUERY_CONDITIONS} updated:>="
-                f"{last_update_loop_time.strftime('%Y-%m-%dT%H:%M:%SZ')}"
-            )
+        query_string_default, query_string_access = [
+            build_github_query(all_accessibility=a, updates_since=last_update_loop_time)
+            for a in (False, True)
+        ]
         # Capture the time immediately before running the query.
         #  (And immediately after encoding the previous value in the query
         #  condition, if we're in an updates_only loop).
         last_update_loop_time = datetime.now()
-        issues = IssuesQuery(query_string, peloton_logins)
-        discussions = DiscussionsQuery(query_string, peloton_logins)
+        issues = IssuesQuery(query_string_default, peloton_logins)
+        discussions = DiscussionsQuery(query_string_default, peloton_logins)
+        accessibility = IssuesQuery(query_string_access, peloton_logins)
         logging.debug(
-            f"    Query returned {len(issues.data_frame)} issues and "
-            f"{len(discussions.data_frame)} discussions."
+            f"    Query returned {len(issues.data_frame)} issues , "
+            f"{len(discussions.data_frame)} discussions , and "
+            f"{len(accessibility.data_frame)} accessibility issues."
         )
 
+        # Avoid any overlap between issues and accessibility issues.
+        #  (so basically: only add Cartopy accessibility issues because the
+        #  others are already included above).
+        accessibility.data_frame = accessibility.data_frame[
+            ~accessibility.data_frame.index.isin(issues.data_frame.index)
+        ]
         issues_discussions = pd.concat(
-            [issues.data_frame, discussions.data_frame]
+            [issues.data_frame, discussions.data_frame, accessibility.data_frame],
         )
 
         logging.info("    Data fetch complete.")
