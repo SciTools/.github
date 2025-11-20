@@ -5,13 +5,21 @@ on:
   schedule:
     - cron: "00 06 * * *"  # TEMPLATE EXAMPLE: schedule = every day at 6am
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   linkChecker:
     runs-on: ubuntu-latest
     permissions:
       issues: write # required for peter-evans/create-issue-from-file
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
 
       - name: Link Checker
         id: lychee
@@ -20,17 +28,25 @@ jobs:
           token: ${{secrets.GITHUB_TOKEN}}
           fail: false
           # TEMPLATE EXAMPLE: check files = RST and INC in docs, PY in source
-          args: "--verbose --max-concurrency 1 './docs/**/*.rst' './docs/**/*.inc' './lib/**/*.py'"
+          args: |
+            --verbose
+            --max-concurrency 1
+            './docs/**/*.rst'
+            './docs/**/*.inc'
+            './lib/**/*.py'
 
       - name: Create Issue From File
-        if: steps.lychee.outputs.exit_code != 0
+        if: ${{ fromJSON(steps.lychee.outputs.exit_code) != 0 }}
         uses: peter-evans/create-issue-from-file@e8ef132d6df98ed982188e460ebb3b5d4ef3a9cd
         with:
           title: Link Checker Report
           content-filepath: ./lychee/out.md
-          labels: "Bot, Type: Documentation, Type: Bug" # TEMPLATE EXAMPLE = failure Issue labels
+          labels: |
+            Bot
+            Type: Documentation
+            Type: Bug
 
       - name: Fail Workflow On Link Errors
-        if: steps.lychee.outputs.exit_code != 0
+        if: ${{ fromJSON(steps.lychee.outputs.exit_code) != 0 }}
         run:
-          exit {{ steps.lychee.outputs.exit_code }}
+          exit ${{ fromJSON(steps.lychee.outputs.exit_code) }}
