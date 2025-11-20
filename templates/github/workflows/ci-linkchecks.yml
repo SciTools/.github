@@ -41,6 +41,7 @@ jobs:
         with:
           title: Link Checker Report
           content-filepath: ./lychee/out.md
+          # TEMPLATE EXAMPLE = failure Issue labels
           labels: |
             Bot
             Type: Documentation
