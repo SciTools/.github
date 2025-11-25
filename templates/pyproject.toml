@@ -127,6 +127,7 @@ exclude = [
 [tool.pytest.ini_options] # The list of keys vary by repository
 addopts = ["-ra", "-v", "--strict-config", "--strict-markers", "--doctest-modules"] # This addopts list varies by repository
 testpaths = "<PATH_TO_MAIN_CODE>" # e.g "cf_units" or "lib/iris"
+log_level = "INFO"
 
 [tool.repo-review]
 # A list of the currently failing repo-review checks, to be fixed later, different for every repository.
