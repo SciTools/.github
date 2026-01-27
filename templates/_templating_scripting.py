@@ -4,6 +4,7 @@
 import argparse
 import contextlib
 from enum import StrEnum
+from hashlib import sha256
 import json
 from pathlib import Path
 import re
@@ -305,6 +306,11 @@ def prompt_share(args: argparse.Namespace) -> None:
         ignored = str(changed_path) in ignore_dict[pr_repo]
         if ignored:
             continue
+
+        changed_hash = sha256(str(changed_path).encode()).hexdigest()
+        changed_url = f"{pr_url}/files#diff-{changed_hash}"
+        changed_link = f"[`{changed_path}`]({changed_url})"
+
         if is_templated:
             template_relative = template.relative_to(TEMPLATE_REPO_ROOT)
             template_url = (
@@ -313,7 +319,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             template_link = f"[`SciTools/.github/{template_relative}`]({template_url})"
 
             templated_list.append(
-                f"- [ ] `{changed_path}`, templated by {template_link}"
+                f"- [ ] {changed_link}, templated by {template_link}"
             )
 
         else:
@@ -329,7 +335,7 @@ def prompt_share(args: argparse.Namespace) -> None:
                 git_root / "benchmarks",
                 git_root / "docs" / "src",
             ):
-                candidates_list.append(f"- [ ] `{changed_path}`")
+                candidates_list.append(f"- [ ] {changed_link}")
 
     if templated_list or candidates_list:
         body_args = [body_intro]
