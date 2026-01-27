@@ -25,8 +25,8 @@ TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
 BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-commit-ci"]
 
 _MAGIC_PREFIX = "@scitools-templating: please"
-MAGIC_NO_PROMPT = re.compile(rf"{_MAGIC_PREFIX} no share prompt")
-MAGIC_NO_NOTIFY = re.compile(rf"{_MAGIC_PREFIX} no update notification on: ([\w-]+)")
+MAGIC_NO_PROMPT = re.compile(rf"{_MAGIC_PREFIX} no share prompt", re.IGNORECASE)
+MAGIC_NO_NOTIFY = re.compile(rf"{_MAGIC_PREFIX} no update notification on: ([\w-]+)", re.IGNORECASE)
 
 
 class ReviewType(StrEnum):
@@ -216,7 +216,6 @@ def prompt_share(args: argparse.Namespace) -> None:
     # pr_number = "https://github.com/SciTools/iris/pull/6496"
 
     body = gh_json(f"pr view {pr_number}", "body")["body"]
-    # TODO: make this case-insensitive.
     if MAGIC_NO_PROMPT.search(body):
         print(
             f"Skipping PR {pr_number} because the body contains the magic "
