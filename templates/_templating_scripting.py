@@ -328,12 +328,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             if changed_parent in (
                 git_root,
                 git_root / "benchmarks",
-            ):
-                candidates_list.append(f"- [ ] `{changed_path}`")
-            # TODO: bring back more generic docs location.
-            if changed_path in (
-                git_root / "docs" / "src" / "conf.py",
-                git_root / "docs" / "src" / "Makefile",
+                git_root / "docs" / "src",
             ):
                 candidates_list.append(f"- [ ] `{changed_path}`")
 
