@@ -3,6 +3,7 @@
 """
 import argparse
 import contextlib
+from enum import StrEnum
 import json
 from pathlib import Path
 import re
@@ -26,6 +27,12 @@ BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-comm
 _MAGIC_PREFIX = "@scitools-templating: please"
 MAGIC_NO_PROMPT = re.compile(rf"{_MAGIC_PREFIX} no share prompt")
 MAGIC_NO_NOTIFY = re.compile(rf"{_MAGIC_PREFIX} no update notification on: ([\w-]+)")
+
+
+class ReviewType(StrEnum):
+    APPROVE = "approve"
+    COMMENT = "comment"
+    REQUEST_CHANGES = "request-changes"
 
 
 def git_command(command: str) -> str:
@@ -209,6 +216,7 @@ def prompt_share(args: argparse.Namespace) -> None:
     # pr_number = "https://github.com/SciTools/iris/pull/6496"
 
     body = gh_json(f"pr view {pr_number}", "body")["body"]
+    # TODO: make this case-insensitive.
     if MAGIC_NO_PROMPT.search(body):
         print(
             f"Skipping PR {pr_number} because the body contains the magic "
@@ -220,15 +228,8 @@ def prompt_share(args: argparse.Namespace) -> None:
         _, org, repo, _, ref = urlparse(url).path.split("/")
         return org, repo, ref
 
-    def url_to_short_ref(url: str) -> str:
-        org, repo, ref = split_github_url(url)
-        return f"{org}/{repo}#{ref}"
-
     pr_url = gh_json(f"pr view {pr_number}", "url")["url"]
-    pr_short_ref = url_to_short_ref(pr_url)
     pr_repo = split_github_url(pr_url)[1]
-
-    author = gh_json(f"pr view {pr_number}", "author")["author"]["login"]
 
     changed_files = gh_json(f"pr view {pr_number}", "files")["files"]
     changed_paths = [Path(file["path"]) for file in changed_files]
@@ -249,9 +250,19 @@ def prompt_share(args: argparse.Namespace) -> None:
             for commit_author in get_commit_authors(commit)
         )
 
+    def post_review(review_body: str, review_type: ReviewType) -> None:
+        with NamedTemporaryFile("w") as file_write:
+            file_write.write(review_body)
+            file_write.flush()
+            gh_command = shlex.split(
+                f"gh pr review {pr_number} --{review_type.value} "
+                f"--body-file {file_write.name}"
+            )
+            run(gh_command, check=True)
+
     human_authors = get_all_authors() - set(BOTS)
     if human_authors == set():
-        review_body = (
+        review_text = (
             f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
             "Version numbers are not typically covered by templating. It is "
             "expected that this PR is 100% about advancing version numbers, "
@@ -259,60 +270,18 @@ def prompt_share(args: argparse.Namespace) -> None:
             "check for any other changes that might be suitable for "
             "templating**."
         )
-        with NamedTemporaryFile("w") as file_write:
-            file_write.write(review_body)
-            file_write.flush()
-            gh_command = shlex.split(
-                f"gh pr review {pr_number} --comment --body-file {file_write.name}"
-            )
-            run(gh_command, check=True)
+        post_review(review_text, ReviewType.COMMENT)
         return
-
-    def create_issue(title: str, body: str) -> None:
-        assignee = author
-
-        # Check that an issue with this title isn't already on the .github repo.
-        existing_issues = gh_json(
-            "issue list --state all --repo SciTools/.github", "title"
-        )
-        if any(issue["title"] == title for issue in existing_issues):
-            return
-
-        if assignee in BOTS:
-            # if the author is a bot, we don't want to assign the issue to the bot
-            # so instead choose a human author from the latest commit
-            assignee = list(human_authors)[0]
-
-        with NamedTemporaryFile("w") as file_write:
-            file_write.write(body)
-            file_write.flush()
-            gh_command = shlex.split(
-                "gh issue create "
-                f'--title "{title}" '
-                f"--body-file {file_write.name} "
-                "--repo SciTools/.github "
-                f"--assignee {assignee}"
-            )
-            issue_url = check_output(gh_command).decode("utf-8").strip()
-        short_ref = url_to_short_ref(issue_url)
-        # GitHub renders the full text of a cross-ref when it is in a list.
-        review_body = f"- [ ] Please see: {short_ref}"
-        gh_command = shlex.split(
-            f'gh pr review {pr_number} --request-changes --body "{review_body}"'
-        )
-        run(gh_command, check=True)
-
-    issue_title = f"Share {pr_short_ref} changes via templating?"
 
     templates_relative = TEMPLATES_DIR.relative_to(TEMPLATE_REPO_ROOT)
     templates_url = f"{SCITOOLS_URL}/.github/tree/main/{templates_relative}"
     body_intro = (
         f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates/README.md)\n\n"
-        f"{pr_short_ref} (by @{author}) includes changes that may be worth "
+        f"This PR includes changes that may be worth "
         "sharing via templating. For each file listed below, please "
         "either:\n\n"
         "- Action the suggestion via a pull request editing/adding the "
-        f"relevant file in the [templates directory]({templates_url}). [^1]\n"
+        f"relevant file in the [SciTools/.github `templates/` directory]({templates_url}). [^1]\n"
         "- Dismiss the suggestion if the changes are not suitable for "
         "templating."
     )
@@ -342,7 +311,7 @@ def prompt_share(args: argparse.Namespace) -> None:
             template_url = (
                 f"{SCITOOLS_URL}/.github/blob/main/{template_relative}"
             )
-            template_link = f"[`{template_relative}`]({template_url})"
+            template_link = f"[`SciTools/.github/{template_relative}`]({template_url})"
 
             templated_list.append(
                 f"- [ ] `{changed_path}`, templated by {template_link}"
@@ -361,6 +330,7 @@ def prompt_share(args: argparse.Namespace) -> None:
                 git_root / "benchmarks",
             ):
                 candidates_list.append(f"- [ ] `{changed_path}`")
+            # TODO: bring back more generic docs location.
             if changed_path in (
                 git_root / "docs" / "src" / "conf.py",
                 git_root / "docs" / "src" / "Makefile",
@@ -385,8 +355,8 @@ def prompt_share(args: argparse.Namespace) -> None:
             f"``{pattern_repo}``"
         )
 
-        issue_body = "\n".join(body_args)
-        create_issue(issue_title, issue_body)
+        review_text= "\n".join(body_args)
+        post_review(review_text, ReviewType.REQUEST_CHANGES)
 
 
 def check_dir(args: argparse.Namespace) -> None:
