@@ -11,7 +11,7 @@ import re
 import shlex
 from subprocess import CalledProcessError, check_output, run
 from tempfile import NamedTemporaryFile
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 from urllib.parse import urlparse
 
 # A mechanism for disabling the issues and comments if the dev team is
@@ -41,9 +41,11 @@ def git_command(command: str) -> str:
     return check_output(command).decode("utf-8").strip()
 
 
-def gh_json(sub_command: str, field: str) -> dict:
-    command = shlex.split(f"gh {sub_command} --json {field}")
-    return json.loads(check_output(command))
+def gh_json(sub_command: str, field: Optional[str] = None) -> dict:
+    command = f"gh {sub_command}"
+    if field:
+        command += f" --json {field}"
+    return json.loads(check_output(shlex.split(command)))
 
 
 class Config:
@@ -216,6 +218,8 @@ def prompt_share(args: argparse.Namespace) -> None:
     # Can use a URL here for local debugging:
     # pr_number = "https://github.com/SciTools/iris/pull/6496"
 
+    current_user = gh_json("api user")["login"]
+
     body = gh_json(f"pr view {pr_number}", "body")["body"]
     if MAGIC_NO_PROMPT.search(body):
         print(
@@ -251,13 +255,21 @@ def prompt_share(args: argparse.Namespace) -> None:
         )
 
     def post_review(review_body: str, review_type: ReviewType) -> None:
+        # Check for any existing reviews by this user.
+        #  If so: we will just edit the most recent review.
+        reviews = gh_json(f"pr view {pr_number}", "reviews")["reviews"]
+        has_existing_review = any(
+            review["author"]["login"] == current_user for review in reviews
+        )
+
         with NamedTemporaryFile("w") as file_write:
             file_write.write(review_body)
             file_write.flush()
-            gh_command = shlex.split(
-                f"gh pr review {pr_number} --{review_type.value} "
-                f"--body-file {file_write.name}"
-            )
+            if has_existing_review:
+                command = f"gh pr comment {pr_number} --edit-last"
+            else:
+                command = f"gh pr review {pr_number} --{review_type.value}"
+            gh_command = shlex.split(f"{command} --body-file {file_write.name}")
             run(gh_command, check=True)
 
     human_authors = get_all_authors() - set(BOTS)
@@ -282,8 +294,13 @@ def prompt_share(args: argparse.Namespace) -> None:
         "either:\n\n"
         "- Action the suggestion via a pull request editing/adding the "
         f"relevant file in the [SciTools/.github `templates/` directory]({templates_url}). [^1]\n"
+        "- Raise an issue against the [SciTools/.github repo]({SCITOOLS_URL}/.github) "
+        "for the above action if you _really_ don't have 10mins spare right now.\n"
         "- Dismiss the suggestion if the changes are not suitable for "
-        "templating."
+        "templating.\n\n"
+        "You will need to dismiss this review before this PR can be merged. "
+        "*Recommend the reviewer does this as their final action before "
+        "merging*, as this text will continually update as commits come in."
     )
 
     templated_list = []
