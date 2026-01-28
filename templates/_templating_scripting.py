@@ -216,7 +216,7 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     pr_number = args.pr_number
     # Can use a URL here for local debugging:
-    # pr_number = "https://github.com/SciTools/iris/pull/6496"
+    pr_number = "https://github.com/SciTools/iris/pull/6901"
 
     current_user = gh_json("api user")["login"]
 
@@ -255,27 +255,45 @@ def prompt_share(args: argparse.Namespace) -> None:
         )
 
     def post_review(review_body: str, review_type: ReviewType) -> None:
-        # Check for any existing reviews by this user.
-        #  If so: we will just edit the most recent review.
-        reviews = gh_json(f"pr view {pr_number}", "reviews")["reviews"]
-        has_existing_review = any(
-            review["author"]["login"] == current_user for review in reviews
-        )
+        pr_int = pr_number
+        if pr_int == pr_url:
+            # Sometimes happens during local debugging.
+            pr_int = gh_json(f"pr view {pr_number}", "number")["number"]
 
-        with NamedTemporaryFile("w") as file_write:
-            file_write.write(review_body)
-            file_write.flush()
-            if has_existing_review:
-                command = f"gh pr comment {pr_number} --edit-last"
-            else:
-                command = f"gh pr review {pr_number} --{review_type.value}"
-            gh_command = shlex.split(f"{command} --body-file {file_write.name}")
-            run(gh_command, check=True)
+        # Find any existing templating reviews. Edit the last one if found.
+        gh_command = f"gh api repos/SciTools/{pr_repo}/pulls/{pr_int}/reviews"
+        existing_reviews = json.loads(check_output(shlex.split(gh_command)))
+        reviews_to_edit = [
+            review for review in existing_reviews
+            if review["user"]["login"] == current_user
+            and review["body"].startswith("## [Templating")
+        ]
+        if reviews_to_edit:
+            # Edit the last existing review.
+            review = reviews_to_edit[-1]
+            payload = json.dumps({"body": review_body})
+            gh_command = (
+                f"gh api --method PUT "
+                f"repos/SciTools/{pr_repo}/pulls/{pr_int}/reviews/{review['id']} "
+                f"--input -"
+            )
+            run(shlex.split(gh_command), input=payload.encode(), check=True)
+
+        else:
+            # Create a new review.
+            with NamedTemporaryFile("w") as file_write:
+                file_write.write(review_body)
+                file_write.flush()
+                gh_command = (
+                    f"gh pr review {pr_number} --{review_type.value} "
+                    f"--body-file {file_write.name}"
+                )
+                run(shlex.split(gh_command), check=True)
 
     human_authors = get_all_authors() - set(BOTS)
     if human_authors == set():
         review_text = (
-            f"### [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
+            f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
             "Version numbers are not typically covered by templating. It is "
             "expected that this PR is 100% about advancing version numbers, "
             "which would not require any templating follow-up. **Please double-"
@@ -294,13 +312,13 @@ def prompt_share(args: argparse.Namespace) -> None:
         "either:\n\n"
         "- Action the suggestion via a pull request editing/adding the "
         f"relevant file in the [SciTools/.github `templates/` directory]({templates_url}). [^1]\n"
-        "- Raise an issue against the [SciTools/.github repo]({SCITOOLS_URL}/.github) "
+        f"- Raise an issue against the [SciTools/.github repo]({SCITOOLS_URL}/.github) "
         "for the above action if you _really_ don't have 10mins spare right now.\n"
         "- Dismiss the suggestion if the changes are not suitable for "
         "templating.\n\n"
         "You will need to dismiss this review before this PR can be merged. "
-        "*Recommend the reviewer does this as their final action before "
-        "merging*, as this text will continually update as commits come in."
+        "**Recommend the reviewer does this as their final action before "
+        "merging**, as this text will continually update as commits come in."
     )
 
     templated_list = []
