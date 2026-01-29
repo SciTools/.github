@@ -23,7 +23,13 @@ SCITOOLS_URL = "https://github.com/SciTools"
 TEMPLATES_DIR = Path(__file__).parent.resolve()
 TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
 # ensure any new bots have both a "app/" prefix and a "[bot]" postfix version
-BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-commit-ci"]
+BOTS = [
+    "dependabot[bot]",
+    "app/dependabot",
+    "pre-commit-ci[bot]",
+    "app/pre-commit-ci",
+    "app/scitools-ci",
+]
 TEMPLATING_HEADING = f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates)"
 
 _MAGIC_PREFIX = "@scitools-templating: please"
