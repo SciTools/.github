@@ -216,7 +216,7 @@ def prompt_share(args: argparse.Namespace) -> None:
 
     pr_number = args.pr_number
     # Can use a URL here for local debugging:
-    pr_number = "https://github.com/SciTools/iris/pull/6901"
+    # pr_number = "https://github.com/SciTools/iris/pull/6901"
 
     current_user = gh_json("api user")["login"]
 
