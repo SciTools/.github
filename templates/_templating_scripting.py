@@ -24,6 +24,7 @@ TEMPLATES_DIR = Path(__file__).parent.resolve()
 TEMPLATE_REPO_ROOT = TEMPLATES_DIR.parent
 # ensure any new bots have both a "app/" prefix and a "[bot]" postfix version
 BOTS = ["dependabot[bot]", "app/dependabot", "pre-commit-ci[bot]", "app/pre-commit-ci"]
+TEMPLATING_HEADING = f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates)"
 
 _MAGIC_PREFIX = "@scitools-templating: please"
 MAGIC_NO_PROMPT = re.compile(rf"{_MAGIC_PREFIX} no share prompt", re.IGNORECASE)
@@ -155,6 +156,8 @@ def notify_updates(args: argparse.Namespace) -> None:
             file_url = f"{SCITOOLS_URL}/{repo}/blob/main/{path_in_repo}"
             file_link = f"[`{path_in_repo}`]({file_url})"
             issue_body = (
+                f"{TEMPLATING_HEADING}\n\n"
+                
                 f"The template for `{path_in_repo}` has been updated; see the "
                 "diff below. Please either:\n\n"
                 
@@ -266,7 +269,7 @@ def prompt_share(args: argparse.Namespace) -> None:
         reviews_to_edit = [
             review for review in existing_reviews
             if review["user"]["login"] == current_user
-            and review["body"].startswith("## [Templating")
+            and review["body"].startswith(TEMPLATING_HEADING)
         ]
         if reviews_to_edit:
             # Edit the last existing review.
@@ -293,7 +296,7 @@ def prompt_share(args: argparse.Namespace) -> None:
     human_authors = get_all_authors() - set(BOTS)
     if human_authors == set():
         review_text = (
-            f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates)\n\n"
+            f"{TEMPLATING_HEADING}\n\n"
             "Version numbers are not typically covered by templating. It is "
             "expected that this PR is 100% about advancing version numbers, "
             "which would not require any templating follow-up. **Please double-"
@@ -306,7 +309,7 @@ def prompt_share(args: argparse.Namespace) -> None:
     templates_relative = TEMPLATES_DIR.relative_to(TEMPLATE_REPO_ROOT)
     templates_url = f"{SCITOOLS_URL}/.github/tree/main/{templates_relative}"
     body_intro = (
-        f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates/README.md)\n\n"
+        f"{TEMPLATING_HEADING}\n\n"
         f"This PR includes changes that may be worth "
         "sharing via templating. For each file listed below, please "
         "either:\n\n"
