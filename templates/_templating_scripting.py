@@ -227,7 +227,8 @@ def prompt_share(args: argparse.Namespace) -> None:
     # Can use a URL here for local debugging:
     # pr_number = "https://github.com/SciTools/iris/pull/6901"
 
-    current_user = gh_json("api user")["login"]
+    # current_user = gh_json("api user")["login"]
+    current_user = "scitools-ci"  # Temporary testing patch.
 
     body = gh_json(f"pr view {pr_number}", "body")["body"]
     if MAGIC_NO_PROMPT.search(body):
