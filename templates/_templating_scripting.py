@@ -227,9 +227,6 @@ def prompt_share(args: argparse.Namespace) -> None:
     # Can use a URL here for local debugging:
     # pr_number = "https://github.com/SciTools/iris/pull/6901"
 
-    # current_user = gh_json("api user")["login"]
-    current_user = "scitools-ci"  # Temporary testing patch.
-
     body = gh_json(f"pr view {pr_number}", "body")["body"]
     if MAGIC_NO_PROMPT.search(body):
         print(
@@ -275,8 +272,7 @@ def prompt_share(args: argparse.Namespace) -> None:
         existing_reviews = json.loads(check_output(shlex.split(gh_command)))
         reviews_to_edit = [
             review for review in existing_reviews
-            if review["user"]["login"] == current_user
-            and review["body"].startswith(TEMPLATING_HEADING)
+            if review["body"].startswith(TEMPLATING_HEADING)
         ]
         if reviews_to_edit:
             # Edit the last existing review.
