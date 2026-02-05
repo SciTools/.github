@@ -30,7 +30,10 @@ BOTS = [
     "app/pre-commit-ci",
     "app/scitools-ci",
 ]
-TEMPLATING_HEADING = f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates)"
+TEMPLATING_HEADING = (
+    "[TEMPLATING WATERMARK]: #\n\n"
+    f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates)"
+)
 
 _MAGIC_PREFIX = "@scitools-templating: please"
 MAGIC_NO_PROMPT = re.compile(rf"{_MAGIC_PREFIX} no share prompt", re.IGNORECASE)
