@@ -29,6 +29,7 @@ BOTS = [
     "pre-commit-ci[bot]",
     "app/pre-commit-ci",
     "app/scitools-ci",
+    "web-flow",
 ]
 TEMPLATING_HEADING = (
     "[TEMPLATING WATERMARK]: #\n\n"
