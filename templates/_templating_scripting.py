@@ -29,8 +29,12 @@ BOTS = [
     "pre-commit-ci[bot]",
     "app/pre-commit-ci",
     "app/scitools-ci",
+    "web-flow",
 ]
-TEMPLATING_HEADING = f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates)"
+TEMPLATING_HEADING = (
+    "[TEMPLATING WATERMARK]: #\n\n"
+    f"## [Templating]({SCITOOLS_URL}/.github/blob/main/templates)"
+)
 
 _MAGIC_PREFIX = "@scitools-templating: please"
 MAGIC_NO_PROMPT = re.compile(rf"{_MAGIC_PREFIX} no share prompt", re.IGNORECASE)
@@ -227,9 +231,6 @@ def prompt_share(args: argparse.Namespace) -> None:
     # Can use a URL here for local debugging:
     # pr_number = "https://github.com/SciTools/iris/pull/6901"
 
-    # current_user = gh_json("api user")["login"]
-    current_user = "scitools-ci"  # Temporary testing patch.
-
     body = gh_json(f"pr view {pr_number}", "body")["body"]
     if MAGIC_NO_PROMPT.search(body):
         print(
@@ -275,8 +276,7 @@ def prompt_share(args: argparse.Namespace) -> None:
         existing_reviews = json.loads(check_output(shlex.split(gh_command)))
         reviews_to_edit = [
             review for review in existing_reviews
-            if review["user"]["login"] == current_user
-            and review["body"].startswith(TEMPLATING_HEADING)
+            if review["body"].startswith(TEMPLATING_HEADING)
         ]
         if reviews_to_edit:
             # Edit the last existing review.
