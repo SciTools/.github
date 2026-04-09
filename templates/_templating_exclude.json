@@ -39,5 +39,8 @@
   "test-iris-imagehash" : [
     ".cirrus.yml",
     "README.rst"
+  ],
+  "cfpint" : [
+    "README.md"
   ]
 }
