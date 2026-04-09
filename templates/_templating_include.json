@@ -23,7 +23,7 @@
     "tephi": ".pre-commit-config.yaml",
     "workflows": ".pre-commit-config.yaml",
     "test-iris-imagehash": ".pre-commit-config.yaml",
-    "mo_pack": ".pre-commit-config.yaml"
+    "mo_pack": ".pre-commit-config.yaml",
     "cfpint": ".pre-commit-config.yaml"
   },
   
@@ -64,7 +64,7 @@
     "test-tephi-imagehash": "LICENSE",
     "iris-abf": "LICENSE",
     "voted_issues": "LICENSE",
-    "twitter-scitools-iris": "LICENSE"
+    "twitter-scitools-iris": "LICENSE",
     "cfpint": "LICENSE"
   },
   ".lycheeignore": {
@@ -135,7 +135,7 @@
     "cf-units": "pyproject.toml",
     "mo_pack": "pyproject.toml",
     "test-iris-imagehash": "pyproject.toml",
-    "iris-abf": "pyproject.toml"
+    "iris-abf": "pyproject.toml",
     "cfpint": "pyproject.toml"
   }
 }
