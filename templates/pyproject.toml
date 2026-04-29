@@ -36,7 +36,7 @@ keywords = [
 ]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
-name = "scitools-<PACKAGE_NAME>" #e.g "scitools-iris"
+name = "<PACKAGE_NAME>" # e.g "scitools-iris", "cf-units"
 requires-python = "<MIN_PYTHON_VERSION>"
 
 [project.urls]
@@ -117,6 +117,7 @@ checks = [
     # -> No Yields section found
     "YD01",  # Not all docstrings require a "Yields" section.
 
+    # TODO: exceptions that still need investigating are below. Might be fixable, or might become permanent (above):
 ]
 exclude = [
     '\.__eq__$',
@@ -130,13 +131,15 @@ testpaths = "<PATH_TO_MAIN_CODE>" # e.g "cf_units" or "lib/iris"
 log_level = "INFO"
 
 [tool.repo-review]
-# A list of the currently failing repo-review checks, to be fixed later, different for every repository.
+# A list of the currently failing repo-review checks, possibly to be fixed later, different for every repository.
 ignore = [
     # https://learn.scientific-python.org/development/guides/style/#PC180
     # Not possible to run on the hardware used by the majority of our developers. Might change in future!
     "PC180", # Uses prettier.
     # https://learn.scientific-python.org/development/guides/packaging-simple#PP006
     "PP006",  # Uses dev dependency group
+
+    # TODO: exceptions that still need investigating are below. Might be fixable, or might become permanent (above):
 ]
 
 [tool.ruff]
@@ -146,10 +149,8 @@ line-length = 88
 preview = false
 
 [tool.ruff.lint]
-# We have agreed that we will permanently ignore the ruff rules in this ignore list.
+# We have agreed that we will permanently ignore the ruff rules in the first half of this ignore list.
 ignore = [
-    # NOTE: Non-permanent exclusions should be added to the ".ruff.toml" file.
-
     # flake8-commas (COM)
     # https://docs.astral.sh/ruff/rules/#flake8-commas-com
     "COM812",  # Trailing comma missing.
@@ -159,6 +160,8 @@ ignore = [
     # https://docs.astral.sh/ruff/rules/single-line-implicit-string-concatenation/
     # NOTE: This rule may cause conflicts when used with "ruff format".
     "ISC001",  # Implicitly concatenate string literals on one line.
+
+    # TODO: exceptions that still need investigating are below. Might be fixable, or might become permanent (above):
 ]
 preview = false
 select = [
