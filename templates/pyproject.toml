@@ -36,7 +36,7 @@ keywords = [
 ]
 license = "BSD-3-Clause"
 license-files = ["LICENSE"]
-name = "scitools-<PACKAGE_NAME>" #e.g "scitools-iris"
+name = "<PACKAGE_NAME>" # e.g "scitools-iris", "cf-units"
 requires-python = "<MIN_PYTHON_VERSION>"
 
 [project.urls]
