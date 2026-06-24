@@ -63,12 +63,12 @@ def build_github_query(
 ):
     base_conditions = (
         "org:SciTools org:SciTools-incubator org:SciTools-classroom "
-        "repo:bjlittle/geovista repo:pp-mo/ncdata repo:pp-mo/ugrid-checks "
+        "repo:pp-mo/ncdata repo:pp-mo/ugrid-checks "
     )
     """
     https://github.com/search?q=org%3ASciTools+org%3ASciTools-incubator
     +org%3ASciTools-classroom
-    +repo%3Abjlittle%2Fgeovista+repo%3App-mo%2Fncdata+repo%3App-mo%2Fugrid-checks
+    +repo%3App-mo%2Fncdata+repo%3App-mo%2Fugrid-checks
     """
 
     if all_accessibility:
