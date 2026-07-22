@@ -58,7 +58,7 @@ repos:
     -   id: trailing-whitespace
 
 # Hooks from all other repos
-# NOTE : keep these in hook-name (aka 'id') order
+# In terms of ordering: hooks that modify files should be placed before hooks that do not.
 
 -   repo: https://github.com/adamchainz/blacken-docs
     # This template does not keep up-to-date with versions, visit the repo to see the most recent release.
@@ -66,6 +66,23 @@ repos:
     hooks:
     -   id: blacken-docs
         types: [file, rst]
+
+-   repo: https://github.com/astral-sh/ruff-pre-commit
+    # This template does not keep up-to-date with versions, visit the repo to see the most recent release.
+    rev: "v0.7.4"
+    hooks:
+    -   id: ruff-check
+        types: [file, python]
+        args: [--fix, --show-fixes]
+    -   id: ruff-format
+        types: [file, python]
+
+-   repo: https://github.com/aio-libs/sort-all
+    # This template does not keep up-to-date with versions, visit the repo to see the most recent release.
+    rev: v1.3.0
+    hooks:
+    -   id: sort-all
+        types: [file, python]
 
 -   repo: https://github.com/codespell-project/codespell
     # This template does not keep up-to-date with versions, visit the repo to see the most recent release.
@@ -89,23 +106,6 @@ repos:
       - id: numpydoc-validation
         types: [file, python]
 
--   repo: https://github.com/astral-sh/ruff-pre-commit
-    # This template does not keep up-to-date with versions, visit the repo to see the most recent release.
-    rev: "v0.7.4"
-    hooks:
-    -   id: ruff-check
-        types: [file, python]
-        args: [--fix, --show-fixes]
-    -   id: ruff-format
-        types: [file, python]
-
--   repo: https://github.com/aio-libs/sort-all
-    # This template does not keep up-to-date with versions, visit the repo to see the most recent release.
-    rev: v1.3.0
-    hooks:
-    -   id: sort-all
-        types: [file, python]
-
 -   repo: https://github.com/scientific-python/cookie
     # This template does not keep up-to-date with versions, visit the repo to see the most recent release.
     rev: 2024.08.19
@@ -126,4 +126,3 @@ repos:
     rev: v1.25.2
     hooks:
     - id: zizmor
-
