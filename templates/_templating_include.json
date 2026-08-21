@@ -68,7 +68,8 @@
     "cfpint": "LICENSE"
   },
   ".lycheeignore": {
-    "iris": ".lycheeignore"
+    "iris": ".lycheeignore",
+    "iris-grib": ".lycheeignore"
   },
 
   "benchmarks/benchmarks/__init__.py": {
@@ -123,7 +124,8 @@
     "iris-esmf-regrid": ".github/workflows/benchmarks_validate.yml"
   },
   "github/workflows/ci-linkchecks.yml": {
-    "iris": ".github/workflows/ci-linkchecks.yml"
+    "iris": ".github/workflows/ci-linkchecks.yml",
+    "iris-grib": ".github/workflows/ci-linkchecks.yml"
   },
   "pyproject.toml": {
     "iris": "pyproject.toml",
