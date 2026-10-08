@@ -83,6 +83,11 @@
     "tephi": "pyproject.toml",
     "test-iris-imagehash": "pyproject.toml",
   },
+  "run_doctests.py": {
+    "iris": "tools/run_doctests.py",
+    "ncdata": "tools/run_doctests.py",
+    "run-doctests": "tools/run_doctests.py"
+  },
 
   "benchmarks/README.md": {
     "iris": "benchmarks/README.md",
@@ -140,6 +145,13 @@
     "iris-esmf-regrid": ".github/workflows/benchmarks_validate.yml"
   },
   "github/workflows/ci-linkchecks.yml": {
-    "iris": ".github/workflows/ci-linkchecks.yml"
+    "iris": ".github/workflows/ci-linkchecks.yml",
+    "ncdata": ".github/workflows/ci-linkchecks.yml"
+  },
+  "github/workflows/ci-template-checks.yml": {
+    "iris": ".github/workflows/ci-template-checks.yml",
+    "iris-esmf-regrid": ".github/workflows/ci-template-checks.yml",
+    "iris-grib": ".github/workflows/ci-template-checks.yml",
+    "ncdata": ".github/workflows/ci-template-checks.yml"
   }
 }
