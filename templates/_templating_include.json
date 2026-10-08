@@ -3,6 +3,63 @@
   "_templating_exclude.json": {},
   "_templating_scripting.py": {},
   "README.md": {},
+
+  ".lycheeignore": {
+    "iris": ".lycheeignore"
+  },
+  ".pre-commit-config.yaml": {
+    "cf-units": ".pre-commit-config.yaml",
+    "cfpint": ".pre-commit-config.yaml",
+    "iris": ".pre-commit-config.yaml",
+    "iris-esmf-regrid": ".pre-commit-config.yaml",
+    "iris-grib": ".pre-commit-config.yaml",
+    "mo_pack": ".pre-commit-config.yaml",
+    "nc-time-axis": ".pre-commit-config.yaml",
+    "python-stratify": ".pre-commit-config.yaml",
+    "tephi": ".pre-commit-config.yaml",
+    "test-iris-imagehash": ".pre-commit-config.yaml",
+    "workflows": ".pre-commit-config.yaml",
+  },
+  "CITATION.cff": {
+    "cf-units": "CITATION.cff",
+    "iris": "CITATION.cff",
+    "iris-esmf-regrid": "CITATION.cff",
+    "iris-grib": "CITATION.cff",
+    "nc-time-axis": "CITATION.cff",
+    "mo_pack": "CITATION.cff",
+    "python-stratify": "CITATION.cff",
+    "tephi": "CITATION.cff",
+  },
+  "CODE_OF_CONDUCT.md": {
+    "cf-units": "CODE_OF_CONDUCT.md",
+    "iris": "CODE_OF_CONDUCT.md",
+    "iris-esmf-regrid": "CODE_OF_CONDUCT.md",
+    "iris-grib": "CODE_OF_CONDUCT.md",
+    "mo_pack": "CODE_OF_CONDUCT.md",
+    "nc-time-axis": "CODE_OF_CONDUCT.md",
+    "python-stratify": "CODE_OF_CONDUCT.md",
+    "tephi": "CODE_OF_CONDUCT.md",
+  },
+  "LICENSE": {
+    ".github": "LICENSE",
+    "cf-units": "LICENSE",
+    "cfpint": "LICENSE",
+    "iris": "LICENSE",
+    "iris-abf": "LICENSE",
+    "iris-esmf-regrid": "LICENSE",
+    "iris-grib": "LICENSE",
+    "libmo_unpack": "LICENSE",
+    "marketing": "LICENSE",
+    "mo_pack": "LICENSE",
+    "nc-time-axis": "LICENSE",
+    "python-stratify": "LICENSE",
+    "tephi": "LICENSE",
+    "test-iris-imagehash": "LICENSE",
+    "test-tephi-imagehash": "LICENSE",
+    "twitter-scitools-iris": "LICENSE",
+    "voted_issues": "LICENSE",
+    "workflows": "LICENSE",
+  },
   "MANIFEST.in": {
     "cf-units": "MANIFEST.in",
     "iris": "MANIFEST.in",
@@ -13,91 +70,27 @@
     "python-stratify": "MANIFEST.in",
     "tephi": "MANIFEST.in"
   },
-  ".pre-commit-config.yaml": {
-    "cf-units": ".pre-commit-config.yaml",
-    "iris": ".pre-commit-config.yaml",
-    "iris-esmf-regrid": ".pre-commit-config.yaml",
-    "iris-grib": ".pre-commit-config.yaml",
-    "nc-time-axis": ".pre-commit-config.yaml",
-    "python-stratify": ".pre-commit-config.yaml",
-    "tephi": ".pre-commit-config.yaml",
-    "workflows": ".pre-commit-config.yaml",
-    "test-iris-imagehash": ".pre-commit-config.yaml",
-    "mo_pack": ".pre-commit-config.yaml",
-    "cfpint": ".pre-commit-config.yaml"
-  },
-  
-  "CITATION.cff": {
-    "iris": "CITATION.cff",
-    "iris-esmf-regrid": "CITATION.cff",
-    "python-stratify": "CITATION.cff",
-    "nc-time-axis": "CITATION.cff",
-    "tephi": "CITATION.cff",
-    "iris-grib": "CITATION.cff",
-    "cf-units": "CITATION.cff",
-    "mo_pack": "CITATION.cff"
-  },
-  "CODE_OF_CONDUCT.md": {
-    "iris": "CODE_OF_CONDUCT.md",
-    "iris-grib": "CODE_OF_CONDUCT.md",
-    "cf-units": "CODE_OF_CONDUCT.md",
-    "iris-esmf-regrid": "CODE_OF_CONDUCT.md",
-    "python-stratify": "CODE_OF_CONDUCT.md",
-    "tephi": "CODE_OF_CONDUCT.md",
-    "nc-time-axis": "CODE_OF_CONDUCT.md",
-    "mo_pack": "CODE_OF_CONDUCT.md"
-  },
-  "LICENSE": {
-    "iris": "LICENSE",
-    "iris-grib": "LICENSE",
-    "tephi": "LICENSE",
-    "python-stratify": "LICENSE",
-    "iris-esmf-regrid": "LICENSE",
-    "cf-units": "LICENSE",
-    "nc-time-axis": "LICENSE",
-    "test-iris-imagehash": "LICENSE",
-    "libmo_unpack": "LICENSE",
-    ".github": "LICENSE",
-    "workflows": "LICENSE",
-    "mo_pack": "LICENSE",
-    "marketing": "LICENSE",
-    "test-tephi-imagehash": "LICENSE",
-    "iris-abf": "LICENSE",
-    "voted_issues": "LICENSE",
-    "twitter-scitools-iris": "LICENSE",
-    "cfpint": "LICENSE"
-  },
-  ".lycheeignore": {
-    "iris": ".lycheeignore"
+  "pyproject.toml": {
+    "cf-units": "pyproject.toml",
+    "cfpint": "pyproject.toml",
+    "iris": "pyproject.toml",
+    "iris-abf": "pyproject.toml",
+    "iris-esmf-regrid": "pyproject.toml",
+    "iris-grib": "pyproject.toml",
+    "mo_pack": "pyproject.toml",
+    "nc-time-axis": "pyproject.toml",
+    "python-stratify": "pyproject.toml",
+    "tephi": "pyproject.toml",
+    "test-iris-imagehash": "pyproject.toml",
   },
 
-  "benchmarks/benchmarks/__init__.py": {
-    "iris": "benchmarks/benchmarks/__init__.py",
-    "iris-esmf-regrid": "benchmarks/benchmarks/__init__.py"
-  },
-  "benchmarks/benchmarks/generate_data/__init__.py": {
-    "iris": "benchmarks/benchmarks/generate_data/__init__.py",
-    "iris-esmf-regrid": "benchmarks/benchmarks/generate_data/__init__.py"
-  },
-  "benchmarks/custom_bms/install.py": {
-    "iris": "benchmarks/custom_bms/install.py",
-    "iris-esmf-regrid": "benchmarks/custom_bms/install.py"
-  },
-  "benchmarks/custom_bms/tracemallocbench.py": {
-    "iris": "benchmarks/custom_bms/tracemallocbench.py",
-    "iris-esmf-regrid": "benchmarks/custom_bms/tracemallocbench.py"
-  },
-  "benchmarks/custom_bms/README.md": {
-    "iris": "benchmarks/custom_bms/README.md",
-    "iris-esmf-regrid": "benchmarks/custom_bms/README.md"
+  "benchmarks/README.md": {
+    "iris": "benchmarks/README.md",
+    "iris-esmf-regrid": "benchmarks/README.md"
   },
   "benchmarks/asv.conf.json": {
     "iris": "benchmarks/asv.conf.json",
     "iris-esmf-regrid": "benchmarks/asv.conf.json"
-  },
-  "benchmarks/_asv_delegated_abc.py": {
-    "iris": "benchmarks/_asv_delegated_abc.py",
-    "iris-esmf-regrid": "benchmarks/_asv_delegated_abc.py"
   },
   "benchmarks/asv_delegated.py": {
     "iris": "benchmarks/asv_delegated.py",
@@ -107,10 +100,34 @@
     "iris": "benchmarks/bm_runner.py",
     "iris-esmf-regrid": "benchmarks/bm_runner.py"
   },
-  "benchmarks/README.md": {
-    "iris": "benchmarks/README.md",
-    "iris-esmf-regrid": "benchmarks/README.md"
+  "benchmarks/_asv_delegated_abc.py": {
+    "iris": "benchmarks/_asv_delegated_abc.py",
+    "iris-esmf-regrid": "benchmarks/_asv_delegated_abc.py"
   },
+
+  "benchmarks/benchmarks/__init__.py": {
+    "iris": "benchmarks/benchmarks/__init__.py",
+    "iris-esmf-regrid": "benchmarks/benchmarks/__init__.py"
+  },
+
+  "benchmarks/benchmarks/generate_data/__init__.py": {
+    "iris": "benchmarks/benchmarks/generate_data/__init__.py",
+    "iris-esmf-regrid": "benchmarks/benchmarks/generate_data/__init__.py"
+  },
+
+  "benchmarks/custom_bms/README.md": {
+    "iris": "benchmarks/custom_bms/README.md",
+    "iris-esmf-regrid": "benchmarks/custom_bms/README.md"
+  },
+  "benchmarks/custom_bms/install.py": {
+    "iris": "benchmarks/custom_bms/install.py",
+    "iris-esmf-regrid": "benchmarks/custom_bms/install.py"
+  },
+  "benchmarks/custom_bms/tracemallocbench.py": {
+    "iris": "benchmarks/custom_bms/tracemallocbench.py",
+    "iris-esmf-regrid": "benchmarks/custom_bms/tracemallocbench.py"
+  },
+
   "github/workflows/ci-benchmarks-report.yml": {
     "iris": ".github/workflows/benchmarks_report.yml"
   },
@@ -124,18 +141,5 @@
   },
   "github/workflows/ci-linkchecks.yml": {
     "iris": ".github/workflows/ci-linkchecks.yml"
-  },
-  "pyproject.toml": {
-    "iris": "pyproject.toml",
-    "iris-esmf-regrid": "pyproject.toml",
-    "iris-grib": "pyproject.toml",
-    "nc-time-axis": "pyproject.toml",
-    "python-stratify": "pyproject.toml",
-    "tephi": "pyproject.toml",
-    "cf-units": "pyproject.toml",
-    "mo_pack": "pyproject.toml",
-    "test-iris-imagehash": "pyproject.toml",
-    "iris-abf": "pyproject.toml",
-    "cfpint": "pyproject.toml"
   }
 }
