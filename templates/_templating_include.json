@@ -148,7 +148,7 @@
     "iris": ".github/workflows/ci-linkchecks.yml",
     "ncdata": ".github/workflows/ci-linkchecks.yml"
   },
-  "github/workflows/ci-template-checks.yml": {
+  "github/workflows/ci-template-check.yml": {
     "iris": ".github/workflows/ci-template-checks.yml",
     "iris-esmf-regrid": ".github/workflows/ci-template-checks.yml",
     "iris-grib": ".github/workflows/ci-template-checks.yml",
