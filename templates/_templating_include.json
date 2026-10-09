@@ -18,7 +18,7 @@
     "python-stratify": ".pre-commit-config.yaml",
     "tephi": ".pre-commit-config.yaml",
     "test-iris-imagehash": ".pre-commit-config.yaml",
-    "workflows": ".pre-commit-config.yaml",
+    "workflows": ".pre-commit-config.yaml"
   },
   "CITATION.cff": {
     "cf-units": "CITATION.cff",
@@ -28,7 +28,7 @@
     "nc-time-axis": "CITATION.cff",
     "mo_pack": "CITATION.cff",
     "python-stratify": "CITATION.cff",
-    "tephi": "CITATION.cff",
+    "tephi": "CITATION.cff"
   },
   "CODE_OF_CONDUCT.md": {
     "cf-units": "CODE_OF_CONDUCT.md",
@@ -38,7 +38,7 @@
     "mo_pack": "CODE_OF_CONDUCT.md",
     "nc-time-axis": "CODE_OF_CONDUCT.md",
     "python-stratify": "CODE_OF_CONDUCT.md",
-    "tephi": "CODE_OF_CONDUCT.md",
+    "tephi": "CODE_OF_CONDUCT.md"
   },
   "LICENSE": {
     ".github": "LICENSE",
@@ -58,7 +58,7 @@
     "test-tephi-imagehash": "LICENSE",
     "twitter-scitools-iris": "LICENSE",
     "voted_issues": "LICENSE",
-    "workflows": "LICENSE",
+    "workflows": "LICENSE"
   },
   "MANIFEST.in": {
     "cf-units": "MANIFEST.in",
@@ -81,7 +81,7 @@
     "nc-time-axis": "pyproject.toml",
     "python-stratify": "pyproject.toml",
     "tephi": "pyproject.toml",
-    "test-iris-imagehash": "pyproject.toml",
+    "test-iris-imagehash": "pyproject.toml"
   },
   "run_doctests.py": {
     "iris": "tools/run_doctests.py",
