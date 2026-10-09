@@ -1,8 +1,21 @@
 {
+  "__comment__": "The first keys are files used in implementation, *not* templates...",
+
   "_templating_include.json": {},
   "_templating_exclude.json": {},
   "_templating_scripting.py": {},
   "README.md": {},
+
+  "__comment__": [
+    "The remaining keys are **paths to templates** ...",
+    "All are files in this directory + its subdirectories.",
+    "PLEASE KEEP THESE IN ORDER.",
+    "They are in alphabetic order, except that ..",
+    "  * all files are listed before subdirectories",
+    "  * capitals come before lower-case.",
+    "  * '.' comes _before_ all letters",
+    "  * '_' comes _after_ all letters"
+  ],
 
   ".lycheeignore": {
     "iris": ".lycheeignore"
