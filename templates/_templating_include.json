@@ -162,9 +162,9 @@
     "ncdata": ".github/workflows/ci-linkchecks.yml"
   },
   "github/workflows/ci-template-check.yml": {
-    "iris": ".github/workflows/ci-template-checks.yml",
-    "iris-esmf-regrid": ".github/workflows/ci-template-checks.yml",
-    "iris-grib": ".github/workflows/ci-template-checks.yml",
-    "ncdata": ".github/workflows/ci-template-checks.yml"
+    "iris": ".github/workflows/ci-template-check.yml",
+    "iris-esmf-regrid": ".github/workflows/ci-template-check.yml",
+    "iris-grib": ".github/workflows/ci-template-check.yml",
+    "ncdata": ".github/workflows/ci-template-check.yml"
   }
 }
