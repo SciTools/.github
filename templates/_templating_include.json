@@ -165,6 +165,7 @@
     "iris": ".github/workflows/ci-template-check.yml",
     "iris-esmf-regrid": ".github/workflows/ci-template-check.yml",
     "iris-grib": ".github/workflows/ci-template-check.yml",
-    "ncdata": ".github/workflows/ci-template-check.yml"
+    "ncdata": ".github/workflows/ci-template-check.yml",
+    "run-doctests": ".github/workflows/ci-template-check.yml"
   }
 }
