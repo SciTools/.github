@@ -96,6 +96,41 @@ benchmarked, creating inconsistent benchmark 'conditions'. The
 [generate_data](./benchmarks/generate_data/__init__.py) module offers a
 solution; read more detail there.
 
+### Benchmarks outlive the code they import
+
+A benchmark run checks out each commit in a range and runs *this* copy of the
+benchmark code against all of them. Benchmark code therefore has to import
+successfully on both sides of any name that moves, or the run reports failures
+for every commit before the move and there is nothing to compare against.
+
+Import the current name first and fall back to the old one:
+
+```python
+try:
+    from mypackage.formats.cf import loader
+except ImportError:
+    # The loader moved out of mypackage.formats.netcdf in #1234.
+    from mypackage.formats.netcdf import loader
+```
+
+Name the pull request that moved it, so that a later reader can tell when the
+fallback is safe to delete: once no benchmarked commit predates the move.
+
+The same applies to a capability that did not always exist. A benchmark
+parametrised over something only newer commits support - a file format, say -
+has nothing to time on the older ones, and attempting it reports a failure
+where there is simply no measurement to make. Detect the capability and raise
+`NotImplementedError` in `setup()`, which is how ASV is told to skip:
+
+```python
+def setup(self, ..., file_format):
+    if file_format == "NewFormat" and not newformat_supported():
+        raise NotImplementedError
+```
+
+Leave the parameter in `params` either way. Removing it would change the
+benchmark names between commits, and ASV matches results by name.
+
 ### ASV re-run behaviour
 
 Note that ASV re-runs a benchmark multiple times between its `setup()` routine.
