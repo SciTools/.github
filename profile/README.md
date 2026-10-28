@@ -83,7 +83,7 @@ The Met Office remains the driving force behind SciTools and most of our package
 - 3 :bulb: : Proposing changes via repository [pull requests](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
 - 4 :pencil2: : Developing your own software that uses or augments SciTools software package(s)
 
-Every SciTools repository has a team of _maintainers_ - developers with GitHub permissions to make changes to the codebase (typically via approving and merging pull requests). Maintainers do their best to respond to discussions / issues / pull requests and generally keep the repositories healthy. [Many of the SciTools repositories are discussed by maintainers at regular Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info).
+Every SciTools repository has a team of _maintainers_ - developers with GitHub permissions to make changes to the codebase (typically via approving and merging pull requests). Maintainers do their best to respond to discussions / issues / pull requests and generally keep the repositories healthy. [Many of the SciTools repositories are discussed by maintainers at regular Peloton meetings](https://github.com/orgs/SciTools/projects/13?pane=info). And you can read what we have recently been working on in our [Developer Diary](https://github.com/orgs/SciTools/discussions?discussions_q=label%3Adeveloper-diary).
 
 ### Contact :telephone_receiver:
 
