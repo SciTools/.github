@@ -18,7 +18,8 @@
   ],
 
   ".lycheeignore": {
-    "iris": ".lycheeignore"
+    "iris": ".lycheeignore",
+    "iris-grib": ".lycheeignore"
   },
   ".pre-commit-config.yaml": {
     "cf-units": ".pre-commit-config.yaml",
@@ -159,6 +160,7 @@
   },
   "github/workflows/ci-linkchecks.yml": {
     "iris": ".github/workflows/ci-linkchecks.yml",
+    "iris-grib": ".github/workflows/ci-linkchecks.yml",
     "ncdata": ".github/workflows/ci-linkchecks.yml"
   },
   "github/workflows/ci-template-check.yml": {
