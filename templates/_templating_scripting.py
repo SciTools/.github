@@ -72,6 +72,8 @@ class Config:
         self.templates: dict[Path, list[Config.TargetRepo]] = {}
 
         for _template, _target_repos in config.items():
+            if _template == "__comment__":
+                continue
             template = TEMPLATES_DIR / _template
             assert template.is_file(), f"{template} does not exist."
             target_repos = [

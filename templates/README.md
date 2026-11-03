@@ -34,6 +34,10 @@ repositories when a template is updated, or a new one created.
 uses the `prompt_share()` function to remind repository developers if they are
 modifying a templated file and should consider sharing the change.
 
+### note:
+Each repo has a `ci-template-check.yml` workflow to call this,
+itself based on [this template](github/workflows/ci-template-check.yml) 
+
 `SPRING_CLEANING` flag in [`_templating_scripting.py`](_templating_scripting.py):
 a mechanism for disabling the issues and comments if the dev team is
 deliberately doing intense work on templates and templated files (the volume
