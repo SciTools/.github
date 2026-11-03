@@ -15,11 +15,8 @@ from typing import Any, Callable
 import warnings
 
 
-def list_modules_recursive(
-    module_importname: str,
-    include_private: bool = True,
-) -> list[str]:
-    """Find all the submodules of a given module, optionally omit private modules."""
+def list_modules_recursive(module_importname: str) -> list[str]:
+    """Find all the submodules of a given module."""
     # Identify module from its import path : N.B. fail --> return [module-path]
     module_names = [module_importname]
     module_path = None
@@ -39,14 +36,6 @@ def list_modules_recursive(
                 )
             )
         )
-        if not include_private:
-            module_names = [
-                name
-                for name in module_names
-                if not any(
-                    part.startswith("_") for part in name.split(".")[1:]
-                )
-            ]
 
     return module_names
 
@@ -96,9 +85,7 @@ def process_options(
     # Implement some handy defaults
     if not paths_are_modules:
         if not "module_relative" in opts_dict:
-            opts_dict["module_relative"] = (
-                False  # we want this OFF, by default anyway
-            )
+            opts_dict["module_relative"] = False  # we want this OFF, by default anyway
     if not "optionflags" in opts_dict:
         default_flags = doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE
         opts_dict["optionflags"] = default_flags  # a generally useful default?
@@ -110,7 +97,6 @@ def run_doctest_paths(
     paths: list[str] | list[Path],
     paths_are_modules: bool = False,
     recurse_modules: bool = False,
-    include_private_modules: bool = False,
     exclude_fragments: list[str] = [],
     doctest_kwargs: dict = {},
     verbose: bool = False,
@@ -125,7 +111,6 @@ def run_doctest_paths(
             f"paths={paths!r}"
             f", paths_are_modules={paths_are_modules!r}"
             f", recurse_modules={recurse_modules!r}"
-            f", include_private_modules={include_private_modules!r}"
             f", exclude_fragments={exclude_fragments!r}"
             f", doctest_kwargs={doctest_kwargs!r}"
             f", verbose={verbose!r}"
@@ -146,13 +131,8 @@ def run_doctest_paths(
         if recurse_modules:
             module_paths = []
             for path in paths:
-                module_paths += list_modules_recursive(
-                    str(
-                        path
-                    ),  # for modules, 'paths' are always strings anyway
-                    include_private=include_private_modules,
-                    # exclude_fragments=exclude_fragments,
-                )
+                # for modules, 'paths' are always strings anyway
+                module_paths += list_modules_recursive(str(path))
             paths = module_paths
     else:
         # paths are filepaths
@@ -275,12 +255,6 @@ _parser.add_argument(
     help="include submodules (only applies with -m).",
 )
 _parser.add_argument(
-    "-p",
-    "--publiconly",
-    action="store_true",
-    help="exclude module names beginning '_' (only applies with -m and -r)",
-)
-_parser.add_argument(
     "-e",
     "--exclude",
     action="append",
@@ -325,10 +299,6 @@ _parser.add_argument(
 
 if __name__ == "__main__":
     args = _parser.parse_args(sys.argv[1:])
-    # Clobber sys.argv after parsing, as the doctest functions check it even when
-    #  called directly :-(
-    sys.argv = sys.argv[:1]
-
     if not args.paths:
         _parser.print_help()
     else:
@@ -336,7 +306,6 @@ if __name__ == "__main__":
             paths=args.paths,
             paths_are_modules=args.module,
             recurse_modules=args.recurse,
-            include_private_modules=not args.publiconly,
             exclude_fragments=args.exclude or [],
             doctest_kwargs=process_options(args.options, args.module),
             verbose=args.verbose,
