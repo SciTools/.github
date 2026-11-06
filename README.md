@@ -9,6 +9,10 @@ Organisational level things such as the SciTools README and organisation workflo
 - [`./peloton`](./peloton) - contains the scripts for automating population of the 
 [SciTools Peloton project](https://github.com/orgs/SciTools/projects/13?pane=info).
   See also [`.github/workflows/peloton.yml`](.github/workflows/peloton.yml).
+- [`./eterna-sprint`](./eterna-sprint) - contains the scripts for automating
+population of the SciTools Eterna Sprint project (a sprint board tracking
+Issues/PRs; `Status` is set manually by the team).
+  See also [`.github/workflows/eterna-sprint.yml`](.github/workflows/eterna-sprint.yml).
 - [`./templates`](./templates) - tooling for standardising files across
 SciTools repos.
 
