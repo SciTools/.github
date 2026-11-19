@@ -1,6 +1,7 @@
 # Reference
 #    - https://github.com/actions/checkout
 #    - https://github.com/actions/cache
+#    - https://github.com/marketplace/actions/setup-miniconda
 
 name: benchmarks-validate
 run-name: Validate the benchmarking setup
