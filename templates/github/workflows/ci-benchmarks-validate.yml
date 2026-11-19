@@ -41,13 +41,21 @@ jobs:
       - name: Install run dependencies
         run: pip install asv  # Some repos also need Nox
 
+      - name: Conda install
+        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          auto-update-conda: false
+
       - name: Restore environment cache
         id: cache-restore
         uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae
         with:
           path: |
             benchmarks/.asv/env
-            $CONDA/pkgs
+            # Path chosen by setup-miniconda.
+            ~/conda_pkgs_dir
           key: ${{ runner.os }}-${{ hashFiles('requirements/') }}-${{ env.ENV_CACHE_BUILD }}
 
       - name: Validate setup
@@ -61,5 +69,6 @@ jobs:
         with:
           path: |
             benchmarks/.asv/env
-            $CONDA/pkgs
+            # Path chosen by setup-miniconda.
+            ~/conda_pkgs_dir
           key: ${{ steps.cache-restore.outputs.cache-primary-key }}
