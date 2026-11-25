@@ -1,3 +1,8 @@
+# reference:
+#   - https://github.com/actions/checkout
+#   - https://github.com/marketplace/actions/setup-miniconda
+#   - https://github.com/tibdex/github-app-token
+
 name: Peloton
 on:
   schedule:
@@ -22,13 +27,20 @@ jobs:
     steps:
       - name: Generate token
         id: generate_token
-        uses: tibdex/github-app-token@v1
+        uses: tibdex/github-app-token@3beb63f4bd073e61482598c45c71c1019b59b73a
         with:
           app_id: ${{ secrets.AUTH_APP_ID }}
           private_key: ${{ secrets.AUTH_APP_PRIVATE_KEY }}
 
       - name: "Checkout repo"
-        uses: actions/checkout@v3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: "Install miniconda"
+        uses: conda-incubator/setup-miniconda@be893c923ea9cf1cf7cd510fbdde27c7e18cbdcb
+        with:
+          miniforge-version: latest
+          channels: conda-forge
+          auto-update-conda: false
 
       - name: "Set up environment"
         run: conda install -c conda-forge --file peloton/requirements.txt
@@ -40,7 +52,7 @@ jobs:
           else
              update_loop_minutes=${{ github.event.inputs.update_loop_minutes }}
           fi
-          $CONDA/bin/python peloton/update_project.py \
+          python peloton/update_project.py \
             --verbose \
             --bearer_token "${{ steps.generate_token.outputs.token }}" \
             --update_loop_minutes $update_loop_minutes
